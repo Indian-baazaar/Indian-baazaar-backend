@@ -58,11 +58,10 @@ export async function registerUserController(request, response) {
 
         await user.save();
 
-        // Send verification email
         await sendEmailFun({
             sendTo: email,
-            subject: "Verify email from Ecommerce App",
-            text: "",
+            subject: "Verify email to register in the Indian Baazaar",
+            text: "Verify email to register in the Indian Baazaar",
             html: VerificationEmail(name, verifyCode)
         })
 
