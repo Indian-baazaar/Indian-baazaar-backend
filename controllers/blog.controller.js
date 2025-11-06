@@ -29,10 +29,11 @@ export async function uploadImages(request, response) {
 
         for (let i = 0; i < image?.length; i++) {
 
-            const img = await cloudinary.uploader.upload(
+            await cloudinary.uploader.upload(
                 image[i].path,
                 options,
                 function (error, result) {
+                    console.log("error : ",error);
                     imagesArr.push(result.secure_url);
                     fs.unlinkSync(`uploads/${request.files[i].filename}`);
                 }
@@ -201,7 +202,7 @@ export async function deleteBlog(request, response) {
 
             if (imageName) {
                 cloudinary.uploader.destroy(imageName, (error, result) => {
-                    // console.log(error, result);
+                    console.log(error, result);
                 });
             }
 

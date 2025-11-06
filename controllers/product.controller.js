@@ -28,10 +28,11 @@ export async function uploadImages(request, response) {
     };
 
     for (let i = 0; i < image?.length; i++) {
-      const img = await cloudinary.uploader.upload(
+      await cloudinary.uploader.upload(
         image[i].path,
         options,
         function (error, result) {
+          console.log("error : ", error);
           imagesArr.push(result.secure_url);
           fs.unlinkSync(`uploads/${request.files[i].filename}`);
         }
@@ -68,6 +69,7 @@ export async function uploadBannerImages(request, response) {
         image[i].path,
         options,
         function (error, result) {
+          console.log("error : ", error);
           bannerImage.push(result.secure_url);
           fs.unlinkSync(`uploads/${request.files[i].filename}`);
         }
@@ -831,13 +833,11 @@ export async function deleteMultipleProduct(request, response) {
     }
 
     await ProductModel.deleteMany({ _id: { $in: request.body.ids } });
-    return response
-      .status(200)
-      .json({
-        message: "Product delete successfully",
-        error: false,
-        success: true,
-      });
+    return response.status(200).json({
+      message: "Product delete successfully",
+      error: false,
+      success: true,
+    });
   } catch (error) {
     return response
       .status(500)
@@ -879,13 +879,11 @@ export async function removeImageFromCloudinary(request, response) {
   try {
     const imgUrl = request.query.img;
     if (!imgUrl) {
-      return response
-        .status(400)
-        .json({
-          message: "img query param is required",
-          error: true,
-          success: false,
-        });
+      return response.status(400).json({
+        message: "img query param is required",
+        error: true,
+        success: false,
+      });
     }
 
     const urlArr = imgUrl.split("/");
@@ -1484,41 +1482,41 @@ export async function filters(request, response) {
 
 // Sort function
 const sortItems = (products, sortBy, order) => {
-    try {
-        return products.sort((a, b) => {
-          if (sortBy === "name") {
-            return order === "asc"
-              ? a.name.localeCompare(b.name)
-              : b.name.localeCompare(a.name);
-          }
-          if (sortBy === "price") {
-            return order === "asc" ? a.price - b.price : b.price - a.price;
-          }
-          return 0; 
-        });
-    } catch (error) {
-       return [];
-    }
+  try {
+    return products.sort((a, b) => {
+      if (sortBy === "name") {
+        return order === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      }
+      if (sortBy === "price") {
+        return order === "asc" ? a.price - b.price : b.price - a.price;
+      }
+      return 0;
+    });
+  } catch (error) {
+    return [];
+  }
 };
 
 export async function sortBy(request, response) {
-    try {
-        const { products, sortBy, order } = request.body;
-        const sortedItems = sortItems([...products?.products], sortBy, order);
-        return response.status(200).json({
-          error: false,
-          success: true,
-          products: sortedItems,
-          totalPages: 0,
-          page: 0,
-        });
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false,
-          });   
-    }
+  try {
+    const { products, sortBy, order } = request.body;
+    const sortedItems = sortItems([...products?.products], sortBy, order);
+    return response.status(200).json({
+      error: false,
+      success: true,
+      products: sortedItems,
+      totalPages: 0,
+      page: 0,
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
 }
 
 export async function searchProductController(request, response) {

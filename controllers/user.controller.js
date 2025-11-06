@@ -478,7 +478,7 @@ export async function userAvatarController(request, response) {
       const res = await cloudinary.uploader.destroy(
         imageName,
         (error, result) => {
-          // console.log(error, res)
+          console.log(error, result)
         }
       );
     }
@@ -490,10 +490,11 @@ export async function userAvatarController(request, response) {
     };
 
     for (let i = 0; i < image?.length; i++) {
-      const img = await cloudinary.uploader.upload(
+      await cloudinary.uploader.upload(
         image[i].path,
         options,
         function (error, result) {
+          console.log("error : ",error);
           imagesArr.push(result.secure_url);
           fs.unlinkSync(`uploads/${request.files[i].filename}`);
         }
@@ -529,7 +530,7 @@ export async function removeImageFromCloudinary(request, response) {
       const res = await cloudinary.uploader.destroy(
         imageName,
         (error, result) => {
-          // console.log(error, res)
+          console.log(error, result);
         }
       );
   
