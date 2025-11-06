@@ -326,7 +326,7 @@ export async function loginAdminController(req, res) {
     res.cookie("refreshToken", refreshToken, cookieOptions);
 
     return res.status(200).json({
-      message: "Admin login successful",
+      message: "Admin login successfully",
       success: true,
       data: {
         accessToken,
