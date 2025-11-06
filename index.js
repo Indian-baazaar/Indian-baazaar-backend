@@ -21,7 +21,7 @@ import logoRouter from './route/logo.route.js';
 
 const app = express();
 app.use(cors({
-  origin: "http://localhost:5173",   // Vite Frontend URL
+  origin: "http://localhost:5173",   
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
