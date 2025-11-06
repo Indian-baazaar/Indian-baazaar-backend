@@ -226,112 +226,117 @@ export async function getCategory(request, response) {
 
 
 export async function removeImageFromCloudinary(request, response) {
-  
-    const imgUrl = request.query.img;
+    try {
+        const imgUrl = request.query.img;
+        if (!imgUrl) {
+            return response.status(400).json({ message: 'img query param is required', error: true, success: false });
+        }
 
-      
         const urlArr = imgUrl.split("/");
         const image = urlArr[urlArr.length - 1];
-    
+
         const imageName = image.split(".")[0];
 
-    
         if (imageName) {
             const res = await cloudinary.uploader.destroy(
                 imageName,
                 (error, result) => {
-                    // console.log(error, res)
+                    console.log(error, res)
                 }
             );
-    
+
             if (res) {
-                response.status(200).send(res);
+                return response.status(200).send(res);
             }
         }
+
+        return response.status(404).json({ message: 'Image not found', error: true, success: false });
+    } catch (error) {
+        return response.status(500).json({ message: error.message || error, error: true, success: false });
+    }
 }
 
 
 export async function deleteCategory(request, response) {
-    const category = await CategoryModel.findById(request.params.id);
-    const images = category.images;
-    let img="";
-    for (img of images) {
-        const imgUrl = img;
-        const urlArr = imgUrl.split("/");
-        const image = urlArr[urlArr.length - 1];
-
-        const imageName = image.split(".")[0];
-
-        if (imageName) {
-            cloudinary.uploader.destroy(imageName, (error, result) => {
-                // console.log(error, result);
-            });
+    try {
+        const category = await CategoryModel.findById(request.params.id);
+        if (!category) {
+            return response.status(404).json({ message: 'Category not found!', success: false, error: true });
         }
 
-    }
+        const images = category.images || [];
+        for (const img of images) {
+            const imgUrl = img;
+            const urlArr = imgUrl.split("/");
+            const image = urlArr[urlArr.length - 1];
 
-    const subCategory = await CategoryModel.find({
-        parentId: request.params.id
-    });
+            const imageName = image.split(".")[0];
 
-    for (let i = 0; i < subCategory.length; i++) {
+            if (imageName) {
+                cloudinary.uploader.destroy(imageName, (error, result) => {
+                    // console.log(error, result);
+                });
+            }
 
-        const thirdsubCategory = await CategoryModel.find({
-            parentId: subCategory[i]._id
-        });
-
-        for (let i = 0; i < thirdsubCategory.length; i++) {
-            const deletedThirdSubCat = await CategoryModel.findByIdAndDelete(thirdsubCategory[i]._id);
         }
 
-        const deletedSubCat = await CategoryModel.findByIdAndDelete(subCategory[i]._id);
-    }
+        const subCategory = await CategoryModel.find({ parentId: request.params.id });
 
-    const deletedCat = await CategoryModel.findByIdAndDelete(request.params.id);
-    if (!deletedCat) {
-        response.status(404).json({
-            message: "Category not found!",
-            success: false,
-            error: true
-        });
-    }
+        for (let i = 0; i < subCategory.length; i++) {
 
-    response.status(200).json({
-        success: true,
-        error: false,
-        message: "Category Deleted!",
-    });
+            const thirdsubCategory = await CategoryModel.find({ parentId: subCategory[i]._id });
+
+            for (let j = 0; j < thirdsubCategory.length; j++) {
+                await CategoryModel.findByIdAndDelete(thirdsubCategory[j]._id);
+            }
+
+            await CategoryModel.findByIdAndDelete(subCategory[i]._id);
+        }
+
+        const deletedCat = await CategoryModel.findByIdAndDelete(request.params.id);
+        if (!deletedCat) {
+            return response.status(404).json({ message: 'Category not deleted!', success: false, error: true });
+        }
+
+        return response.status(200).json({ success: true, error: false, message: 'Category Deleted!' });
+    } catch (error) {
+        return response.status(500).json({ message: error.message || error, error: true, success: false });
+    }
 }
 
 export async function updatedCategory(request, response){
-    console.log(request.body.name)
-    const category = await CategoryModel.findByIdAndUpdate(
-        request.params.id,
-        {
-          name: request.body.name,
-          images: imagesArr.length>0 ? imagesArr[0] : request.body.images,
-          parentId:request.body.parentId,
-          parentCatName: request.body.parentCatName
-        },
-        { new: true }
-      );
+        try {
+                console.log(request.body.name)
+                const category = await CategoryModel.findByIdAndUpdate(
+                        request.params.id,
+                        {
+                            name: request.body.name,
+                            images: imagesArr.length>0 ? imagesArr[0] : request.body.images,
+                            parentId:request.body.parentId,
+                            parentCatName: request.body.parentCatName
+                        },
+                        { new: true }
+                    );
 
-      if (!category) {
-        return response.status(500).json({
-          message: "Category cannot be updated!",
-          success: false,
-          error:true
-        });
-      }
+                    if (!category) {
+                        return response.status(500).json({
+                            message: "Category cannot be updated!",
+                            success: false,
+                            error:true
+                        });
+                    }
 
 
-      imagesArr = [];
-      
-      response.status(200).json({
-        error:false,
-        success:true,
-        category:category,
-        message:"Category updated successfully"
-      })
+                    imagesArr = [];
+          
+                    return response.status(200).json({
+                        error:false,
+                        success:true,
+                        category:category,
+                        message:"Category updated successfully"
+                    })
+        } catch (error) {
+                return response.status(500).json({ message: error.message || error, error: true, success: false });
+        }
     
 }

@@ -156,47 +156,52 @@ export async function getLogoById(request, response) {
 
 
 export async function updatedLogo(request, response) {
-    const logo = await LogoModel.findByIdAndUpdate(
-        request.params.id,
-        {
-            logo: imagesArr.length > 0 ? imagesArr[0] : request.body.logo,
-        },
-        { new: true }
-    );
+    try {
+        const logo = await LogoModel.findByIdAndUpdate(
+            request.params.id,
+            {
+                logo: imagesArr.length > 0 ? imagesArr[0] : request.body.logo,
+            },
+            { new: true }
+        );
 
-    if (!logo) {
-        return response.status(500).json({
-            message: "logo cannot be updated!",
-            success: false,
-            error: true
-        });
+        if (!logo) {
+            return response.status(500).json({
+                message: "logo cannot be updated!",
+                success: false,
+                error: true
+            });
+        }
+
+
+        imagesArr = [];
+
+        return response.status(200).json({
+            error: false,
+            success: true,
+            logo: logo,
+            message: "logo updated successfully"
+        })
+    } catch (error) {
+        return response.status(500).json({ message: error.message || error, error: true, success: false });
     }
-
-
-    imagesArr = [];
-
-    response.status(200).json({
-        error: false,
-        success: true,
-        logo: logo,
-        message: "logo updated successfully"
-    })
 
 }
 
 
 
 export async function removeImageFromCloudinary(request, response) {
-  
-    const imgUrl = request.query.img;
+    try {
+        const imgUrl = request.query.img;
+        if (!imgUrl) {
+            return response.status(400).json({ message: 'img query param is required', error: true, success: false });
+        }
 
-      
         const urlArr = imgUrl.split("/");
         const image = urlArr[urlArr.length - 1];
-    
+
         const imageName = image.split(".")[0];
 
-    
         if (imageName) {
             const res = await cloudinary.uploader.destroy(
                 imageName,
@@ -204,9 +209,14 @@ export async function removeImageFromCloudinary(request, response) {
                     // console.log(error, res)
                 }
             );
-    
+
             if (res) {
-                response.status(200).send(res);
+                return response.status(200).send(res);
             }
         }
+
+        return response.status(404).json({ message: 'Image not found', error: true, success: false });
+    } catch (error) {
+        return response.status(500).json({ message: error.message || error, error: true, success: false });
+    }
 }

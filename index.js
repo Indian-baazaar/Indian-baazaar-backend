@@ -1,4 +1,5 @@
 import express from 'express';
+import './config/patchExpressAsync.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -69,6 +70,16 @@ app.use("/api/blog",blogRouter)
 app.use("/api/order",orderRouter)
 app.use("/api/logo",logoRouter)
 
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    const status = err?.status || 500;
+    res.status(status).json({
+        message: err?.message || 'Internal Server Error',
+        error: true,
+        success: false,
+        ...(process.env.NODE_ENV === 'development' ? { stack: err.stack } : {})
+    });
+});
 
 connectDB().then(() => {
     app.listen(process.env.PORT, () => {

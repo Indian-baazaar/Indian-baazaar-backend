@@ -180,68 +180,91 @@ export async function getBlog(request, response) {
 
 
 export async function deleteBlog(request, response) {
-    const blog = await BlogModel.findById(request.params.id);
-    const images = blog.images;
-    let img = "";
-    for (img of images) {
-        const imgUrl = img;
-        const urlArr = imgUrl.split("/");
-        const image = urlArr[urlArr.length - 1];
-
-        const imageName = image.split(".")[0];
-
-        if (imageName) {
-            cloudinary.uploader.destroy(imageName, (error, result) => {
-                // console.log(error, result);
+    try {
+        const blog = await BlogModel.findById(request.params.id);
+        if (!blog) {
+            return response.status(404).json({
+                message: "blog not found!",
+                success: false,
+                error: true
             });
         }
 
-    }
-    const deletedBlog = await BlogModel.findByIdAndDelete(request.params.id);
-    if (!deletedBlog) {
-        response.status(404).json({
-            message: "blog not found!",
-            success: false,
-            error: true
-        });
-    }
+        const images = blog.images || [];
+        let img = "";
+        for (img of images) {
+            const imgUrl = img;
+            const urlArr = imgUrl.split("/");
+            const image = urlArr[urlArr.length - 1];
 
-    response.status(200).json({
-        success: true,
-        error: false,
-        message: "blog Deleted!",
-    });
+            const imageName = image.split(".")[0];
+
+            if (imageName) {
+                cloudinary.uploader.destroy(imageName, (error, result) => {
+                    // console.log(error, result);
+                });
+            }
+
+        }
+        const deletedBlog = await BlogModel.findByIdAndDelete(request.params.id);
+        if (!deletedBlog) {
+            return response.status(404).json({
+                message: "blog not deleted!",
+                success: false,
+                error: true
+            });
+        }
+
+        return response.status(200).json({
+            success: true,
+            error: false,
+            message: "blog Deleted!",
+        });
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        })
+    }
 }
 
 
 
 export async function updateBlog(request, response) {
-    const blog = await BlogModel.findByIdAndUpdate(
-        request.params.id,
-        {
-            title: request.body.title,
-            description: request.body.description,
-            images: imagesArr.length > 0 ? imagesArr[0] : request.body.images,
-        },
-        { new: true }
-    );
+    try {
+        const blog = await BlogModel.findByIdAndUpdate(
+            request.params.id,
+            {
+                title: request.body.title,
+                description: request.body.description,
+                images: imagesArr.length > 0 ? imagesArr[0] : request.body.images,
+            },
+            { new: true }
+        );
 
-    if (!blog) {
+        if (!blog) {
+            return response.status(500).json({
+                message: "Category cannot be updated!",
+                success: false,
+                error: true
+            });
+        }
+
+        imagesArr = [];
+
+        return response.status(200).json({
+            error: false,
+            success: true,
+            blog: blog,
+            message: "blog updated successfully"
+        })
+    } catch (error) {
         return response.status(500).json({
-            message: "Category cannot be updated!",
-            success: false,
-            error: true
-        });
+            message: error.message || error,
+            error: true,
+            success: false
+        })
     }
-
-
-    imagesArr = [];
-
-    response.status(200).json({
-        error: false,
-        success: true,
-        blog: blog,
-        message: "blog updated successfully"
-    })
 
 }
