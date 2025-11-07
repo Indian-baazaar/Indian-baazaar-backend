@@ -1,13 +1,25 @@
 import NotificationModel from '../models/notification.model.js';
+import UserModel from '../models/user.model.js';
 
 export async function getNotifications(request, response) {
   try {
     const userId = request.userId;
     const notifications = await NotificationModel.find({ user: userId })
       .sort({ createdAt: -1 })
-      .populate('product', 'name price images');
+      .populate('product'); 
+    const mapped = notifications.map((n) => ({
+      _id: n._id,
+      title: n.title,
+      message: n.message,
+      read: n.read,
+      createdAt: n.createdAt,
+      updatedAt: n.updatedAt,
+      product: n.product || null,
+      productId: n.product ? n.product._id : null,
+      productImage: n.product && n.product.images && n.product.images.length > 0 ? n.product.images[0] : null,
+    }));
 
-    return response.status(200).json({ error: false, success: true, notifications });
+    return response.status(200).json({ error: false, success: true, notifications: mapped });
   } catch (error) {
     return response.status(500).json({ message: error.message || error, error: true, success: false });
   }
@@ -32,6 +44,38 @@ export async function markAsRead(request, response) {
 
     return response.status(200).json({ message: 'Notification marked as read', error: false, success: true });
   } catch (error) {
+    return response.status(500).json({ message: error.message || error, error: true, success: false });
+  }
+}
+
+export async function createNotification(request, response) {
+  try {
+    const userId = request.userId;
+    const { title, message, productId } = request.body;
+
+    const user = await UserModel.findById(userId).lean();
+    if (!user || user.role !== 'ADMIN') {
+      return response.status(403).json({ message: 'Forbidden to user', error: true, success: false });
+    }
+
+    const users = await UserModel.find({}, '_id').lean();
+    if (!users || users.length === 0) {
+      return response.status(200).json({ message: 'No users to notify', error: false, success: true });
+    }
+
+    const docs = users.map((u) => ({
+      user: u._id,
+      product: productId || null,
+      title: title || 'Notification',
+      message: message || '',
+      read: false,
+    }));
+
+    await NotificationModel.insertMany(docs);
+
+    return response.status(200).json({ message: 'Notifications created', error: false, success: true });
+  } catch (error) {
+    console.error('createNotification error:', error);
     return response.status(500).json({ message: error.message || error, error: true, success: false });
   }
 }
