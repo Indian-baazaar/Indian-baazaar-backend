@@ -7,6 +7,8 @@ import fs from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 
+import { createNotificationForAllUsers } from '../utils/notification.service.js';
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -138,14 +140,22 @@ export async function createProduct(request, response) {
     console.log(product);
 
     if (!product) {
-      response.status(500).json({
+      return response.status(500).json({
         error: true,
         success: false,
         message: "Product Not created",
       });
     }
 
+    // Reset imagesArr used by upload endpoint
     imagesArr = [];
+
+    // Create a notification for every user about this new product. Do not block response on failures.
+    try {
+      await createNotificationForAllUsers(product);
+    } catch (e) {
+      console.error('Notification creation failed:', e);
+    }
 
     return response.status(200).json({
       message: "Product Created successfully",
