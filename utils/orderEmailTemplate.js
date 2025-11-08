@@ -107,7 +107,7 @@ const OrderConfirmationEmail = (username, orders) => {
             <p>If you have any questions, feel free to contact us.</p>
         </div >
     <div className="footer">
-        &copy; ${new Date().getFullYear()} Your Store. All rights reserved.
+        &copy; ${new Date().getFullYear()} Indian baazaar. All rights reserved.
     </div>
     </div >
 </body >
