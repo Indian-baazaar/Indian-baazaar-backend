@@ -18,6 +18,8 @@ import bannerList2Router from './route/bannerList2.route.js';
 import blogRouter from './route/blog.route.js';
 import orderRouter from './route/order.route.js';
 import notificationRouter from './route/notification.route.js';
+import trackingRoutes from './route/trackingRoutes.js';
+import shiprocketRoutes from './route/shiprocketRoutes.js';
 
 const app = express();
 app.use(cors({
@@ -34,6 +36,9 @@ app.use(cookieParser())
 app.use(helmet({
     crossOriginResourcePolicy: false
 }))
+
+console.log("Tracking route loaded");
+app.use("/api", trackingRoutes);
 
 try {
     app.get("/", (request, response) => {
@@ -69,6 +74,7 @@ app.use("/api/bannerList2",bannerList2Router)
 app.use("/api/blog",blogRouter)
 app.use("/api/order",orderRouter)
 app.use('/api/notification', notificationRouter)
+app.use('/api/shiprocket', shiprocketRoutes)
 
 app.use((err, req, res, next) => {
     console.error('Unhandled error:', err);
