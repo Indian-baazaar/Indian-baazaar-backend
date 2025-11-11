@@ -14,7 +14,7 @@ export function buildRoleBasedFilter(user, baseFilter = {}) {
   }
 
   // SUPER_ADMIN and ADMIN can see everything
-  if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
+  if (user.role === 'SUPER_ADMIN') {
     return baseFilter;
   }
 
@@ -42,7 +42,7 @@ export function canModifyResource(user, resource) {
   }
 
   // SUPER_ADMIN and ADMIN can modify anything
-  if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
+  if (user.role === 'SUPER_ADMIN') {
     return true;
   }
 
@@ -66,7 +66,7 @@ export function filterResourcesByRole(user, resources) {
   }
 
   // SUPER_ADMIN and ADMIN can see everything
-  if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
+  if (user.role === 'SUPER_ADMIN') {
     return resources;
   }
 

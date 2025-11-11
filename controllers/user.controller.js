@@ -9,6 +9,7 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import ReviewModel from "../models/reviews.model.js.js";
 import dotenv from "dotenv";
+import AddressModel from "../models/address.model.js";
 dotenv.config();
 
 cloudinary.config({
@@ -17,6 +18,179 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
 });
+
+
+export async function registerRetailerController(request, response) {
+  try {
+    const {
+      name,
+      email,
+      password,
+      mobile,
+      address_line1,
+      city,
+      state,
+      pincode,
+      country,
+      landmark,
+      addressType, // "Home" | "Office"
+    } = request.body;
+
+    if (!name || !email || !password) {
+      return response.status(400).json({
+        message: "Provide name, email, and password",
+        error: true,
+        success: false,
+      });
+    }
+
+    if (!mobile) {
+      return response.status(400).json({
+        message: "Provide mobile number",
+        error: true,
+        success: false,
+      });
+    }
+
+    if (!address_line1 || !city || !state || !pincode || !country) {
+      return response.status(400).json({
+        message: "Provide complete address details",
+        error: true,
+        success: false,
+      });
+    }
+
+    let user = await UserModel.findOne({ email });
+
+    // Helper: create or update primary retailer address
+    const createOrUpdateRetailerAddress = async (userDoc) => {
+      const userIdString = userDoc._id.toString();
+
+      // Mark all old addresses as not selected
+      await AddressModel.updateMany(
+        { userId: userIdString },
+        { $set: { selected: false } }
+      );
+
+      const addressPayload = {
+        address_line1,
+        city,
+        state,
+        pincode,
+        country,
+        mobile,
+        landmark: landmark || "",
+        addressType: addressType || "Office", // default office/shop
+        userId: userIdString,
+        selected: true,
+        status: true,
+      };
+
+      const addressDoc = await AddressModel.create(addressPayload);
+
+      if (!userDoc.address_details) {
+        userDoc.address_details = [];
+      }
+
+      const alreadyLinked = userDoc.address_details.some(
+        (id) => id.toString() === addressDoc._id.toString()
+      );
+
+      if (!alreadyLinked) {
+        userDoc.address_details.push(addressDoc._id);
+      }
+
+      await userDoc.save();
+
+      return addressDoc;
+    };
+
+    if (user) {
+      if (user.verify_email !== true) {
+        const saltExisting = await bcryptjs.genSalt(10);
+        const hashPasswordExisting = await bcryptjs.hash(password, saltExisting);
+
+        const verifyCodeExisting = Math.floor(
+          100000 + Math.random() * 900000
+        ).toString();
+
+        user.name = name;
+        user.password = hashPasswordExisting;
+        user.role = "RETAILER";
+        user.mobile = mobile;
+        user.otp = verifyCodeExisting;
+        user.otpExpires = Date.now() + 600000; // 10 mins
+
+        await user.save();
+
+        // Create/update retailer address
+        await createOrUpdateRetailerAddress(user);
+
+        await sendEmailFun({
+          sendTo: email,
+          subject: "Verify email to register in the Indian Baazaar",
+          text: "Verify email to register in the Indian Baazaar",
+          html: VerificationEmail(name, verifyCodeExisting),
+        });
+
+        return response.status(200).json({
+          success: true,
+          error: false,
+          message:
+            "Verification email resent. Please check your inbox to verify your account.",
+        });
+      }
+
+      // Already verified user with this email
+      return response.status(400).json({
+        message: "User already registered with this email",
+        error: true,
+        success: false,
+      });
+    }
+
+    // New retailer registration
+    const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const salt = await bcryptjs.genSalt(10);
+    const hashPassword = await bcryptjs.hash(password, salt);
+
+    user = new UserModel({
+      name,
+      email,
+      password: hashPassword,
+      mobile,
+      role: "RETAILER",
+      otp: verifyCode,
+      otpExpires: Date.now() + 600000, // 10 mins
+    });
+
+    await user.save();
+
+    await createOrUpdateRetailerAddress(user);
+
+    await sendEmailFun({
+      sendTo: email,
+      subject: "Verify email to register in the Indian Baazaar",
+      text: "Verify email to register in the Indian Baazaar",
+      html: VerificationEmail(name, verifyCode),
+    });
+
+    return response.status(200).json({
+      success: true,
+      error: false,
+      message:
+        "Verification email sent. Please check your inbox to verify your account.",
+    });
+  } catch (error) {
+    console.error("registerRetailerController error:", error);
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}
 
 export async function registerUserController(request, response) {
   try {
@@ -326,7 +500,7 @@ export async function loginAdminController(req, res) {
     res.cookie("refreshToken", refreshToken, cookieOptions);
 
     return res.status(200).json({
-      message: "Admin login successfully",
+      message:`${user.role} login successfully`,
       success: true,
       data: {
         accessToken,

@@ -56,7 +56,7 @@ export async function createPermission(req, res) {
       action,
       apiPath,
       method,
-      allowedRoles: allowedRoles || ["SUPER_ADMIN", "ADMIN"],
+      allowedRoles: allowedRoles || ["SUPER_ADMIN"],
     });
 
     await permission.save();
