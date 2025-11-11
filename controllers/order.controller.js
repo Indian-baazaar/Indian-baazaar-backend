@@ -154,63 +154,6 @@ export async function getTotalOrdersCountController(request, response) {
 
 
 
-function getPayPalClient() {
-
-    const environment =
-        process.env.PAYPAL_MODE === "live"
-            ? new paypal.core.LiveEnvironment(
-                process.env.PAYPAL_CLIENT_ID_LIVE,
-                process.env.PAYPAL_SECRET_LIVE
-            )
-            : new paypal.core.SandboxEnvironment(
-                process.env.PAYPAL_CLIENT_ID_TEST,
-                process.env.PAYPAL_SECRET_TEST
-            );
-
-    return new paypal.core.PayPalHttpClient(environment);
-
-
-}
-
-
-export const createOrderPaypalController = async (request, response) => {
-    try {
-
-        const req = new paypal.orders.OrdersCreateRequest();
-        req.prefer("return=representation");
-
-        req.requestBody({
-            intent: "CAPTURE",
-            purchase_units: [{
-                amount: {
-                    currency_code: 'USD',
-                    value: request.query.totalAmount
-                }
-            }]
-        });
-
-
-        try {
-            const client = getPayPalClient();
-            const order = await client.execute(req);
-            response.json({ id: order.result.id });
-        } catch (error) {
-            console.error(error);
-            response.status(500).send("Error creating PayPal order");
-        }
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        })
-    }
-}
-
-
-
-
 export const captureOrderPaypalController = async (request, response) => {
     try {
         const { paymentId } = request.body;
