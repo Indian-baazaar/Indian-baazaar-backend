@@ -1,5 +1,5 @@
 import OrderModel from "../models/order.model.js";
-import { validateAddress, createShipment, trackShipment } from '../utils/shiprocket.service.js';
+import { validateAddress, createShipment } from '../utils/shiprocket.service.js';
 import UserModel from '../models/user.model.js';
 import OrderConfirmationEmail from "../utils/orderEmailTemplate.js";
 import sendEmailFun from "../config/sendEmail.js";
@@ -18,6 +18,8 @@ export const createOrderController = async (request, response) => {
         if (!isServiceable) {
             return response.status(400).json({ error: true, success: false, message: 'Delivery address not serviceable by Shiprocket. Please update your address.' });
         }
+
+        console.log("request.body.products ",request.body.products);
 
         let order = new OrderModel({
             userId: request.body.userId,

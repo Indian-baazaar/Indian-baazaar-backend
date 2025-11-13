@@ -70,7 +70,7 @@ const OrderConfirmationEmail = (username, orders) => {
            ${orders?.products.map(
         (product) => `
              <tr>
-        <td>${product?.productTitle}</td>
+        <td>${product?.productTitle || product?.name}</td>
                 <td>${product?.quantity}</td>
                         <td>${product?.sub_total?.toLocaleString("en-US", {
             style: "currency",
