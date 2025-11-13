@@ -1,5 +1,7 @@
 import axios from 'axios';
 import RandExp from 'randexp';
+import dotenv from 'dotenv';
+dotenv.config();
 
 class ShipRocket {
 

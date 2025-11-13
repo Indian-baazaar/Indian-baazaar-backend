@@ -1,155 +1,147 @@
-import { ShipRocket } from '../helper/index.js';
-import { response } from '../utils/index.js';
+import { ShipRocket } from "../helper/index.js";
+import { getShiprocketToken } from "../helper/shiprocketAuth.js";
+import { response } from "../utils/index.js";
 
- export const requestCreateOrder = async (req, res)=>{
+export const requestCreateOrder = async (req, res) => {
+  try {
+    let token = await getShiprocketToken();
+    const shipRocket = new ShipRocket(token);
 
-  try{
+    const { status, data, message } = await shipRocket.requestCreateOrder(
+      req.order
+    );
 
-    const shipRocket = new ShipRocket(req.shipRocket);
-
-    const { status, data, message } = await shipRocket.requestCreateOrder(req.order);
-
-    if(!status) throw { code: 409, message };
+    if (!status) throw { code: 409, message };
 
     response.success(res, { code: 200, message, data, pagination: null });
-  }
-  catch (e){
-
-    response.error(res, e)
+  } catch (e) {
+    response.error(res, e);
   }
 };
 
- export const assignAWB = async (req, res)=>{
-
-  try{
-
+export const assignAWB = async (req, res) => {
+  try {
     const { shipmentId } = req.body;
 
-    const shipRocket = new ShipRocket(req.shipRocket);
+        let token = await getShiprocketToken();
+    const shipRocket = new ShipRocket(token);
 
     const { status, data, message } = await shipRocket.generateAWB(shipmentId);
 
-    if(!status) throw { code: 409, message };
+    if (!status) throw { code: 409, message };
 
     response.success(res, { code: 200, message, data, pagination: null });
-  }
-  catch (e){
-    response.error(res, e)
+  } catch (e) {
+    response.error(res, e);
   }
 };
 
-
- export const generateLabel = async (req, res)=>{
-
-  try{
-
+export const generateLabel = async (req, res) => {
+  try {
     const { shipmentIds } = req.body;
 
-    const shipRocket = new ShipRocket(req.shipRocket);
+        let token = await getShiprocketToken();
+    const shipRocket = new ShipRocket(token);
 
-    const { status, data, message } = await shipRocket.generateLabel(shipmentIds);
+    const { status, data, message } = await shipRocket.generateLabel(
+      shipmentIds
+    );
 
-    if(!status) throw { code: 409, message };
+    if (!status) throw { code: 409, message };
 
     response.success(res, { code: 200, message, data, pagination: null });
-  }
-  catch (e){
-    response.error(res, e)
+  } catch (e) {
+    response.error(res, e);
   }
 };
 
- export const generateInvoice = async (req, res)=>{
-
-  try{
-
+export const generateInvoice = async (req, res) => {
+  try {
     const { orderIds } = req.body;
 
-    const shipRocket = new ShipRocket(req.shipRocket);
+        let token = await getShiprocketToken();
+    const shipRocket = new ShipRocket(token);
 
-    const { status, data, message } = await shipRocket.generateInvoice(orderIds);
+    const { status, data, message } = await shipRocket.generateInvoice(
+      orderIds
+    );
 
-    if(!status) throw { code: 409, message };
+    if (!status) throw { code: 409, message };
 
     response.success(res, { code: 200, message, data, pagination: null });
-  }
-  catch (e){
-    response.error(res, e)
+  } catch (e) {
+    response.error(res, e);
   }
 };
 
- export const shipmentPickUp = async (req, res)=>{
-
-  try{
-
+export const shipmentPickUp = async (req, res) => {
+  try {
     const { shipmentIds } = req.body;
 
-    const shipRocket = new ShipRocket(req.shipRocket);
+        let token = await getShiprocketToken();
+    const shipRocket = new ShipRocket(token);
 
-    const { status, data, message } = await shipRocket.shipmentPickUp(shipmentIds);
+    const { status, data, message } = await shipRocket.shipmentPickUp(
+      shipmentIds
+    );
 
-    if(!status) throw { code: 409, message };
+    if (!status) throw { code: 409, message };
 
     response.success(res, { code: 200, message, data, pagination: null });
-  }
-  catch (e){
-    response.error(res, e)
+  } catch (e) {
+    response.error(res, e);
   }
 };
 
- export const generateManifests = async (req, res)=>{
-
-  try{
-
+export const generateManifests = async (req, res) => {
+  try {
     const { shipmentIds } = req.body;
 
-    const shipRocket = new ShipRocket(req.shipRocket);
+        let token = await getShiprocketToken();
+    const shipRocket = new ShipRocket(token);
 
-    const { status, data, message } = await shipRocket.generateManifests(shipmentIds);
+    const { status, data, message } = await shipRocket.generateManifests(
+      shipmentIds
+    );
 
-    if(!status) throw { code: 409, message };
+    if (!status) throw { code: 409, message };
 
     response.success(res, { code: 200, message, data, pagination: null });
-  }
-  catch (e){
-    response.error(res, e)
+  } catch (e) {
+    response.error(res, e);
   }
 };
 
-
- export const printManifests = async (req, res)=>{
-
-  try{
-
+export const printManifests = async (req, res) => {
+  try {
     const { orderIds } = req.body;
 
-    const shipRocket = new ShipRocket(req.shipRocket);
+        let token = await getShiprocketToken();
+    const shipRocket = new ShipRocket(token);
 
     const { status, data, message } = await shipRocket.printManifests(orderIds);
 
-    if(!status) throw { code: 409, message };
+    if (!status) throw { code: 409, message };
 
     response.success(res, { code: 200, message, data, pagination: null });
-  }
-  catch (e){
-    response.error(res, e)
+  } catch (e) {
+    response.error(res, e);
   }
 };
 
- export const deleteOrder = async (req, res)=>{
-
-  try{
-
+export const deleteOrder = async (req, res) => {
+  try {
     const { orderIds } = req.body;
 
-    const shipRocket = new ShipRocket(req.shipRocket);
+        let token = await getShiprocketToken();
+    const shipRocket = new ShipRocket(token);
 
     const { status, data, message } = await shipRocket.deleteOrder(orderIds);
 
-    if(!status) throw { code: 409, message };
+    if (!status) throw { code: 409, message };
 
     response.success(res, { code: 200, message, data, pagination: null });
-  }
-  catch (e){
-    response.error(res, e)
+  } catch (e) {
+    response.error(res, e);
   }
 };

@@ -1,4 +1,5 @@
 import { ShipRocket } from '../helper/index.js';
+import { getShiprocketToken } from '../helper/shiprocketAuth.js';
 import { response } from '../utils/index.js';
 
 export const registerPickUpAddress = async (req, res)=>{
@@ -6,8 +7,9 @@ export const registerPickUpAddress = async (req, res)=>{
   try{
     const { email, phone, title, addressLineOne,
       addressLineTwo, city, pinCode, state, country  } = req.body;
-
-    const shipRocket = new ShipRocket(req.shipRocket);
+    let token = await getShiprocketToken();
+    console.log("token : ",token);
+    const shipRocket = new ShipRocket(token);
 
     const body = {
       name: title,

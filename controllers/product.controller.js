@@ -836,7 +836,7 @@ export async function deleteProduct(request, response) {
       message: "Product Deleted!",
     });
   } catch (error) {
-    console.log("Error : ", error);
+    console.log("Error hai : ", error);
     return response.status(500).json({
       message: error.message || error,
       error: true,
