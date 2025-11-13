@@ -79,8 +79,6 @@ const OrderConfirmationEmail = (username, orders) => {
         </tr>
                     `
     )}
-
-    
                     <tr>
                      <td colspan={1}></td>
                         <td colspan={2}>Total</td>
