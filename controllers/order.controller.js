@@ -1,8 +1,6 @@
 import OrderModel from "../models/order.model.js";
 import { validateAddress, createShipment, trackShipment } from '../utils/shiprocket.service.js';
-import ProductModel from '../models/product.modal.js';
 import UserModel from '../models/user.model.js';
-import paypal from "@paypal/checkout-server-sdk";
 import OrderConfirmationEmail from "../utils/orderEmailTemplate.js";
 import sendEmailFun from "../config/sendEmail.js";
 import dotenv from 'dotenv';
