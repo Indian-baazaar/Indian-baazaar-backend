@@ -116,13 +116,12 @@ class ShipRocket {
     }
   }
 
-  async generateAWB(shipment_id){
+  async generateAWB(shipping_id, courier_id){
 
     try{
-
       const result = await this.axiosInstance.post('courier/assign/awb', {
-        shipment_id,
-        courier_id: '',
+        shipment_id : shipping_id,
+        courier_id,
       });
 
       const { status, data } = this.validateData(result);
@@ -145,12 +144,12 @@ class ShipRocket {
     }
   }
 
-  async generateLabel(shipment_id){
+  async generateLabel(shipping_id){
 
     try {
 
       const result = await this.axiosInstance.post('courier/generate/label', {
-        shipment_id,
+        shipping_id,
       });
 
       const { status, data } = this.validateData(result);
@@ -201,12 +200,12 @@ class ShipRocket {
     }
   }
 
-  async shipmentPickUp(shipment_id){
+  async shipmentPickUp(shipping_id){
 
     try{
 
       const result = await this.axiosInstance.post('courier/generate/pickup', {
-        shipment_id,
+        shipping_id,
       });
 
       const { status, data } = this.validateData(result);
@@ -236,12 +235,12 @@ class ShipRocket {
     }
   }
 
-  async generateManifests(shipment_id){
+  async generateManifests(shipping_id){
 
     try {
 
       const result = await this.axiosInstance.post('manifests/generate', {
-        shipment_id,
+        shipping_id,
       });
 
       const { status, data } = this.validateData(result);

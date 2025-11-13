@@ -18,12 +18,12 @@ export const requestCreateOrder = async (req, res) => {
 
 export const assignAWB = async (req, res) => {
   try {
-    const { shipping_id } = req.body;
+    const { shipping_id,courier_id } = req.body;
 
         let token = await getShiprocketToken();
     const shipRocket = new ShipRocket(token);
 
-    const { status, data, message } = await shipRocket.generateAWB(shipping_id);
+    const { status, data, message } = await shipRocket.generateAWB(shipping_id, courier_id);
 
     if (!status) throw { code: 409, message };
 

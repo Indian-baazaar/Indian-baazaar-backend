@@ -208,9 +208,7 @@ export const CheckassignAWB = (req, res, next) =>{
 
   try{
     const { shipping_id } = req.body;
-
     if(!shipping_id) throw { code: 409, message: 'please provide shipment id' };
-
     next()
   }
   catch (e){
