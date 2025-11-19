@@ -20,6 +20,11 @@ export const requestCreateOrder = async (req, res) => {
     const user = userId ? await UserModel.findById(userId).lean() : await UserModel.findById(order.userId).lean();
     if (!user) throw { code: 404, message: 'User not found' };
 
+    let deliveryAddress = null;
+    if (order.delivery_address) {
+      deliveryAddress = await AddressModel.findById(order.delivery_address).lean();
+    }
+
     let seller = null;
     if (sellerId) seller = await UserModel.findById(sellerId).lean();
 
@@ -34,7 +39,7 @@ export const requestCreateOrder = async (req, res) => {
     }
 
     if (!seller || seller == (null || undefined || "")) throw { code: 404, message: 'Seller not found or not provided' };
-    const payload = buildShiprocketOrderPayload({ order, user, seller, products });
+    const payload = buildShiprocketOrderPayload({ order, user, seller, products, deliveryAddress });
 
     let token = await getShiprocketToken();
     const shipRocket = new ShipRocket(token);

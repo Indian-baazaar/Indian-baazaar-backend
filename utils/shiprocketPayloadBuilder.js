@@ -1,11 +1,9 @@
-export const buildShiprocketOrderPayload = ({ order, user, seller, products }) => {
+export const buildShiprocketOrderPayload = ({ order, user, seller, products, deliveryAddress }) => {
   const [firstName, ...lastParts] = (user.name || '').split(' ');
   const lastName = lastParts.join(' ') || '';
 
-  //user can have multiple addresses, try to get Exact order address which user selected during checkout
-  const deliveryAddress = order.delivery_address ? order.delivery_address : (user.address_details && user.address_details[0]);
+  const address = deliveryAddress || (user.address_details && user.address_details[0]);
 
-  // assemble order_items expected by Shiprocket
   const order_items = order.products.map((p) => {
     const prod = products.find(x => String(x._id) === String(p.productId));
     return {
@@ -18,7 +16,6 @@ export const buildShiprocketOrderPayload = ({ order, user, seller, products }) =
 
   const sub_total = order.products.reduce((acc, cur) => acc + (cur.sub_total || (cur.price * (cur.quantity || 1)) || 0), 0);
 
-  // dimensions: try to read from product if available, fallback to defaults
   const sampleProd = products[0] || {};
   const weightVal = sampleProd.productWeight && sampleProd.productWeight.length ? parseFloat(sampleProd.productWeight[0]) || 0.5 : 0.5;
 
@@ -36,12 +33,12 @@ export const buildShiprocketOrderPayload = ({ order, user, seller, products }) =
     comment: '',
     billing_customer_name: firstName || '',
     billing_last_name: lastName,
-    billing_address: deliveryAddress ? (deliveryAddress.address_line1 || '') : '',
-    billing_address_2: deliveryAddress && deliveryAddress.landmark ? deliveryAddress.landmark : '',
-    billing_city: deliveryAddress ? (deliveryAddress.city || '') : '',
-    billing_pincode: deliveryAddress ? (deliveryAddress.pincode || '') : '',
-    billing_state: deliveryAddress ? (deliveryAddress.state || '') : '',
-    billing_country: deliveryAddress ? (deliveryAddress.country || '') : '',
+    billing_address: address ? (address.address_line1 || '') : '',
+    billing_address_2: address && address.landmark ? address.landmark : '',
+    billing_city: address ? (address.city || '') : '',
+    billing_pincode: address ? (address.pincode || '') : '',
+    billing_state: address ? (address.state || '') : '',
+    billing_country: address ? (address.country || '') : '',
     billing_email: user.email || '',
     billing_phone: user.mobile || '',
     shipping_is_billing: true,
