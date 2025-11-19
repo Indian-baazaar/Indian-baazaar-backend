@@ -8,12 +8,17 @@ import ProductModel from "../models/product.modal.js";
 import UserModel from "../models/user.model.js";
 import AddressModel from "../models/address.model.js";
 import { buildShiprocketOrderPayload } from "../utils/shiprocketPayloadBuilder.js";
+import mongoose from "mongoose";
 
 export const requestCreateOrder = async (req, res) => {
   try {
     const { orderId, userId, sellerId } = req.body;
 
     if (!orderId) throw { code: 400, message: 'orderId is required' };
+    if (!mongoose.Types.ObjectId.isValid(orderId || userId || sellerId )) {
+      throw { code: 400, message: 'Invalid orderId format' };
+    }
+
     const order = await OrderModel.findById(orderId).lean();
     if (!order) throw { code: 404, message: 'Order not found' };
 

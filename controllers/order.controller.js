@@ -5,17 +5,33 @@ import OrderConfirmationEmail from "../utils/orderEmailTemplate.js";
 import sendEmailFun from "../config/sendEmail.js";
 import dotenv from 'dotenv';
 import { getCache, setCache, delCache } from '../utils/redisUtil.js';
+import AddressModel from "../models/address.model.js";
 dotenv.config();
 
 export const createOrderController = async (request, response) => {
     try {
 
-        // Validate user's delivery address with Shiprocket
-        const deliveryPincode = request.body.delivery_address?.pincode;
-        if (!deliveryPincode) {
-            return response.status(400).json({ error: true, success: false, message: 'Delivery pincode required.' });
-        }
-        const isServiceable = await validateAddress(deliveryPincode);
+    const addressId = request.body.delivery_address;
+
+    if (!addressId) {
+      return response.status(400).json({
+        error: true,
+        success: false,
+        message: "Delivery address ID is required.",
+      });
+    }
+
+    const addressDetails = await AddressModel.findById(addressId);
+
+    if (!addressDetails) {
+      return response.status(404).json({
+        error: true,
+        success: false,
+        message: "Address not found.",
+      });
+    }
+        const isServiceable = await validateAddress(addressDetails.pincode);
+        console.log("isServiceable : ",isServiceable);
         if (!isServiceable) {
             return response.status(400).json({ error: true, success: false, message: 'Delivery address not serviceable by Shiprocket. Please update your address.' });
         }

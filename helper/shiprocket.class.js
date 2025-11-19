@@ -3,6 +3,43 @@ import RandExp from 'randexp';
 import dotenv from 'dotenv';
 dotenv.config();
 
+const REQUIRED_FIELDS = [
+  "order_id",
+  "order_date",
+  "pickup_location",
+  "billing_customer_name",
+  "billing_address",
+  "billing_city",
+  "billing_pincode",
+  "billing_state",
+  "billing_country",
+  "billing_phone",
+  "order_items",
+  "payment_method",
+  "sub_total",
+  "length",
+  "breadth",
+  "height",
+  "weight"
+];
+function validateRequiredFields(request, requiredFields) {
+  const missing = [];
+  requiredFields.forEach((field) => {
+    const value = request[field];
+    if (
+      value === undefined ||
+      value === null ||
+      value === "" ||
+      (Array.isArray(value) && value.length === 0)
+    ) {
+      missing.push(field);
+    }
+  });
+  return missing;
+}
+
+
+
 class ShipRocket {
 
   constructor(token){
@@ -90,6 +127,16 @@ class ShipRocket {
         giftwrap_charges, transaction_charges, total_discount, sub_total,
         length, breadth, height, weight
       } = request;
+    
+    const missingFields = validateRequiredFields(request, REQUIRED_FIELDS);
+
+    if (missingFields.length > 0) {
+      return {
+        status: false,
+        message: `Missing required fields: ${missingFields.join(", ")}`,
+        data: null
+      };
+    }
 
       const result = await this.axiosInstance.post('orders/create/adhoc', {
         order_id, order_date, pickup_location, channel_id, comment,
@@ -100,6 +147,8 @@ class ShipRocket {
         giftwrap_charges, transaction_charges, total_discount, sub_total,
         length, breadth, height, weight,
       });
+
+      console.log("result : ",result);
 
       const { status, data } = this.validateData(result);
 
