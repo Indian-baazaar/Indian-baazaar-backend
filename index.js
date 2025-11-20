@@ -7,6 +7,11 @@ import cookieParser from 'cookie-parser'
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { redis } from './config/redisClient.js';
+import mongoSanitize from 'express-mongo-sanitize';
+import xss from 'xss-clean';
+import hpp from 'hpp';
+import compression from 'compression';
+import morgan from 'morgan';
 import connectDB from './config/connectDb.js';
 import userRouter from './route/user.route.js'
 import categoryRouter from './route/category.route.js';
@@ -47,13 +52,26 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
 
-
-
-app.use(express.json())
-app.use(cookieParser())
+// Security middlewares
 app.use(helmet({
-    crossOriginResourcePolicy: false
-}))
+  crossOriginResourcePolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+}));
+app.use(compression()); // Compress responses
+app.use(morgan('combined')); // HTTP request logging
+app.use(mongoSanitize()); // Prevent MongoDB injection
+app.use(xss()); // Prevent XSS attacks
+app.use(hpp()); // Prevent HTTP parameter pollution
+
+app.use(express.json({ limit: '10mb' })); // Limit JSON payload size
+app.use(cookieParser())
 
 const checkBlockedIP = async (req, res, next) => {
   const ip = req.ip || req.connection.remoteAddress || req.socket.remoteAddress;
