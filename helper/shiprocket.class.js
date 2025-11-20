@@ -95,13 +95,13 @@ class ShipRocket {
         country,
         pin_code,
       });
-       console.log("shiprocket result : ",result);
-
-      const { success, address: addressData  } = result.data;
+      
+      const { success, address: addressData } = result.data;
 
       if(!success) throw { message: 'Unable to register address' };
+      const pickup_location = addressData.pickup_code; 
 
-      return { status: success, data: addressData, message: 'Address registered successfully!' }
+      return { status: success, pickup_location, data: addressData, message: 'Address registered successfully!' }
     }
     catch(error){
       console.log("shiprocket error : ",error);

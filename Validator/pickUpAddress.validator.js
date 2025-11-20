@@ -54,6 +54,8 @@ export const CheckrequestCreateOrder = (req, res, next)=>{
     const { orderId, userId, sellerId } = req.body;
 
     if(!orderId) throw { code: 409, message: 'please provide orderId' };
+    if(!userId) throw { code: 409, message: 'please provide userId' };
+    if(!sellerId) throw { code: 409, message: 'please provide sellerId' };
     next()
   }
   catch (e){

@@ -13,38 +13,26 @@ import mongoose from "mongoose";
 export const requestCreateOrder = async (req, res) => {
   try {
     const { orderId, userId, sellerId } = req.body;
-
-    if (!orderId) throw { code: 400, message: 'orderId is required' };
+    
     if (!mongoose.Types.ObjectId.isValid(orderId || userId || sellerId )) {
-      throw { code: 400, message: 'Invalid orderId format' };
+      throw { code: 400, message: 'Invalid orderId || userId || sellerId format' };
     }
 
     const order = await OrderModel.findById(orderId).lean();
     if (!order) throw { code: 404, message: 'Order not found' };
 
-    const user = userId ? await UserModel.findById(userId).lean() : await UserModel.findById(order.userId).lean();
+    const user = await UserModel.findById(userId).lean();
     if (!user) throw { code: 404, message: 'User not found' };
+    
+    let seller =  await UserModel.findById(sellerId).lean();
+    if (!seller) throw { code: 404, message: 'Seller not found' };
 
-    let deliveryAddress = null;
-    if (order.delivery_address) {
-      deliveryAddress = await AddressModel.findById(order.delivery_address).lean();
-    }
-
-    let seller = null;
-    if (sellerId) seller = await UserModel.findById(sellerId).lean();
+    let deliveryAddress = await AddressModel.findById(order.delivery_address).lean();
 
     const productIds = order.products.map(p => p.productId).filter(Boolean);
     const products = await ProductModel.find({ _id: { $in: productIds } }).lean();
 
-    if (!seller) {
-      const firstProduct = products.find(p => p.createdBy);
-      if (firstProduct && firstProduct.createdBy) {
-        seller = await UserModel.findById(firstProduct.createdBy).lean();
-      }
-    }
-
-    if (!seller || seller == (null || undefined || "")) throw { code: 404, message: 'Seller not found or not provided' };
-    const payload = buildShiprocketOrderPayload({ order, user, seller, products, deliveryAddress });
+    const payload = await buildShiprocketOrderPayload({ order, user, seller, products, deliveryAddress });
 
     let token = await getShiprocketToken();
     const shipRocket = new ShipRocket(token);

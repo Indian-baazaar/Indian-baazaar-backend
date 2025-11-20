@@ -1,4 +1,6 @@
-export const buildShiprocketOrderPayload = ({ order, user, seller, products, deliveryAddress }) => {
+import AddressModel from "../models/address.model.js";
+
+export const buildShiprocketOrderPayload = async ({ order, user, seller, products, deliveryAddress }) => {
   const [firstName, ...lastParts] = (user.name || '').split(' ');
   const lastName = lastParts.join(' ') || '';
 
@@ -19,26 +21,29 @@ export const buildShiprocketOrderPayload = ({ order, user, seller, products, del
   const sampleProd = products[0] || {};
   const weightVal = sampleProd.productWeight && sampleProd.productWeight.length ? parseFloat(sampleProd.productWeight[0]) || 0.5 : 0.5;
 
-  // pickup location - try seller address
-  // try to get exact address from seller who is fulfilling the order
-  const sellerAddressId = seller.address_details && seller.address_details[0];
-  let pickup_location = '';
-  if (sellerAddressId) pickup_location = String(sellerAddressId);
+  const sellerAddressDoc = await AddressModel.findById(seller.address_details[0]);
+  if (!sellerAddressDoc?.pickup_location) {
+    throw new Error("Missing required fields: pickup_location");
+  }
 
+  const pickup_location = sellerAddressDoc.pickup_location;
+
+  console.log("seller pickup_location address :", pickup_location);
+ 
   return {
     order_id: String(order._id),
     order_date: order.createdAt ? order.createdAt.toISOString() : new Date().toISOString(),
-    pickup_location : pickup_location || sellerAddressId,
+    pickup_location,
     channel_id: '',
     comment: '',
     billing_customer_name: firstName || '',
     billing_last_name: lastName,
     billing_address: address ? (address.address_line1 || '') : '',
-    billing_address_2: address && address.landmark ? address.landmark : '',
-    billing_city: address ? (address.city || '') : '',
-    billing_pincode: address ? (address.pincode || '') : '',
-    billing_state: address ? (address.state || '') : '',
-    billing_country: address ? (address.country || '') : '',
+    billing_address_2: address?.landmark || '',
+    billing_city: address?.city || '',
+    billing_pincode: address?.pincode || '',
+    billing_state: address?.state || '',
+    billing_country: address?.country || '',
     billing_email: user.email || '',
     billing_phone: user.mobile || '',
     shipping_is_billing: true,
