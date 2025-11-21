@@ -31,7 +31,6 @@ import ShipRocketOrderRoute from './route/shiprocket.order.route.js';
 import shiprocketTrackingRoute from './route/shiprocket.tracking.route.js';
 import adminRouter from './route/admin.route.js';
 import retailerRouter from './route/retailer.route.js';
-import payoutRouter from './route/payout.route.js';
 import { razorpayWebhook } from './controllers/payment.controller.js';
 
 const app = express();
@@ -158,7 +157,6 @@ app.use('/api/shiprocket/package',  ShipRocketOrderRoute);
 app.use('/api/shiprocket', shiprocketTrackingRoute);
 app.use('/api/admin', adminRouter);
 app.use('/api/retailer', retailerRouter);
-app.use('/api/payout', payoutRouter);
 app.post('/api/payment/webhook', express.json({ type: '*/*' }), razorpayWebhook);
 
 app.use((err, req, res, next) => {
