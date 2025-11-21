@@ -1,6 +1,7 @@
 import { Router } from "express";
 import auth from "../middlewares/auth.js";
-import { createOrderController, deleteOrder, getOrderDetailsController, getTotalOrdersCountController, getUserOrderDetailsController, totalSalesController, totalUsersController, updateOrderStatusController } from "../controllers/order.controller.js";
+import { superAdminAuth } from "../middlewares/adminAuth.js";
+import { createOrderController, deleteOrder, getOrderDetailsController, getTotalOrdersCountController, getUserOrderDetailsController, totalSalesController, totalUsersController, updateOrderStatusController, approvePayment } from "../controllers/order.controller.js";
 
 const orderRouter = Router();
 
@@ -12,5 +13,6 @@ orderRouter.get('/sales',auth,totalSalesController)
 orderRouter.get('/users',auth,totalUsersController)
 orderRouter.get('/order-list/orders',auth,getUserOrderDetailsController)
 orderRouter.delete('/deleteOrder/:id',auth,deleteOrder)
+orderRouter.post('/approve-payment/:orderId', superAdminAuth, approvePayment)
 
 export default orderRouter;

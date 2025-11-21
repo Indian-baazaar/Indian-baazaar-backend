@@ -620,3 +620,45 @@ export async function deleteOrder(request, response) {
         return response.status(500).json({ message: error.message || error, error: true, success: false });
     }
 }
+
+export const approvePayment = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+
+        const order = await OrderModel.findById(orderId);
+        if (!order) {
+            return res.status(404).json({
+                error: true,
+                success: false,
+                message: 'Order not found'
+            });
+        }
+
+        // Check if already approved
+        if (order.paymentApprovalByAdmin) {
+            return res.status(400).json({
+                error: true,
+                success: false,
+                message: 'Payment already approved'
+            });
+        }
+
+        // Update order
+        order.paymentApprovalByAdmin = true;
+        order.paymentApprovalAt = new Date();
+        await order.save();
+
+        return res.status(200).json({
+            error: false,
+            success: true,
+            message: 'Payment approved successfully'
+        });
+    } catch (error) {
+        console.error('Approve Payment Error:', error);
+        return res.status(500).json({
+            error: true,
+            success: false,
+            message: error.message || 'Internal server error'
+        });
+    }
+};
