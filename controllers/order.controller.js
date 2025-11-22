@@ -6,6 +6,7 @@ import sendEmailFun from "../config/sendEmail.js";
 import dotenv from 'dotenv';
 import { getCache, setCache, delCache } from '../utils/redisUtil.js';
 import AddressModel from "../models/address.model.js";
+import ProductModel from "../models/product.modal.js";
 import Razorpay from 'razorpay';
 dotenv.config();
 import crypto from "crypto";
@@ -17,23 +18,69 @@ const razorpay = new Razorpay({
 
 export const createOrderController = async (req, res) => {
   try {
-    const { userId, delivery_address, products, totalAmt, retailerId } = req.body;
+    const { userId, productIds, quantities, deliveryAddressId } = req.body;
 
-    if (!delivery_address) {
-      return res.status(400).json({ success: false, message: "Delivery address required" });
+    if (!userId || !productIds || !quantities || !deliveryAddressId) {
+      return res.status(400).json({ success: false, message: "All fields are required: userId, productIds, quantities, deliveryAddressId" });
     }
 
-    const address = await AddressModel.findById(delivery_address);
-    if (!address) return res.status(404).json({ success: false, message: "Address not found" });
+    if (!Array.isArray(productIds) || !Array.isArray(quantities) || productIds.length !== quantities.length) {
+      return res.status(400).json({ success: false, message: "productIds and quantities must be arrays of the same length" });
+    }
+
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const address = await AddressModel.findById(deliveryAddressId);
+    if (!address) {
+      return res.status(404).json({ success: false, message: "Delivery address not found" });
+    }
 
     const isServiceable = await validateAddress(address.pincode);
-    if (!isServiceable)
+    if (!isServiceable) {
       return res.status(400).json({ success: false, message: "Address not serviceable" });
+    }
+
+    const products = await ProductModel.find({ _id: { $in: productIds } });
+    if (products.length !== productIds.length) {
+      return res.status(404).json({ success: false, message: "Some products not found" });
+    }
+
+    const retailerId = products[0].createdBy;
+    if (!retailerId) {
+      return res.status(400).json({ success: false, message: "Product does not have a creator" });
+    }
+
+    const allSameRetailer = products.every(p => p.createdBy && p.createdBy.toString() === retailerId.toString());
+    if (!allSameRetailer) {
+      return res.status(400).json({ success: false, message: "All products must be from the same retailer" });
+    }
+
+    const retailer = await UserModel.findById(retailerId);
+    if (!retailer || retailer.role == 'USER') {
+      return res.status(404).json({ success: false, message: "Retailer not found or invalid role" });
+    }
+
+    const orderProducts = productIds.map((id, index) => {
+      const prod = products.find(p => p._id.toString() === id);
+      return {
+        productId: id,
+        productTitle: prod.name,
+        quantity: quantities[index],
+        price: prod.price,
+        image: prod.images[0] || '',
+        sub_total: prod.price * quantities[index]
+      };
+    });
+
+    const totalAmt = orderProducts.reduce((sum, p) => sum + p.sub_total, 0);
 
     const order = await OrderModel.create({
       userId,
-      products,
-      delivery_address,
+      products: orderProducts,
+      delivery_address: deliveryAddressId,
       totalAmt,
       retailerId,
       payment_status: "PENDING",
@@ -48,12 +95,12 @@ export const createOrderController = async (req, res) => {
 
     order.razorpayOrderId = razorpayOrder.id;
     await order.save();
-    const user = await UserModel.findOne({ _id: userId });
+
     await sendEmailFun({ 
-        sendTo: user?.email,
-        subject: "Order Confirmation", 
-        text: "", 
-        html: OrderConfirmationEmail(user?.name, order) 
+      sendTo: user?.email,
+      subject: "Order Confirmation", 
+      text: "", 
+      html: OrderConfirmationEmail(user?.name, order) 
     });
 
     return res.status(200).json({
