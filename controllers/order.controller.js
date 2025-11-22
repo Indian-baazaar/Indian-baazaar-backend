@@ -61,6 +61,8 @@ export const createOrderController = async (req, res) => {
 
       const product = products.find(p => p._id.toString() === productId);
       const retailerId = product.createdBy;
+      console.log("product : ",product);
+      console.log("retailerid : ",retailerId);
 
       if (!retailerId) {
         return res.status(400).json({ success: false, message: `Product ${productId} does not have a creator` });

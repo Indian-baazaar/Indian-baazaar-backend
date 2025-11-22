@@ -892,6 +892,7 @@ export async function updateProduct(request, response) {
         productRam: request.body.productRam,
         size: request.body.size,
         productWeight: request.body.productWeight,
+        createdBy : request.userId,
       },
       { new: true }
     );

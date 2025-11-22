@@ -1,5 +1,4 @@
 import { Router } from 'express'
-import { checkPermission } from '../middlewares/checkPermission.js';
 import upload from '../middlewares/multer.js';
 import {createProduct, createProductRAMS, deleteMultipleProduct, deleteProduct, deleteProductRAMS, getAllFeaturedProducts, getAllProducts, getAllProductsByCatId, getAllProductsByCatName, getAllProductsByPrice, getAllProductsByRating, getAllProductsBySubCatId, getAllProductsBySubCatName, getAllProductsByThirdLavelCatId, getProduct, getProductRams, getProductsCount, updateProduct, updateProductRam, uploadImages, getProductRamsById, createProductWEIGHT, deleteProductWEIGHT, updateProductWeight, getProductWeight, getProductWeightById, createProductSize, deleteProductSize, updateProductSize, getProductSize, getProductSizeById, uploadBannerImages, getAllProductsBanners, filters, sortBy, searchProductController, getAllProductsByCat} from '../controllers/product.controller.js';
 
@@ -8,9 +7,9 @@ import { removeImageFromCloudinary } from '../controllers/user.controller.js';
 
 const productRouter = Router();
 
-productRouter.post('/uploadImages', checkPermission({ resource: 'product', action: 'upload' }), upload.array('images'), uploadImages);
-productRouter.post('/uploadBannerImages', checkPermission({ resource: 'product', action: 'upload' }), upload.array('bannerimages'), uploadBannerImages);
-productRouter.post('/create', checkPermission({ resource: 'product', action: 'create' }), checkRetailerBankDetails, createProduct);
+productRouter.post('/uploadImages',  upload.array('images'), uploadImages);
+productRouter.post('/uploadBannerImages',  upload.array('bannerimages'), uploadBannerImages);
+productRouter.post('/create', checkRetailerBankDetails, createProduct);
 productRouter.get('/getAllProducts',  getAllProducts);
 productRouter.get('/getAllProductsBanners', getAllProductsBanners);
 productRouter.get('/getAllProductsByCatId/:id', getAllProductsByCatId);
@@ -24,28 +23,28 @@ productRouter.get('/getAllProductsByPrice', getAllProductsByPrice);
 productRouter.get('/getAllProductsByRating', getAllProductsByRating);
 productRouter.get('/getAllProductsCount', getProductsCount);
 productRouter.get('/getAllFeaturedProducts', getAllFeaturedProducts);
-productRouter.delete('/deleteMultiple', checkPermission({ resource: 'product', action: 'delete' }), deleteMultipleProduct);
-productRouter.delete('/:id', checkPermission({ resource: 'product', action: 'delete' }), deleteProduct);
+productRouter.delete('/deleteMultiple', deleteMultipleProduct);
+productRouter.delete('/:id', deleteProduct);
 productRouter.get('/:id', getProduct);
-productRouter.delete('/deteleImage', checkPermission({ resource: 'product', action: 'delete' }), removeImageFromCloudinary);
-productRouter.put('/updateProduct/:id', checkPermission({ resource: 'product', action: 'update' }), updateProduct);
+productRouter.delete('/deteleImage', removeImageFromCloudinary);
+productRouter.put('/updateProduct/:id', updateProduct);
 
-productRouter.post('/productRAMS/create', checkPermission({ resource: 'productRAMS', action: 'create' }), createProductRAMS);
-productRouter.delete('/productRAMS/:id', checkPermission({ resource: 'productRAMS', action: 'delete' }), deleteProductRAMS);
-productRouter.put('/productRAMS/:id', checkPermission({ resource: 'productRAMS', action: 'update' }), updateProductRam);
+productRouter.post('/productRAMS/create', createProductRAMS);
+productRouter.delete('/productRAMS/:id', deleteProductRAMS);
+productRouter.put('/productRAMS/:id', updateProductRam);
 productRouter.get('/productRAMS/get', getProductRams);
 productRouter.get('/productRAMS/:id', getProductRamsById);
 
-productRouter.post('/productWeight/create', checkPermission({ resource: 'productWeight', action: 'create' }), createProductWEIGHT);
-productRouter.delete('/productWeight/:id', checkPermission({ resource: 'productWeight', action: 'delete' }), deleteProductWEIGHT);
-productRouter.put('/productWeight/:id', checkPermission({ resource: 'productWeight', action: 'update' }), updateProductWeight);
+productRouter.post('/productWeight/create', createProductWEIGHT);
+productRouter.delete('/productWeight/:id', deleteProductWEIGHT);
+productRouter.put('/productWeight/:id', updateProductWeight);
 productRouter.get('/productWeight/get', getProductWeight);
 productRouter.get('/productWeight/:id', getProductWeightById);
 
 
-productRouter.post('/productSize/create', checkPermission({ resource: 'productSize', action: 'create' }), createProductSize);
-productRouter.delete('/productSize/:id', checkPermission({ resource: 'productSize', action: 'delete' }), deleteProductSize);
-productRouter.put('/productSize/:id', checkPermission({ resource: 'productSize', action: 'update' }), updateProductSize);
+productRouter.post('/productSize/create', createProductSize);
+productRouter.delete('/productSize/:id', deleteProductSize);
+productRouter.put('/productSize/:id', updateProductSize);
 productRouter.get('/productSize/get', getProductSize);
 productRouter.get('/productSize/:id', getProductSizeById);
 
