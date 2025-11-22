@@ -48,65 +48,76 @@ export const createOrderController = async (req, res) => {
       return res.status(404).json({ success: false, message: "Some products not found" });
     }
 
-    const retailerId = products[0].createdBy;
-    if (!retailerId) {
-      return res.status(400).json({ success: false, message: "Product does not have a creator" });
+    const orders = [];
+    const razorpayOrders = [];
+
+    for (let i = 0; i < productIds.length; i++) {
+      const productId = productIds[i];
+      const quantity = quantities[i];
+
+      if (quantity <= 0) {
+        return res.status(400).json({ success: false, message: `Quantity for product ${productId} must be greater than zero` });
+      }
+
+      const product = products.find(p => p._id.toString() === productId);
+      const retailerId = product.createdBy;
+
+      if (!retailerId) {
+        return res.status(400).json({ success: false, message: `Product ${productId} does not have a creator` });
+      }
+
+      const retailer = await UserModel.findById(retailerId);
+      if (!retailer) {
+        return res.status(404).json({ success: false, message: `Invalid retailer for product ${productId}` });
+      }
+
+      const orderProducts = [{
+        productId: productId,
+        productTitle: product.name,
+        quantity: quantity,
+        price: product.price,
+        image: product.images[0] || '',
+        sub_total: product.price * quantity
+      }];
+
+      const totalAmt = orderProducts[0].sub_total;
+
+      // Create order
+      const order = await OrderModel.create({
+        userId,
+        products: orderProducts,
+        delivery_address: deliveryAddressId,
+        totalAmt,
+        retailerId,
+        payment_status: "PENDING",
+        order_status: "pending",
+      });
+
+      const razorpayOrder = await razorpay.orders.create({
+        amount: totalAmt * 100,
+        currency: "INR",
+        receipt: order._id.toString(),
+      });
+
+      order.razorpayOrderId = razorpayOrder.id;
+      await order.save();
+
+      orders.push(order);
+      razorpayOrders.push(razorpayOrder);
     }
 
-    const allSameRetailer = products.every(p => p.createdBy && p.createdBy.toString() === retailerId.toString());
-    if (!allSameRetailer) {
-      return res.status(400).json({ success: false, message: "All products must be from the same retailer" });
-    }
-
-    const retailer = await UserModel.findById(retailerId);
-    if (!retailer || retailer.role == 'USER') {
-      return res.status(404).json({ success: false, message: "Retailer not found or invalid role" });
-    }
-
-    const orderProducts = productIds.map((id, index) => {
-      const prod = products.find(p => p._id.toString() === id);
-      return {
-        productId: id,
-        productTitle: prod.name,
-        quantity: quantities[index],
-        price: prod.price,
-        image: prod.images[0] || '',
-        sub_total: prod.price * quantities[index]
-      };
-    });
-
-    const totalAmt = orderProducts.reduce((sum, p) => sum + p.sub_total, 0);
-
-    const order = await OrderModel.create({
-      userId,
-      products: orderProducts,
-      delivery_address: deliveryAddressId,
-      totalAmt,
-      retailerId,
-      payment_status: "PENDING",
-      order_status: "pending",
-    });
-
-    const razorpayOrder = await razorpay.orders.create({
-      amount: totalAmt * 100,
-      currency: "INR",
-      receipt: order._id.toString(),
-    });
-
-    order.razorpayOrderId = razorpayOrder.id;
-    await order.save();
 
     await sendEmailFun({ 
       sendTo: user?.email,
       subject: "Order Confirmation", 
       text: "", 
-      html: OrderConfirmationEmail(user?.name, order) 
+      html: OrderConfirmationEmail(user?.name, orders[0]) 
     });
 
     return res.status(200).json({
       success: true,
-      order,
-      razorpayOrder,
+      orders,
+      razorpayOrders,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -678,6 +689,50 @@ export async function deleteOrder(request, response) {
         });
     } catch (error) {
         return response.status(500).json({ message: error.message || error, error: true, success: false });
+    }
+}
+
+export async function getRetailerOrdersController(request, response) {
+    try {
+        const retailerId = request.userId; 
+        const retailer = await UserModel.findById(retailerId);
+        if (!retailer) {
+            return response.status(403).json({ message: "Access denied", error: true, success: false });
+        }
+
+        const { page = 1, limit = 10 } = request.query;
+
+        const cacheKey = `retailer_orders_${retailerId}_${page}_${limit}`;
+        const cachedData = await getCache(cacheKey);
+        if (cachedData) {
+            return response.json(cachedData);
+        }
+
+        const orders = await OrderModel.find({ retailerId })
+            .sort({ createdAt: -1 })
+            .populate('delivery_address userId')
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit));
+
+        const total = await OrderModel.countDocuments({ retailerId });
+        const responseData = {
+            message: "Retailer orders",
+            data: orders,
+            error: false,
+            success: true,
+            total: total,
+            page: parseInt(page),
+            totalPages: Math.ceil(total / limit)
+        };
+
+        await setCache(cacheKey, responseData);
+        return response.json(responseData);
+    } catch (error) {
+        return response.status(500).json({
+            message: error.message || error,
+            error: true,
+            success: false
+        });
     }
 }
 
