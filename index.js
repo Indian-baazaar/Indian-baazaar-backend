@@ -5,8 +5,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 import cookieParser from 'cookie-parser'
 import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import { redis } from './config/redisClient.js';
+// import rateLimit from 'express-rate-limit';
+// import { redis } from './config/redisClient.js';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
@@ -75,56 +75,58 @@ app.use(hpp());
 app.use(express.json({ limit: '10mb' })); 
 app.use(cookieParser())
 
-const checkBlockedIP = async (req, res, next) => {
-  const forwarded = req.headers['x-forwarded-for'];
-  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
-  try {
-    const isBlocked = await redis.get(`blocked:${ip}`);
-    if (isBlocked) {
-      return res.status(403).json({
-        error: true,
-        success: false,
-        message: 'Your IP address has been blocked due to suspicious activity.'
-      });
-    }
-  } catch (error) {
-    console.error('Error checking blocked IP:', error);
-  }
-  next();
-};
+// export const checkBlockedIP = async (req, res, next) => {
+//   const forwarded = req.headers['x-forwarded-for'];
+//   const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
+//   try {
+//     const isBlocked = await redis.get(`blocked:${ip}`);
+//     if (isBlocked) {
+//       return res.status(403).json({
+//         error: true,
+//         success: false,
+//         message: 'Your IP address has been blocked due to suspicious activity.'
+//       });
+//     }
+//   } catch (error) {
+//     console.error('Error checking blocked IP:', error);
+//   }
+//   next();
+// };
 
 // app.use(checkBlockedIP);
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: {
-    error: true,
-    success: false,
-    message: 'Too many requests from this IP, please try again later.'
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
+// export const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   max: 100,
+//   message: {
+//     error: true,
+//     success: false,
+//     message: 'Too many requests from this IP, please try again later.'
+//   },
+//   standardHeaders: true,
+//   legacyHeaders: false,
 
- handler: async (req, res, next) => {
-  const forwarded = req.headers['x-forwarded-for'];
-  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
-  try {
-    await redis.set(`blocked:${ip}`, 'true', 'EX', 3600); 
-  } catch (error) {
-    console.error('Error blocking IP:', error);
-  }
+//  handler: async (req, res, next) => {
+//   const forwarded = req.headers['x-forwarded-for'];
+//   const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
+//   try {
+//     await redis.set(`blocked:${ip}`, 'true', 'EX', 3600); 
+//   } catch (error) {
+//     console.error('Error blocking IP:', error);
+//   }
 
-  return res.status(429).json({
-    error: true,
-    success: false,
-    message: 'Too many requests from this IP, please try again later.'
-  });
-}
+//   return res.status(429).json({
+//     error: true,
+//     success: false,
+//     message: 'Too many requests from this IP, please try again later.'
+//   });
+// }
 
-});
+// });
 
 // app.use(limiter);
+
+
 
 
 try {
