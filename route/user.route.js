@@ -23,7 +23,7 @@ userRouter.post('/verify-forgot-password-otp', endpointSecurity({ maxRequests: 1
 userRouter.post('/reset-password', endpointSecurity({ maxRequests: 5, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), resetpassword)
 userRouter.post('/forgot-password/change-password', endpointSecurity({ maxRequests: 5, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), changePasswordController)
 userRouter.post('/refresh-token', endpointSecurity({ maxRequests: 20, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), refreshToken)
-userRouter.get('/user-details',auth,userDetails);
+userRouter.get('/user-details',endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), auth,userDetails);
 userRouter.post('/addReview',auth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addReview);
 userRouter.get('/getReviews',getReviews);
 userRouter.get('/getAllReviews',getAllReviews);
