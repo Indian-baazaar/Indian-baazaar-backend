@@ -110,7 +110,7 @@ const productSchema = mongoose.Schema({
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: false, // Optional for backward compatibility with existing products
+        required: true,
     },
 },{
     timestamps : true
