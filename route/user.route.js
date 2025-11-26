@@ -14,7 +14,6 @@ userRouter.post('/authWithGoogle', endpointSecurity({ maxRequests: 5, windowMs: 
 userRouter.get('/logout',auth,logoutController);
 userRouter.post('/admin-login', endpointSecurity({ maxRequests: 5, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), loginAdminController)
 
-// Admin-only: update user avatar
 userRouter.put('/user-avatar',  endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }),  upload.array('avatar'), userAvatarController);
 userRouter.delete('/deteleImage',auth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), removeImageFromCloudinary);
 userRouter.put('/:id', endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateUserDetails);
@@ -25,9 +24,9 @@ userRouter.post('/forgot-password/change-password', endpointSecurity({ maxReques
 userRouter.post('/refresh-token', endpointSecurity({ maxRequests: 20, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), refreshToken)
 userRouter.get('/user-details',endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), auth,userDetails);
 userRouter.post('/addReview',auth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addReview);
-userRouter.get('/getReviews',getReviews);
-userRouter.get('/getAllReviews',getAllReviews);
-userRouter.get('/getAllUsers',getAllUsers);
+userRouter.get('/getReviews',endpointSecurity({ maxRequests: 100, windowMs: 1 * 60 * 1000, blockDurationMs: 3600000 }),getReviews);
+userRouter.get('/getAllReviews',endpointSecurity({ maxRequests: 100, windowMs: 1 * 60 * 1000, blockDurationMs: 3600000 }),getAllReviews);
+userRouter.get('/getAllUsers',endpointSecurity({ maxRequests: 100, windowMs: 1 * 60 * 1000, blockDurationMs: 3600000 }), getAllUsers);
 
 
 export default userRouter
