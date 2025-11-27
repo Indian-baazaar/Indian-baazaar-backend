@@ -10,6 +10,7 @@ import xss from 'xss-clean';
 import hpp from 'hpp';
 import compression from 'compression';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 import connectDB from './config/connectDb.js';
 import userRouter from './route/user.route.js'
 import categoryRouter from './route/category.route.js';
@@ -29,6 +30,7 @@ import shiprocketTrackingRoute from './route/shiprocket.tracking.route.js';
 import adminRouter from './route/admin.route.js';
 import retailerRouter from './route/retailer.route.js';
 import { razorpayWebhook } from './controllers/payment.controller.js';
+import { redis } from './config/redisClient.js';
 
 const app = express();
 const allowedOrigins = [
@@ -73,7 +75,54 @@ app.use(hpp());
 
 app.use(express.json({ limit: '10mb' })); 
 app.use(cookieParser())
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
+
+export const checkBlockedIP = async (req, res, next) => {
+  const forwarded = req.headers['x-forwarded-for'];
+  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
+  try {
+    const isBlocked = await redis.get(`blocked:${ip}`);
+    if (isBlocked) {
+      return res.status(403).json({
+        error: true,
+        success: false,
+        message: 'Your IP address has been blocked due to suspicious activity.'
+      });
+    }
+  } catch (error) {
+    console.error('Error checking blocked IP:', error);
+  }
+  next();
+};
+app.use(checkBlockedIP);
+
+export const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 500,
+  message: {
+    error: true,
+    success: false,
+    message: 'Too many requests from this IP, please try again later.'
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: async (req, res, next) => {
+  const forwarded = req.headers['x-forwarded-for'];
+  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
+  try {
+    await redis.set(`blocked:${ip}`, 'true', 'EX', 3600); 
+  } catch (error) {
+    console.error('Error blocking IP:', error);
+  }
+  return res.status(429).json({
+    error: true,
+    success: false,
+    message: 'Too many requests from this IP, please try again later.'
+  });
+}
+});
+
+app.use(limiter);
 
 try {
     app.get("/", (request, response) => {
