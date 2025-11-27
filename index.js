@@ -38,7 +38,8 @@ const allowedOrigins = [
   "https://www.indianbaazaar.com",
   "https://admin.indianbaazaar.com",
   "https://www.admin.indianbaazaar.com",
-  "https://vivid-seats-assignment.vercel.app"
+  "https://vivid-seats-assignment.vercel.app",
+  "http://localhost:8081",
 ];
 
 app.use(cors({
