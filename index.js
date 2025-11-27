@@ -5,13 +5,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 import cookieParser from 'cookie-parser'
 import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import { redis } from './config/redisClient.js';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import hpp from 'hpp';
 import compression from 'compression';
 import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
 import connectDB from './config/connectDb.js';
 import userRouter from './route/user.route.js'
 import categoryRouter from './route/category.route.js';
@@ -31,6 +30,7 @@ import shiprocketTrackingRoute from './route/shiprocket.tracking.route.js';
 import adminRouter from './route/admin.route.js';
 import retailerRouter from './route/retailer.route.js';
 import { razorpayWebhook } from './controllers/payment.controller.js';
+import { redis } from './config/redisClient.js';
 
 const app = express();
 const allowedOrigins = [
@@ -40,7 +40,8 @@ const allowedOrigins = [
   "https://www.indianbaazaar.com",
   "https://admin.indianbaazaar.com",
   "https://www.admin.indianbaazaar.com",
-  "https://vivid-seats-assignment.vercel.app"
+  "https://vivid-seats-assignment.vercel.app",
+  "http://localhost:8081",
 ];
 
 app.use(cors({
@@ -74,8 +75,9 @@ app.use(hpp());
 
 app.use(express.json({ limit: '10mb' })); 
 app.use(cookieParser())
+app.set('trust proxy', 1);
 
-const checkBlockedIP = async (req, res, next) => {
+export const checkBlockedIP = async (req, res, next) => {
   const forwarded = req.headers['x-forwarded-for'];
   const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
   try {
@@ -92,12 +94,11 @@ const checkBlockedIP = async (req, res, next) => {
   }
   next();
 };
+app.use(checkBlockedIP);
 
-// app.use(checkBlockedIP);
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+export const limiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 500,
   message: {
     error: true,
     success: false,
@@ -105,8 +106,7 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-
- handler: async (req, res, next) => {
+  handler: async (req, res, next) => {
   const forwarded = req.headers['x-forwarded-for'];
   const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
   try {
@@ -114,18 +114,15 @@ const limiter = rateLimit({
   } catch (error) {
     console.error('Error blocking IP:', error);
   }
-
   return res.status(429).json({
     error: true,
     success: false,
     message: 'Too many requests from this IP, please try again later.'
   });
 }
-
 });
 
-// app.use(limiter);
-
+app.use(limiter);
 
 try {
     app.get("/", (request, response) => {

@@ -1,18 +1,19 @@
 import { Router } from "express";
 import auth from "../middlewares/auth.js";
 import { createOrderController, deleteOrder, getOrderDetailsController, getTotalOrdersCountController, getUserOrderDetailsController, totalSalesController, totalUsersController, updateOrderStatusController, verifyPaymentController, getRetailerOrdersController } from "../controllers/order.controller.js";
+import { endpointSecurity } from "../middlewares/endpointSecurity.js";
 
 const orderRouter = Router();
 
-orderRouter.post('/create',auth,createOrderController)
-orderRouter.post("/verify", auth, verifyPaymentController);
-orderRouter.get("/order-list",auth,getOrderDetailsController)
-orderRouter.put('/order-status/:id',auth,updateOrderStatusController)
-orderRouter.get('/count',auth,getTotalOrdersCountController)
-orderRouter.get('/sales',auth,totalSalesController)
-orderRouter.get('/users',auth,totalUsersController)
-orderRouter.get('/order-list/orders',auth,getUserOrderDetailsController)
-orderRouter.delete('/deleteOrder/:id',auth,deleteOrder)
+orderRouter.post('/create', auth, endpointSecurity({ maxRequests: 5, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), createOrderController)
+orderRouter.post("/verify-payment", auth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), verifyPaymentController);
+orderRouter.get("/order-list", auth, getOrderDetailsController)
+orderRouter.put('/order-status/:id', auth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateOrderStatusController)
+orderRouter.get('/count', auth, getTotalOrdersCountController)
+orderRouter.get('/sales', auth, totalSalesController)
+orderRouter.get('/users', auth, totalUsersController)
+orderRouter.get('/order-list/orders', auth, getUserOrderDetailsController)
+orderRouter.delete('/deleteOrder/:id', auth, endpointSecurity({ maxRequests: 5, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteOrder)
 orderRouter.get('/retailer/orders', auth, getRetailerOrdersController)
 
 export default orderRouter;
