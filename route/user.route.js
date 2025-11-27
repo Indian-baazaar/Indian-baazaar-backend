@@ -4,6 +4,7 @@ import { shiprocketAddressValidation } from '../middlewares/shiprocketValidation
 import auth from '../middlewares/auth.js';
 import upload from '../middlewares/multer.js';
 import { endpointSecurity } from '../middlewares/endpointSecurity.js';
+import { superAdminAuth } from '../middlewares/adminAuth.js';
 
 const userRouter = Router()
 userRouter.post('/register', endpointSecurity({ maxRequests: 5, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), registerUserController)
@@ -26,7 +27,7 @@ userRouter.get('/user-details',endpointSecurity({ maxRequests: 10, windowMs: 15 
 userRouter.post('/addReview',auth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addReview);
 userRouter.get('/getReviews',endpointSecurity({ maxRequests: 100, windowMs: 1 * 60 * 1000, blockDurationMs: 3600000 }),getReviews);
 userRouter.get('/getAllReviews',endpointSecurity({ maxRequests: 100, windowMs: 1 * 60 * 1000, blockDurationMs: 3600000 }),getAllReviews);
-userRouter.get('/getAllUsers',endpointSecurity({ maxRequests: 100, windowMs: 1 * 60 * 1000, blockDurationMs: 3600000 }), getAllUsers);
+userRouter.get('/getAllUsers', superAdminAuth, endpointSecurity({ maxRequests: 100, windowMs: 1 * 60 * 1000, blockDurationMs: 3600000 }), getAllUsers);
 
 
 export default userRouter

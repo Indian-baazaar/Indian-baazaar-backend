@@ -1173,21 +1173,16 @@ export async function getAllReviews(request, response) {
   }
 }
 
-//get all users
 export async function getAllUsers(request, response) {
   try {
-    const { page, limit } = request.query;
+    const page = parseInt(request.query.page) || 1;
+    const limit = parseInt(request.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    const totalUsers = await UserModel.find();
+    const totalUsersCount = await UserModel.countDocuments();
+    const totalUsers = await UserModel.find().sort({ createdAt: -1 }).skip(skip).limit(limit);
 
-    const users = await UserModel.find()
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
-
-    const total = await UserModel.countDocuments(users);
-
-    if (!users) {
+    if (!totalUsers) {
       return response.status(400).json({
         error: true,
         success: false,
@@ -1197,16 +1192,16 @@ export async function getAllUsers(request, response) {
     return response.status(200).json({
       error: false,
       success: true,
-      users: users,
-      total: total,
-      page: parseInt(page),
-      totalPages: Math.ceil(total / limit),
+      page: page,
+      // users: users,
+      // total: total,
+      totalPages: Math.ceil(totalUsersCount / limit),
       totalUsersCount: totalUsers?.length,
       totalUsers: totalUsers,
     });
   } catch (error) {
     return response.status(500).json({
-      message: "Something is wrong",
+      message: error.message || "Something is wrong",
       error: true,
       success: false,
     });
