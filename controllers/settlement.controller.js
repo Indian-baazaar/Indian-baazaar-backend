@@ -110,7 +110,7 @@ export const approveSettlement = async (req, res) => {
       success: true,
       message: "Settlement approved and payout sent successfully",
       data: {
-        payoutId: payout.id,
+        payoutId: fundAccountResult.id,
         amount: payableAmount,
         settlementId: settlement._id,
       },

@@ -323,6 +323,19 @@ export const updateOrderStatusController = async (request, response) => {
         if (!order) {
             return response.status(404).json({ message: "Order not found", error: true, success: false });
         }
+
+        // ✅ Verify seller/retailer owns this order
+        // Only the retailer who owns the order can update its status
+        if (request.userId && order.retailerId) {
+            if (order.retailerId.toString() !== request.userId.toString()) {
+                return response.status(403).json({
+                    message: "Access denied. You can only update your own orders",
+                    error: true,
+                    success: false
+                });
+            }
+        }
+
         // If retailer approves, create shipment in Shiprocket
         let shipmentResult = null;
         if (order_status === 'approved') {
@@ -344,6 +357,10 @@ export const updateOrderStatusController = async (request, response) => {
         await delCache('order_list');
         await delCache(`user_order_list_${order.userId}`);
         await delCache('total_orders_count');
+        // Also invalidate retailer-specific cache
+        if (order.retailerId) {
+            await delCache(`retailer_orders_${order.retailerId}_*`);
+        }
         return response.json({
             message: "Update order status",
             success: true,
