@@ -6,7 +6,13 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:unit": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=tests/unit",
+    "test:property": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=tests/property",
+    "test:integration": "NODE_OPTIONS=--experimental-vm-modules jest --testPathPatterns=tests/integration",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -38,5 +44,12 @@
     "randexp": "^0.5.3",
     "razorpay": "^2.9.6",
     "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "babel-jest": "^30.2.0",
+    "fast-check": "^4.3.0",
+    "jest": "^30.2.0"
   }
 }
