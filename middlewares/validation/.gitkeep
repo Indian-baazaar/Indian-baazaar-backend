@@ -1,0 +1,2 @@
+# Validation middleware directory
+# Contains express-validator based validation middleware for seller operations

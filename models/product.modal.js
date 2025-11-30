@@ -112,6 +112,16 @@ const productSchema = mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    sellerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Seller',
+        required: false, // Not required for backward compatibility with existing products
+    },
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active'
+    }
 },{
     timestamps : true
 });

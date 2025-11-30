@@ -188,21 +188,31 @@ export const deleteCartItemQtyController = async (request, response) => {
 
 export const emptyCartController = async (request, response) => {
     try {
-        const userId = request.params.id // middlewar
+        const userId = request.userId; // From auth middleware
+        
+        // Security: Verify user can only empty their own cart
+        if (!userId) {
+            return response.status(401).json({
+                message: "Unauthorized",
+                error: true,
+                success: false
+            });
+        }
 
-        await CartProductModel.deleteMany({userId:userId })
+        await CartProductModel.deleteMany({userId: userId});
         // Invalidate cart cache for user
         await delCache(`cart_${userId}`);
-          return response.status(200).json({
-            error : false,
-            success : true,
-          })
+        return response.status(200).json({
+            message: "Cart emptied successfully",
+            error: false,
+            success: true,
+        });
 
     } catch (error) {
         return response.status(500).json({
             message: error.message || error,
             error: true,
             success: false
-        })
+        });
     }
 }
