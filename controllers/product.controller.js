@@ -854,15 +854,13 @@ export async function updateProduct(request, response) {
     }
 
     // Check if user can modify this product
-    // if (!canModifyResource(request.user, existingProduct)) {
-    //   return response.status(403).json({
-    //     message: "Permission denied: You can only modify your own products",
-    //     error: true,
-    //     success: false,
-    //   });
-    // }
-
-    console.log("request.userId. :",request.userId);
+    if (!canModifyResource(request.user, existingProduct)) {
+      return response.status(403).json({
+        message: "Permission denied: You can only modify your own products",
+        error: true,
+        success: false,
+      });
+    }
 
     const product = await ProductModel.findByIdAndUpdate(
       request.params.id,
@@ -880,19 +878,18 @@ export async function updateProduct(request, response) {
         oldPrice: Number(request.body.oldPrice),
         catId: request.body.catId,
         catName: request.body.catName,
-        subCat: request.body.subCat,
         subCatId: request.body.subCatId,
+        subCat: request.body.subCat,
         category: request.body.category,
         thirdsubCat: request.body.thirdsubCat,
         thirdsubCatId: request.body.thirdsubCatId,
         countInStock: Number(request.body.countInStock),
-        rating: Number(0),
+        rating: Number(request.body.rating || 0),
         discount: Number(request.body.discount),
         isFeatured: request.body.isFeatured,
         productRam: request.body.productRam,
         size: request.body.size,
         productWeight: request.body.productWeight,
-        createdBy : request.userId,
       },
       { new: true }
     );
