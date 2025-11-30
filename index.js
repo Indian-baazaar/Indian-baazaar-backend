@@ -40,6 +40,7 @@ const allowedOrigins = [
   "https://www.indianbaazaar.com",
   "https://admin.indianbaazaar.com",
   "https://www.admin.indianbaazaar.com",
+  "https://supplier.indianbaazaar.com",
   "https://vivid-seats-assignment.vercel.app",
   "http://localhost:8081",
 ];
@@ -180,4 +181,5 @@ connectDB().then(() => {
     app.listen(process.env.PORT, () => {
         console.log(`Server is running http://localhost:${process.env.PORT}`);
     })
+
 })
