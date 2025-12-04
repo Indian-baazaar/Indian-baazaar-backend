@@ -38,6 +38,6 @@ ShipRocketOrderRoute.post("/print-manifest", adminAuth, endpointSecurity({ maxRe
 
 ShipRocketOrderRoute.delete("/delete-order", adminAuth, endpointSecurity({ maxRequests: 5, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, deleteOrder);
 
-ShipRocketOrderRoute.get("/get-orders",  getOrders);
+ShipRocketOrderRoute.get("/get-orders", adminAuth, endpointSecurity({ maxRequests: 20, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getOrders);
 
 export default ShipRocketOrderRoute;
