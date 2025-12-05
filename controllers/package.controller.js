@@ -169,14 +169,14 @@ export const printManifests = async (req, res) => {
   }
 };
 
-export const deleteOrder = async (req, res) => {
+export const cancelOrder = async (req, res) => {
   try {
     const { orderIds } = req.body;
 
     let token = await getShiprocketToken();
     const shipRocket = new ShipRocket(token);
 
-    const { status, data, message } = await shipRocket.deleteOrder(orderIds);
+    const { status, data, message } = await shipRocket.cancelOrder(orderIds);
 
     if (!status) throw { code: 409, message };
 
