@@ -333,7 +333,7 @@ class ShipRocket {
     }
   }
 
-  async deleteOrder(ids){
+  async cancelOrder(ids){
 
     try {
 
@@ -359,6 +359,7 @@ class ShipRocket {
   async getOrders(params = {}) {
 
     try {
+      console.log("params : ",params);
       const queryParams = new URLSearchParams(params).toString();
       const url = `orders?${queryParams}`;
       const result = await this.axiosInstance.get(url);

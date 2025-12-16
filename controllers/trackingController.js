@@ -22,7 +22,7 @@ export const TrackShipmentRealTime = async (req, res) => {
       }
     );
 
-    await setCache(cacheKey, response.data);
+    await setCache(cacheKey, response.data, 300); // Cache for 5 minutes
     res.json(response.data);
   } catch (error) {
     console.error("Tracking error:", error.response?.data || error.message);

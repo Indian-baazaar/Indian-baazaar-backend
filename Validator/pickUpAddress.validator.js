@@ -153,15 +153,33 @@ export const CheckpackageParams = async (req, res, next) => {
   }
 };
 
-export const CheckassignAWB = (req, res, next) =>{
-
-  try{
-    const { shipping_id } = req.body;
-    if(!shipping_id) throw { code: 409, message: 'please provide shipment id' };
-    next()
-  }
-  catch (e){
-    res.status(e.code || 500).json({ message: e.message || "Internal Server Error", error: true, success: false });
+export const CheckassignAWB = (req, res, next) => {
+  try {
+    const { shipping_id, courier_id } = req.body;
+    
+    if (!shipping_id) {
+      throw { code: 400, message: 'Shipping ID is required' };
+    }
+    
+    if (!courier_id) {
+      throw { code: 400, message: 'Courier ID is required' };
+    }
+    
+    if (typeof shipping_id !== 'number') {
+      throw { code: 400, message: 'Shipping ID must be a number' };
+    }
+    
+    if (typeof courier_id !== 'number') {
+      throw { code: 400, message: 'Courier ID must be a number' };
+    }
+    
+    next();
+  } catch (e) {
+    res.status(e.code || 500).json({ 
+      message: e.message || "Internal Server Error", 
+      error: true, 
+      success: false 
+    });
   }
 };
 

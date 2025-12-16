@@ -24,10 +24,21 @@ export const requestCreateOrder = async (req, res) => {
     const user = await UserModel.findById(userId).lean();
     if (!user) throw { code: 404, message: 'User not found' };
     
-    let seller =  await UserModel.findById(sellerId).lean();
+    const seller = await UserModel.findById(sellerId).lean();
     if (!seller) throw { code: 404, message: 'Seller not found' };
+    
+    // Validate seller has pickup address
+    if (!seller.address_details || seller.address_details.length === 0) {
+      throw { 
+        code: 400, 
+        message: 'Seller must have a registered pickup address. Please create one using /api/shiprocket/pick-up-address/create' 
+      };
+    }
 
-    let deliveryAddress = await AddressModel.findById(order.delivery_address).lean();
+    const deliveryAddress = await AddressModel.findById(order.delivery_address).lean();
+    if (!deliveryAddress) {
+      throw { code: 404, message: 'Delivery address not found' };
+    }
 
     const productIds = order.products.map(p => p.productId).filter(Boolean);
     const products = await ProductModel.find({ _id: { $in: productIds } }).lean();
@@ -158,14 +169,14 @@ export const printManifests = async (req, res) => {
   }
 };
 
-export const deleteOrder = async (req, res) => {
+export const cancelOrder = async (req, res) => {
   try {
     const { orderIds } = req.body;
 
     let token = await getShiprocketToken();
     const shipRocket = new ShipRocket(token);
 
-    const { status, data, message } = await shipRocket.deleteOrder(orderIds);
+    const { status, data, message } = await shipRocket.cancelOrder(orderIds);
 
     if (!status) throw { code: 409, message };
 
@@ -210,7 +221,7 @@ export const getOrders = async (req, res) => {
     if (!apiStatus) throw { code: 409, message };
 
     const responseData = { code: 200, message, data, pagination: data.meta || null };
-    await setCache(cacheKey, responseData);
+    await setCache(cacheKey, responseData, 300); // Cache for 5 minutes
     response.success(res, responseData);
   } catch (e) {
     response.error(res, e);
