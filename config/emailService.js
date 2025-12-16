@@ -3,9 +3,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+  host: "mail.cloud.newwebindia.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.INDIAN_BAAZAAR_TRANSPORTER_USER_MAIL,
     pass: process.env.INDIAN_BAAZAAR_TRANSPORTER_USER_PASSWORD,
