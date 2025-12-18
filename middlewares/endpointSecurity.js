@@ -39,6 +39,7 @@ export const endpointSecurity = ({ maxRequests, windowMs, blockDurationMs }) => 
       return res.status(429).json({
         error: true,
         success: false,
+        requestLimitExceeded: true,
         message: 'Too many requests to this endpoint. Try again later.',
       });
     }
@@ -55,6 +56,7 @@ export const endpointSecurity = ({ maxRequests, windowMs, blockDurationMs }) => 
       return res.status(429).json({
         error: true,
         success: false,
+        requestLimitExceeded: true,
         message: 'Too many requests to this endpoint. Try again later.',
       });
     }
