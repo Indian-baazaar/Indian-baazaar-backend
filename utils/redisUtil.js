@@ -1,6 +1,6 @@
 import { redis as redisClient } from '../config/redisClient.js';
 
-export const DEFAULT_EXPIRY = 60 * 5; // 5 minutes
+export const DEFAULT_EXPIRY = 60 * 5;
 
 export const getCache = async (key) => {
   try {

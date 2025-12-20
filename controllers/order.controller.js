@@ -249,7 +249,8 @@ export async function getOrderDetailsController(request, response) {
             page: parseInt(page),
             totalPages: Math.ceil(total / limit)
         };
-        await setCache(cacheKey, responseData);
+        let expiry = 60*1;
+        await setCache(cacheKey, responseData, expiry);
         return response.json(responseData);
     } catch (error) {
         return response.status(500).json({
