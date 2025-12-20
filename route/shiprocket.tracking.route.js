@@ -9,14 +9,14 @@ const router = express.Router();
 
 // Track by AWB number
 router.get("/track/awb/:awb", auth, endpointSecurity({ 
-  maxRequests: 20, 
+  maxRequests: 200, 
   windowMs: 15 * 60 * 1000, 
   blockDurationMs: 3600000 
 }), TrackShipmentRealTime);
 
 // Track by Shipping ID
 router.get('/track/shipping/:shipping_id', auth, endpointSecurity({ 
-  maxRequests: 20, 
+  maxRequests: 200, 
   windowMs: 15 * 60 * 1000, 
   blockDurationMs: 3600000 
 }), async (req, res, next) => {

@@ -5,6 +5,6 @@ import { endpointSecurity } from '../middlewares/endpointSecurity.js';
 
 const router = express.Router();
 
-router.post('/bank-details', auth, endpointSecurity({ maxRequests: 5, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addOrUpdateBankDetails);
+router.post('/bank-details', auth, endpointSecurity({ maxRequests: 50, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addOrUpdateBankDetails);
 
 export default router;

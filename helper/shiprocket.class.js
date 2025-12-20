@@ -149,8 +149,6 @@ class ShipRocket {
         length, breadth, height, weight,
       });
 
-      console.log("result : ",result);
-
       const { status, data } = this.validateData(result);
 
       if(!status) throw { message: data.message };
@@ -254,7 +252,6 @@ class ShipRocket {
       const result = await this.axiosInstance.post('courier/generate/pickup', {
         shipment_id : shipping_id,
       });
-      console.log("result : ",result);
 
       const { status, data } = this.validateData(result);
 
