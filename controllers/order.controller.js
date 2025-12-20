@@ -233,7 +233,7 @@ export const verifyPaymentController = async (req, res) => {
 export async function getOrderDetailsController(request, response) {
     try {
         const { page, limit } = request.query;
-        const cacheKey = 'order_list';
+        const cacheKey = `order_list_${page}_perPage_${limit}`;
         const cachedData = await getCache(cacheKey);
         if (cachedData) {
             return response.json(cachedData);
@@ -265,7 +265,7 @@ export async function getUserOrderDetailsController(request, response) {
     try {
         const userId = request.userId;
         const { page, limit } = request.query;
-        const cacheKey = `user_order_list_${userId}`;
+        const cacheKey = `user_order_list_${userId}_${page}_${limit}`;
         const cachedData = await getCache(cacheKey);
         if (cachedData) {
             return response.json(cachedData);
