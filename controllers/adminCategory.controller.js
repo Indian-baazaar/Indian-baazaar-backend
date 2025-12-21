@@ -42,6 +42,7 @@ export async function createCategory(req, res) {
 
     // Invalidate categories cache
     await delCache('categories');
+    await deleteCacheByPattern("categories_*");
 
     return res.status(201).json({
       success: true,
@@ -59,15 +60,11 @@ export async function createCategory(req, res) {
   }
 }
 
-/**
- * Get all categories with hierarchy
- * Requirements: 10.2
- */
+
 export async function getCategories(req, res) {
   try {
     const categories = await CategoryModel.find();
     
-    // Build category hierarchy
     const categoryMap = {};
     categories.forEach((cat) => {
       categoryMap[cat._id] = { ...cat._doc, children: [] };

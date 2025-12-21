@@ -1,7 +1,7 @@
 import { ShipRocket } from "../helper/index.js";
 import { getShiprocketToken } from "../helper/shiprocketAuth.js";
 import { response } from "../utils/index.js";
-import { getCache, setCache } from "../utils/redisUtil.js";
+import { deleteCacheByPattern, getCache, setCache } from "../utils/redisUtil.js";
 
 import OrderModel from "../models/order.model.js";
 import ProductModel from "../models/product.modal.js";
@@ -61,6 +61,7 @@ export const requestCreateOrder = async (req, res) => {
       courier_company_id: data?.courier_company_id,
       new_channel: data?.new_channel
     }, { new: true }).lean();
+    await deleteCacheByPattern("order_list_*");
     response.success(res, { code: 200, message, data, pagination: null });
   } catch (e) {
     response.error(res, e);
