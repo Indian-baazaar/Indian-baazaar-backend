@@ -219,40 +219,53 @@ class ShipRocket {
   }
 
   async generateAWB(shipping_id, courier_id) {
-    try {
-      const result = await this.axiosInstance.post("courier/assign/awb", {
-        shipment_id: shipping_id,
-        courier_id,
-      });
+  try {
+    const result = await this.axiosInstance.post("courier/assign/awb", {
+      shipment_id: shipping_id,
+      courier_id,
+    });
 
-      const { status, data } = this.validateData(result);
+    const { status, data } = this.validateData(result);
 
-      if (!status) {
-        throw new Error(data?.message || "AWB assignment failed");
-      }
+    if (!status) {
+      throw new Error(data?.message || "AWB assignment failed");
+    }
 
-      if (data?.status_code) {
-        throw new Error(data?.message || "Courier service error");
-      }
+    if (data?.status_code) {
+      throw new Error(data?.message || "Courier service error");
+    }
 
-      const returnData = data?.response?.data;
+    const responseData = data?.response?.data;
+    console.log("status, data", status, data);
 
-      if (typeof returnData !== "object" || returnData === null) {
-        throw new Error(returnData || "Courier login failed / invalid session");
-      }
 
-      returnData.awb_assign_status = data.awb_assign_status;
+    if (typeof responseData !== "object" || responseData === null) {
+      throw new Error(responseData || "Courier login failed / invalid session");
+    }
 
+    const assignStatus = data?.awb_assign_status;
+    if (assignStatus === 1) {
       return {
         status: true,
-        data: returnData,
+        data: responseData,
         message: "AWB assigned successfully!",
       };
-    } catch (error) {
-      const message = this.parseError(error);
-      return { status: false, data: null, message };
     }
+    if (assignStatus === 0 && responseData?.awb_assign_error) {
+      return {
+        status: true,
+        data: responseData,
+        message: responseData.awb_assign_error,
+      };
+    }
+    throw new Error("Unable to assign AWB");
+
+  } catch (error) {
+    const message = this.parseError(error);
+    return { status: false, data: null, message };
   }
+}
+
 
   async generateLabel(shipping_id) {
   try {

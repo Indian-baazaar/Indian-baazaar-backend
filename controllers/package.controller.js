@@ -278,11 +278,11 @@ export const getOrders = async (req, res) => {
 
 export const getCouriersServices = async (req,res) => {
   try {
-    // const cacheKey = `shiprocket_couriers_services`;
-    // const cachedData = await getCache(cacheKey);
-    // if (cachedData) {
-    //   return response.success(res, cachedData);
-    // }
+    const cacheKey = `shiprocket_couriers_services`;
+    const cachedData = await getCache(cacheKey);
+    if (cachedData) {
+      return response.success(res, cachedData);
+    }
     let token = await getShiprocketToken();
     const shipRocket = new ShipRocket(token);
     const { data, message } = await shipRocket.getCouriers();
@@ -291,8 +291,7 @@ export const getCouriersServices = async (req,res) => {
       message,
       data,
     };
-    console.log("responseData", responseData);
-    // await setCache(cacheKey, responseData, 300);
+    await setCache(cacheKey, responseData, 300);
     response.success(res, responseData);
   } catch (error) {
   response.error(res, error);
