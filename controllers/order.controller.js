@@ -736,36 +736,36 @@ export const totalUsersController = async (request, response) => {
 
 
 
-export async function deleteOrder(request, response) {
-    try {
-        const order = await OrderModel.findById(request.params.id);
-        if (!order) {
-            return response.status(404).json({
-                message: "Order Not found",
-                error: true,
-                success: false
-            })
-        }
+// export async function deleteOrder(request, response) {
+//     try {
+//         const order = await OrderModel.findById(request.params.id);
+//         if (!order) {
+//             return response.status(404).json({
+//                 message: "Order Not found",
+//                 error: true,
+//                 success: false
+//             })
+//         }
 
 
-        const deletedOrder = await OrderModel.findByIdAndDelete(request.params.id);
-        if (!deletedOrder) {
-            return response.status(404).json({
-                message: "Order not deleted!",
-                success: false,
-                error: true
-            });
-        }
-        await deleteCacheByPattern("order_list_*");
-        return response.status(200).json({
-            success: true,
-            error: false,
-            message: "Order Deleted!",
-        });
-    } catch (error) {
-        return response.status(500).json({ message: error.message || error, error: true, success: false });
-    }
-}
+//         const deletedOrder = await OrderModel.findByIdAndDelete(request.params.id);
+//         if (!deletedOrder) {
+//             return response.status(404).json({
+//                 message: "Order not deleted!",
+//                 success: false,
+//                 error: true
+//             });
+//         }
+//         await deleteCacheByPattern("order_list_*");
+//         return response.status(200).json({
+//             success: true,
+//             error: false,
+//             message: "Order Deleted!",
+//         });
+//     } catch (error) {
+//         return response.status(500).json({ message: error.message || error, error: true, success: false });
+//     }
+// }
 
 export async function getRetailerOrdersController(request, response) {
     try {
