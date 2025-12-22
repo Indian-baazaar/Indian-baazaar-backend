@@ -3,16 +3,6 @@ import SellerModel from '../models/seller.model.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-/**
- * Seller Authentication Middleware
- * - Validates JWT token
- * - Verifies seller exists
- * - Checks kycStatus is "approved"
- * - Checks sellerStatus is "active"
- * - Attaches seller object to request
- * 
- * Requirements: 1.5, 12.1, 12.2
- */
 export default async function sellerAuth(req, res, next) {
   try {
     // Extract token from Authorization header or query parameter
@@ -102,11 +92,6 @@ export default async function sellerAuth(req, res, next) {
   }
 }
 
-/**
- * Basic seller authentication (without KYC/status checks)
- * Used for routes that sellers can access even with pending KYC
- * e.g., viewing their own profile, checking KYC status
- */
 export async function basicSellerAuth(req, res, next) {
   try {
     let token = req.headers?.authorization?.split(' ')[1];

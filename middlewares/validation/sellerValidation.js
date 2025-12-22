@@ -1,16 +1,6 @@
-/**
- * Seller Validation Middleware
- * Uses express-validator for request validation
- * Requirements: 13.1, 13.2, 13.3, 13.4
- */
-
 import { body, validationResult } from 'express-validator';
 import { validateGST, validatePAN, validateIFSC, validateEmail, validatePhone } from '../../utils/sellerValidation.js';
 
-/**
- * Middleware to handle validation errors
- * Returns standardized error response if validation fails
- */
 export const handleValidationErrors = (request, response, next) => {
   const errors = validationResult(request);
   
@@ -33,10 +23,6 @@ export const handleValidationErrors = (request, response, next) => {
   next();
 };
 
-/**
- * Validation rules for seller registration
- * Requirements: 13.1, 13.2, 13.3, 13.4
- */
 export const validateSellerRegistration = [
   body('name')
     .trim()
@@ -105,10 +91,6 @@ export const validateSellerRegistration = [
   handleValidationErrors
 ];
 
-/**
- * Validation rules for seller login
- * Requirements: 13.1, 13.2
- */
 export const validateSellerLogin = [
   body('email')
     .trim()
@@ -128,10 +110,6 @@ export const validateSellerLogin = [
   handleValidationErrors
 ];
 
-/**
- * Validation rules for profile update
- * Requirements: 13.1, 13.2
- */
 export const validateProfileUpdate = [
   body('name')
     .optional()
@@ -187,10 +165,6 @@ export const validateProfileUpdate = [
   handleValidationErrors
 ];
 
-/**
- * Validation rules for password update
- * Requirements: 13.2
- */
 export const validatePasswordUpdate = [
   body('currentPassword')
     .notEmpty()
@@ -205,10 +179,6 @@ export const validatePasswordUpdate = [
   handleValidationErrors
 ];
 
-/**
- * Validation rules for bank details update
- * Requirements: 13.2
- */
 export const validateBankDetailsUpdate = [
   body('ifscCode')
     .optional()
@@ -247,10 +217,6 @@ export const validateBankDetailsUpdate = [
   handleValidationErrors
 ];
 
-/**
- * Validation rules for product creation
- * Requirements: 13.2
- */
 export const validateProductCreation = [
   body('name')
     .trim()
@@ -293,10 +259,6 @@ export const validateProductCreation = [
   handleValidationErrors
 ];
 
-/**
- * Validation rules for product update
- * Requirements: 13.2
- */
 export const validateProductUpdate = [
   body('name')
     .optional()
@@ -332,10 +294,6 @@ export const validateProductUpdate = [
   handleValidationErrors
 ];
 
-/**
- * Validation rules for stock update
- * Requirements: 13.2
- */
 export const validateStockUpdate = [
   body('countInStock')
     .notEmpty()

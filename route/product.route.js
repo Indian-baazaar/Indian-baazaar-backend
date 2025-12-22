@@ -25,7 +25,7 @@ productRouter.get('/getAllProductsByPrice', getAllProductsByPrice);
 productRouter.get('/getAllProductsByRating', getAllProductsByRating);
 productRouter.get('/getAllProductsCount', getProductsCount);
 productRouter.get('/getAllFeaturedProducts', getAllFeaturedProducts);
-productRouter.delete('/deleteMultiple',adminAuth, endpointSecurity({ maxRequests: 50, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteMultipleProduct);
+productRouter.delete('/deleteMultiple',adminAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteMultipleProduct);
 productRouter.delete('/:id',adminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteProduct);
 productRouter.get('/:id', getProduct);
 productRouter.delete('/deteleImage',adminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), removeImageFromCloudinary);

@@ -80,24 +80,24 @@ app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser())
 app.set('trust proxy', 1);
 
-export const checkBlockedIP = async (req, res, next) => {
-  const forwarded = req.headers['x-forwarded-for'];
-  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
-  try {
-    const isBlocked = await redis.get(`blocked:${ip}`);
-    if (isBlocked) {
-      return res.status(403).json({
-        error: true,
-        success: false,
-        message: 'Your IP address has been blocked due to suspicious activity.'
-      });
-    }
-  } catch (error) {
-    console.error('Error checking blocked IP:', error);
-  }
-  next();
-};
-app.use(checkBlockedIP);
+// export const checkBlockedIP = async (req, res, next) => {
+//   const forwarded = req.headers['x-forwarded-for'];
+//   const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
+//   try {
+//     const isBlocked = await redis.get(`blocked:${ip}`);
+//     if (isBlocked) {
+//       return res.status(403).json({
+//         error: true,
+//         success: false,
+//         message: 'Your IP address has been blocked due to suspicious activity.'
+//       });
+//     }
+//   } catch (error) {
+//     console.error('Error checking blocked IP:', error);
+//   }
+//   next();
+// };
+// app.use(checkBlockedIP);
 
 export const limiter = rateLimit({
   windowMs: 1 * 60 * 1000,

@@ -2,22 +2,6 @@ import OrderModel from "../models/order.model.js";
 import SellerModel from "../models/seller.model.js";
 import ProductModel from "../models/product.modal.js";
 
-/**
- * Get platform analytics
- * Requirements: 11.1, 11.2, 11.3
- * 
- * Returns comprehensive metrics including:
- * - Total sales (count of successful orders)
- * - Total revenue (sum of order amounts)
- * - Total GST collected
- * - Total commission earned
- * - Active sellers count
- * - Total products count
- * 
- * Supports date range filtering via query parameters:
- * - startDate: ISO date string
- * - endDate: ISO date string
- */
 export async function getAnalytics(req, res) {
   try {
     const { startDate, endDate } = req.query;

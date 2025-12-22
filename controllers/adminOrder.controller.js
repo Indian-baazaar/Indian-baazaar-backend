@@ -1,13 +1,6 @@
 import OrderModel from '../models/order.model.js';
 import ProductModel from '../models/product.modal.js';
-import SellerModel from '../models/seller.model.js';
 
-/**
- * Get all orders (Super Admin)
- * Requirements: 9.1
- * - Returns all orders from all sellers
- * - Supports pagination and filtering
- */
 export async function getAllOrders(req, res) {
   try {
     // Get pagination parameters
@@ -80,12 +73,6 @@ export async function getAllOrders(req, res) {
   }
 }
 
-/**
- * Get order by ID (Super Admin)
- * Requirements: 9.2
- * - Returns complete order details with seller and product information
- * - No ownership restrictions for super admin
- */
 export async function getOrderById(req, res) {
   try {
     const { orderId } = req.params;
@@ -146,12 +133,6 @@ export async function getOrderById(req, res) {
   }
 }
 
-/**
- * Get global order statistics (Super Admin)
- * Requirements: 9.3
- * - Returns total sales, revenue, GST, commission
- * - Filters by paymentStatus "SUCCESS"
- */
 export async function getGlobalOrderStats(req, res) {
   try {
     // Build date filter if provided

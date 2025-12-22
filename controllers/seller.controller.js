@@ -2,30 +2,17 @@ import SellerModel from '../models/seller.model.js';
 import jwt from 'jsonwebtoken';
 import { validateGST, validatePAN, validateEmail, validatePhone, validateIFSC } from '../utils/sellerValidation.js';
 
-/**
- * Generate access token for seller
- */
+
 const generateSellerAccessToken = (sellerId) => {
   return jwt.sign({ id: sellerId }, process.env.SECRET_KEY_ACCESS_TOKEN);
 };
 
-/**
- * Generate refresh token for seller
- */
 const generateSellerRefreshToken = (sellerId) => {
   return jwt.sign({ id: sellerId }, process.env.SECRET_KEY_REFRESH_TOKEN, {
     expiresIn: '7d'
   });
 };
 
-/**
- * Register a new seller
- * Requirements: 1.1, 1.2
- * - Creates seller with kycStatus "pending" and sellerStatus "inactive"
- * - Validates all required fields
- * - Checks email uniqueness
- * - Password is hashed by pre-save hook in model
- */
 export async function registerSellerController(request, response) {
   try {
     const { name, email, password, phone, brandName, gstNumber, panNumber } = request.body;
@@ -137,13 +124,6 @@ export async function registerSellerController(request, response) {
   }
 }
 
-/**
- * Login seller
- * Requirements: 1.3, 1.4, 1.5
- * - Validates email/password
- * - Generates JWT access token on success
- * - Checks kycStatus and sellerStatus before allowing login
- */
 export async function loginSellerController(request, response) {
   try {
     const { email, password } = request.body;
@@ -244,12 +224,6 @@ export async function loginSellerController(request, response) {
   }
 }
 
-/**
- * Get seller profile
- * Requirements: 2.1, 15.3
- * - Returns seller data without password
- * - Requires authentication (seller attached to request by middleware)
- */
 export async function getProfileController(request, response) {
   try {
     // Seller is already attached to request by sellerAuth middleware
@@ -281,13 +255,6 @@ export async function getProfileController(request, response) {
   }
 }
 
-/**
- * Update seller profile
- * Requirements: 2.2
- * - Updates name, phone, brandName, address
- * - Validates input and persists changes
- * - Returns updated profile
- */
 export async function updateProfileController(request, response) {
   try {
     const seller = request.seller;
@@ -387,12 +354,6 @@ export async function updateProfileController(request, response) {
   }
 }
 
-/**
- * Update seller password
- * Requirements: 2.3, 2.4
- * - Requires current password verification
- * - Hashes new password before storing
- */
 export async function updatePasswordController(request, response) {
   try {
     const seller = request.seller;
@@ -465,11 +426,6 @@ export async function updatePasswordController(request, response) {
   }
 }
 
-/**
- * Update seller bank details
- * Requirements: 2.5
- * - Updates bank details with IFSC validation
- */
 export async function updateBankDetailsController(request, response) {
   try {
     const seller = request.seller;

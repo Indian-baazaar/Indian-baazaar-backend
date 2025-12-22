@@ -46,21 +46,21 @@ router.put('/sellers/status/:sellerId', endpointSecurity({ maxRequests: 200, win
 
 // Product Management Routes
 router.get('/products', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getAllProducts);
-router.put('/products/:id', endpointSecurity({ maxRequests: 50, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateProduct);
-router.delete('/products/:id', endpointSecurity({ maxRequests: 50, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteProduct);
+router.put('/products/:id', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateProduct);
+router.delete('/products/:id', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteProduct);
 
 // Order Management Routes
 router.get('/orders', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getAllOrders);
 router.get('/orders/:id', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getOrderById);
-router.get('/order-stats', endpointSecurity({ maxRequests: 50, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getGlobalOrderStats);
+router.get('/order-stats', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getGlobalOrderStats);
 
 // Category Management Routes
 router.post('/category', endpointSecurity({ maxRequests: 200, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), createCategory);
 router.get('/category', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getCategories);
-router.put('/category/:id', endpointSecurity({ maxRequests: 50, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateCategory);
+router.put('/category/:id', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateCategory);
 router.delete('/category/:id', endpointSecurity({ maxRequests: 200, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteCategory);
 
 // Analytics Routes
-router.get('/analytics', endpointSecurity({ maxRequests: 50, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getAnalytics);
+router.get('/analytics', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getAnalytics);
 
 export default router;

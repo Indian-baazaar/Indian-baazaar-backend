@@ -1,12 +1,5 @@
 import ProductModel from '../models/product.modal.js';
 
-/**
- * Get all products with pagination and filtering
- * Requirements: 8.1
- * - Returns all products from all sellers
- * - Supports pagination (page, limit)
- * - Supports filtering by seller, category, and status
- */
 export async function getAllProducts(request, response) {
   try {
     const { page = 1, limit = 10, sellerId, category, status, search } = request.query;
@@ -83,11 +76,6 @@ export async function getAllProducts(request, response) {
   }
 }
 
-/**
- * Update any product (admin can update any product regardless of ownership)
- * Requirements: 8.2
- * - Updates product without ownership restriction
- */
 export async function updateProduct(request, response) {
   try {
     const { id } = request.params;
@@ -147,11 +135,6 @@ export async function updateProduct(request, response) {
   }
 }
 
-/**
- * Delete any product (admin can delete any product regardless of ownership)
- * Requirements: 8.3
- * - Deletes product without ownership restriction
- */
 export async function deleteProduct(request, response) {
   try {
     const { id } = request.params;

@@ -7,6 +7,6 @@ import adminAuth from '../middlewares/adminAuth.js';
 const shipRocketAddressRoute = express.Router();
 
 
-shipRocketAddressRoute.post('/create', adminAuth, endpointSecurity({ maxRequests: 50, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckpickUpAddressValidator, registerPickUpAddress);
+shipRocketAddressRoute.post('/create', adminAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckpickUpAddressValidator, registerPickUpAddress);
 
 export default shipRocketAddressRoute;

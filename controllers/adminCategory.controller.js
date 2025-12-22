@@ -1,10 +1,6 @@
 import CategoryModel from "../models/category.modal.js";
 import { delCache } from '../utils/redisUtil.js';
 
-/**
- * Create a new category
- * Requirements: 10.1, 10.2, 10.3
- */
 export async function createCategory(req, res) {
   try {
     const { name, parentId, images } = req.body;
@@ -94,10 +90,6 @@ export async function getCategories(req, res) {
   }
 }
 
-/**
- * Update a category
- * Requirements: 10.3
- */
 export async function updateCategory(req, res) {
   try {
     const { id } = req.params;
@@ -169,10 +161,6 @@ export async function updateCategory(req, res) {
   }
 }
 
-/**
- * Delete a category with product protection
- * Requirements: 10.4, 10.5
- */
 export async function deleteCategory(req, res) {
   try {
     const { id } = req.params;

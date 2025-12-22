@@ -1,12 +1,5 @@
 import SellerModel from '../models/seller.model.js';
 
-/**
- * Get all sellers with pagination and filtering
- * Requirements: 7.1
- * - Returns all registered sellers
- * - Supports pagination (page, limit)
- * - Supports filtering by kycStatus and sellerStatus
- */
 export async function getSellersController(request, response) {
   try {
     const { page = 1, limit = 10, kycStatus, sellerStatus, search } = request.query;
@@ -86,12 +79,6 @@ export async function getSellersController(request, response) {
   }
 }
 
-/**
- * Approve a seller
- * Requirements: 7.2
- * - Sets kycStatus to "approved"
- * - Sets sellerStatus to "active"
- */
 export async function approveSellerController(request, response) {
   try {
     const { sellerId } = request.params;
@@ -139,12 +126,6 @@ export async function approveSellerController(request, response) {
   }
 }
 
-/**
- * Reject a seller
- * Requirements: 7.3
- * - Sets kycStatus to "rejected"
- * - Optionally stores rejection reason
- */
 export async function rejectSellerController(request, response) {
   try {
     const { sellerId } = request.params;
@@ -194,11 +175,6 @@ export async function rejectSellerController(request, response) {
   }
 }
 
-/**
- * Toggle seller status between active and inactive
- * Requirements: 7.4
- * - Switches sellerStatus between "active" and "inactive"
- */
 export async function toggleSellerStatusController(request, response) {
   try {
     const { sellerId } = request.params;

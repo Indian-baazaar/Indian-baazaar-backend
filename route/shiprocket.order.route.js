@@ -9,6 +9,7 @@ import {
   printManifests,
   cancelOrder,
   getOrders,
+  getCouriersServices,
 } from "../controllers/package.controller.js";
 import {
   CheckrequestCreateOrder,
@@ -36,8 +37,10 @@ ShipRocketOrderRoute.post("/generate-manifest", adminAuth, endpointSecurity({ ma
 
 ShipRocketOrderRoute.post("/print-manifest", adminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, printManifests);
 
-ShipRocketOrderRoute.delete("/cancel-order", adminAuth, endpointSecurity({ maxRequests: 50, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, cancelOrder);
+ShipRocketOrderRoute.delete("/cancel-order", adminAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, cancelOrder);
 
 ShipRocketOrderRoute.get("/get-orders", adminAuth, endpointSecurity({ maxRequests: 200, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getOrders);
+
+ShipRocketOrderRoute.get("/get-courier-patners", adminAuth, endpointSecurity({ maxRequests: 100, windowMs: 60 * 1000, blockDurationMs: 300000 }), getCouriersServices);
 
 export default ShipRocketOrderRoute;
