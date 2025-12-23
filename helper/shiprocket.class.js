@@ -227,23 +227,16 @@ class ShipRocket {
 
     const { status, data } = this.validateData(result);
 
-    if (!status) {
-      throw new Error(data?.message || "AWB assignment failed");
-    }
-
-    if (data?.status_code) {
-      throw new Error(data?.message || "Courier service error");
-    }
-
-    const responseData = data?.response?.data;
-    console.log("status, data", status, data);
-
-
-    if (typeof responseData !== "object" || responseData === null) {
-      throw new Error(responseData || "Courier login failed / invalid session");
+    if (!status || !data) {
+      return {
+        status: false,
+        data: null,
+        message: "Invalid response from Shiprocket",
+      };
     }
 
     const assignStatus = data?.awb_assign_status;
+    const responseData = data?.response?.data;
     if (assignStatus === 1) {
       return {
         status: true,
@@ -251,18 +244,30 @@ class ShipRocket {
         message: "AWB assigned successfully!",
       };
     }
-    if (assignStatus === 0 && responseData?.awb_assign_error) {
+
+    if (assignStatus === 0) {
       return {
-        status: true,
-        data: responseData,
-        message: responseData.awb_assign_error,
+        status: false,
+        data: responseData || null,
+        message:
+          responseData?.awb_assign_error ||
+          "AWB assignment failed",
       };
     }
-    throw new Error("Unable to assign AWB");
+
+    return {
+      status: false,
+      data: null,
+      message: "Unexpected Shiprocket error during AWB assignment",
+    };
 
   } catch (error) {
-    const message = this.parseError(error);
-    return { status: false, data: null, message };
+    console.log("error : ",error);
+    return {
+      status: false,
+      data: null,
+      message: this.parseError(error),
+    };
   }
 }
 
@@ -278,6 +283,8 @@ class ShipRocket {
       }
     );
 
+    console.log("lable result : ",result);
+
     const { status, data } = this.validateData(result);
 
     if (!status) {
@@ -291,14 +298,12 @@ class ShipRocket {
     const notCreated = data?.not_created || [];
     const labelUrl = data?.label_url;
 
-    // ❌ shipment failed
     if (notCreated.length > 0) {
       throw new Error(
         `Label not generated for shipment(s): ${notCreated.join(", ")}`
       );
     }
 
-    // ✅ label available
     if (labelUrl) {
       return {
         status: true,
@@ -307,7 +312,6 @@ class ShipRocket {
       };
     }
 
-    // ⚠️ label exists / async generation
     return {
       status: true,
       data: null,
@@ -449,28 +453,27 @@ class ShipRocket {
   }
 
   async cancelOrder(ids) {
-    try {
-      const result = await this.axiosInstance.post("orders/cancel", {
-        ids,
-      });
-
-      const { status, data } = this.validateData(result);
-
-      if (!status) throw { message: data.message };
-
-      if (data.hasOwnProperty("status_code")) throw { message: data.message };
-
+  try {
+    const result = await this.axiosInstance.post("orders/cancel", { ids });
+    const { status, data } = this.validateData(result);
+    if (!status) {
+      throw new Error(data?.message || "Order cancellation failed");
+    }
+    if (data?.status_code === 200) {
       return {
         status: true,
         data: true,
-        message: "Orders cancelled successfully!",
+        message: data.message || "Orders cancelled successfully!",
       };
-    } catch (error) {
-      const message = this.parseError(error);
-
-      return { status: false, data: null, message };
     }
+    throw new Error(data?.message || "Unable to cancel order");
+
+  } catch (error) {
+    const message = this.parseError(error);
+    return { status: false, data: null, message };
   }
+}
+
 
   async getCouriers() {
     try {
