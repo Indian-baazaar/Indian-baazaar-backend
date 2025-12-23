@@ -1,6 +1,6 @@
 import { Router } from "express";
 import auth from "../middlewares/auth.js";
-import { createOrderController, getOrderDetailsController, getTotalOrdersCountController, getUserOrderDetailsController, totalSalesController, totalUsersController, updateOrderStatusController, verifyPaymentController, getRetailerOrdersController, deleteOrder } from "../controllers/order.controller.js";
+import { createOrderController, getOrderDetailsController, getTotalOrdersCountController, getUserOrderDetailsController, totalSalesController, totalUsersController, updateOrderStatusController, verifyPaymentController, getRetailerOrdersController } from "../controllers/order.controller.js";
 import { endpointSecurity } from "../middlewares/endpointSecurity.js";
 
 const orderRouter = Router();
@@ -13,7 +13,7 @@ orderRouter.get('/count', auth, getTotalOrdersCountController)
 orderRouter.get('/sales', auth, totalSalesController)
 orderRouter.get('/users', auth, totalUsersController)
 orderRouter.get('/order-list/orders', auth, getUserOrderDetailsController)
-orderRouter.delete('/deleteOrder/:id', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteOrder)
+// orderRouter.delete('/deleteOrder/:id', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteOrder)
 orderRouter.get('/retailer/orders', auth, getRetailerOrdersController)
 
 export default orderRouter;
