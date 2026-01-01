@@ -1,0 +1,47 @@
+name: Deploy Node Backend to cPanel (Production)
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy Backend
+        run: |
+          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e
+
+            echo "➡️ Go to backend directory"
+            cd ~/app/indian-baazaar-backend
+
+            echo "➡️ Checkout production branch"
+            git checkout production
+
+            echo "➡️ Pull latest backend code"
+            git pull origin production
+
+            echo "➡️ Install production dependencies"
+            npm install --production
+
+            echo "➡️ Restart backend with PM2"
+            pm2 restart indian-baazaar-backend || pm2 start index.js --name indian-baazaar-backend
+
+            echo "➡️ Save PM2 state"
+            pm2 save
+
+            echo "✅ Backend deployment completed"
+          EOF
