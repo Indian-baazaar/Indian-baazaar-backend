@@ -6,7 +6,6 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
-// Validation functions
 const validateIFSC = (ifsc) => {
   const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
   return ifscRegex.test(ifsc);
@@ -16,10 +15,50 @@ const validateAccountNumber = (accountNumber) => {
   return /^\d+$/.test(accountNumber);
 };
 
+
+export const getSellerBankDetails = async (req, res) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({
+        success: false,
+        error: true,
+        message: "Unauthorized",
+      });
+    }
+
+    const sellerId = req.userId;
+
+    const bankDetails = await RetailerBankDetails.findOne({
+      retailerId: sellerId,
+    }).select("-accountNumber"); 
+
+    if (!bankDetails) {
+      return res.status(404).json({
+        success: false,
+        error: true,
+        message: "Bank details not found for this seller",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      error: false,
+      data: bankDetails,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: true,
+      message: error.message || "Server error",
+    });
+  }
+};
+
+
 export const addOrUpdateBankDetails = async (req, res) => {
   try {
     const { accountHolderName, bankName, accountNumber, ifscCode, branchName, upiId } = req.body;
-    const retailerId = req.userId; // Assuming set by auth middleware
+    const retailerId = req.userId; 
 
     // Validate inputs
     if (!accountHolderName || !bankName || !accountNumber || !ifscCode) {

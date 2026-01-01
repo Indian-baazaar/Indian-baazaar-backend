@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import upload from '../middlewares/multer.js';
-import {createProduct, createProductRAMS, deleteMultipleProduct, deleteProduct, deleteProductRAMS, getAllFeaturedProducts, getAllProducts, getAllProductsByCatId, getAllProductsByCatName, getAllProductsByPrice, getAllProductsByRating, getAllProductsBySubCatId, getAllProductsBySubCatName, getAllProductsByThirdLavelCatId, getProduct, getProductRams, getProductsCount, updateProduct, updateProductRam, uploadImages, getProductRamsById, createProductWEIGHT, deleteProductWEIGHT, updateProductWeight, getProductWeight, getProductWeightById, createProductSize, deleteProductSize, updateProductSize, getProductSize, getProductSizeById, uploadBannerImages, getAllProductsBanners, filters, sortBy, searchProductController, getAllProductsByCat} from '../controllers/product.controller.js';
+import {createProduct, createProductRAMS, deleteMultipleProduct, deleteProduct, deleteProductRAMS, getAllFeaturedProducts, getAllProducts, getAllProductsByCatId, getAllProductsByCatName, getAllProductsByPrice, getAllProductsByRating, getAllProductsBySubCatId, getAllProductsBySubCatName, getAllProductsByThirdLavelCatId, getProduct, getProductRams, getProductsCount, updateProduct, updateProductRam, uploadImages, getProductRamsById, createProductWEIGHT, deleteProductWEIGHT, updateProductWeight, getProductWeight, getProductWeightById, createProductSize, deleteProductSize, updateProductSize, getProductSize, getProductSizeById, uploadBannerImages, getAllProductsBanners, filters, sortBy, searchProductController, getAllProductsByCat, getUsersAllProducts} from '../controllers/product.controller.js';
 
 import { checkRetailerBankDetails } from '../middlewares/checkRetailerBankDetails.js';
 import { removeImageFromCloudinary } from '../controllers/user.controller.js';
@@ -24,6 +24,7 @@ productRouter.get('/getAllProductsByThirdLavelCatName', getAllProductsBySubCatNa
 productRouter.get('/getAllProductsByPrice', getAllProductsByPrice);
 productRouter.get('/getAllProductsByRating', getAllProductsByRating);
 productRouter.get('/getAllProductsCount', getProductsCount);
+productRouter.get('/getUserProducts',adminAuth, getUsersAllProducts);
 productRouter.get('/getAllFeaturedProducts', getAllFeaturedProducts);
 productRouter.delete('/deleteMultiple',adminAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteMultipleProduct);
 productRouter.delete('/:id',adminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteProduct);

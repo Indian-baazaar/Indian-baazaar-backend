@@ -271,6 +271,13 @@ export async function deleteCategory(request, response) {
         .status(404)
         .json({ message: "Category not found!", success: false, error: true });
     }
+    if (category.createdBy.toString() !== request.userId.toString()) {
+      return response.status(403).json({
+        success: false,
+        error: true,
+        message: "You are not allowed to delete this category"
+      });
+    }
 
     const images = category.images || [];
     for (const img of images) {

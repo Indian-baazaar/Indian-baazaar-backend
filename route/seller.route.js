@@ -33,6 +33,8 @@ import {
 import {
   getPayoutHistoryController
 } from '../controllers/sellerPayout.controller.js';
+import auth from '../middlewares/auth.js';
+import { addOrUpdateBankDetails, getSellerBankDetails } from '../controllers/retailer.controller.js';
 
 const router = express.Router();
 
@@ -64,5 +66,9 @@ router.put('/update-stock/:productId', sellerAuth, endpointSecurity({ maxRequest
 
 // Payout history
 router.get('/payout-history', sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getPayoutHistoryController);
+
+router.post('/bank-details', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addOrUpdateBankDetails);
+
+router.get('/bank-details-requirements', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getSellerBankDetails);
 
 export default router;
