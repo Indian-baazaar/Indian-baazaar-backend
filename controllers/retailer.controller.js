@@ -1,20 +1,10 @@
-import RetailerBankDetails from '../models/retailerBankDetails.model.js';
-import Razorpay from 'razorpay';
+import Razorpay from "razorpay";
+import RetailerBankDetails from "../models/retailerBankDetails.model.js";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
-
-const validateIFSC = (ifsc) => {
-  const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
-  return ifscRegex.test(ifsc);
-};
-
-const validateAccountNumber = (accountNumber) => {
-  return /^\d+$/.test(accountNumber);
-};
-
 
 export const getSellerBankDetails = async (req, res) => {
   try {
@@ -30,7 +20,7 @@ export const getSellerBankDetails = async (req, res) => {
 
     const bankDetails = await RetailerBankDetails.findOne({
       retailerId: sellerId,
-    }).select("-accountNumber"); 
+    }).select("-accountNumber");
 
     if (!bankDetails) {
       return res.status(404).json({
@@ -54,96 +44,84 @@ export const getSellerBankDetails = async (req, res) => {
   }
 };
 
-
-export const addOrUpdateBankDetails = async (req, res) => {
+export const addBankDetails = async (req, res) => {
   try {
-    const { accountHolderName, bankName, accountNumber, ifscCode, branchName, upiId } = req.body;
-    const retailerId = req.userId; 
+    if (!req.userId) {
+      return res.status(401).json({
+        success: false,
+        error: true,
+        message: "Unauthorized",
+      });
+    }
+    const retailerId = req.userId;
 
-    // Validate inputs
+    const {
+      accountHolderName,
+      bankName,
+      accountNumber,
+      ifscCode,
+      branchName,
+      upiId,
+    } = req.body;
+
     if (!accountHolderName || !bankName || !accountNumber || !ifscCode) {
       return res.status(400).json({
-        error: true,
         success: false,
-        message: 'All required fields must be provided'
-      });
-    }
-
-    if (!validateIFSC(ifscCode)) {
-      return res.status(400).json({
         error: true,
-        success: false,
-        message: 'Invalid IFSC code format'
+        message: "All required fields are mandatory",
       });
     }
 
-    if (!validateAccountNumber(accountNumber)) {
-      return res.status(400).json({
+    const existing = await RetailerBankDetails.findOne({ retailerId });
+    if (existing) {
+      return res.status(409).json({
+        success: false,
         error: true,
-        success: false,
-        message: 'Account number must be numeric'
+        message: "Bank details already added",
       });
     }
 
-    // Check if bank details already exist
-    let bankDetails = await RetailerBankDetails.findOne({ retailerId });
+    const customer = await razorpay.customers.create({
+      name: accountHolderName,
+      reference_id: retailerId.toString(),
+    });
 
-    if (bankDetails) {
-      // Update existing
-      bankDetails.accountHolderName = accountHolderName;
-      bankDetails.bankName = bankName;
-      bankDetails.accountNumber = accountNumber;
-      bankDetails.ifscCode = ifscCode;
-      bankDetails.branchName = branchName;
-      bankDetails.upiId = upiId;
-    } else {
-      // Create new
-      bankDetails = new RetailerBankDetails({
-        retailerId,
-        accountHolderName,
-        bankName,
-        accountNumber,
-        ifscCode,
-        branchName,
-        upiId
-      });
-    }
+    const fundAccount = await razorpay.fundAccount.create({
+      customer_id: customer.id,
+      account_type: "bank_account",
+      bank_account: {
+        name: accountHolderName,
+        ifsc: ifscCode,
+        account_number: accountNumber,
+      },
+    });
 
-    // Create Razorpay Fund Account
-    try {
-      const fundAccount = await razorpay.fundAccount.create({
-        account_type: 'bank_account',
-        bank_account: {
-          name: accountHolderName,
-          account_number: accountNumber,
-          ifsc: ifscCode
-        }
-      });
-
-      bankDetails.razorpayFundAccountId = fundAccount.id;
-    } catch (razorpayError) {
-      console.error('Razorpay Fund Account Creation Error:', razorpayError);
-      return res.status(500).json({
-        error: true,
-        success: false,
-        message: 'Failed to create fund account with Razorpay'
-      });
-    }
+    const bankDetails = new RetailerBankDetails({
+      retailerId,
+      accountHolderName,
+      bankName,
+      accountNumber,
+      ifscCode,
+      branchName,
+      upiId,
+      razorpayCustomerId: customer.id,
+      razorpayFundAccountId: fundAccount.id,
+    });
 
     await bankDetails.save();
 
-    return res.status(200).json({
-      error: false,
+    return res.status(201).json({
       success: true,
-      message: 'Bank details saved successfully',
-      data: bankDetails
+      error: false,
+      message: "Bank details added successfully",
+      data: bankDetails,
     });
-  } catch (error) {
-    console.error('Error saving bank details:', error);
+  } catch (err) {
+    console.error("Razorpay Error:", err);
     return res.status(500).json({
-      error: true,
       success: false,
-      message: error.message || 'Internal server error'
+      error: true,
+      message: err.error?.description || err.message,
     });
   }
 };
