@@ -11,7 +11,7 @@ const productRouter = Router();
 
 productRouter.post('/uploadImages',adminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), upload.array('images'), uploadImages);
 productRouter.post('/uploadBannerImages', adminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), upload.array('bannerimages'), uploadBannerImages);
-productRouter.post('/create', checkRetailerBankDetails, adminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), createProduct);
+productRouter.post('/create',adminAuth, checkRetailerBankDetails,  endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), createProduct);
 productRouter.get('/getAllProducts', getAllProducts);
 productRouter.get('/getAllProductsBanners', getAllProductsBanners);
 productRouter.get('/getAllProductsByCatId/:id', getAllProductsByCatId);
