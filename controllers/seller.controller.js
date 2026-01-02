@@ -426,76 +426,10 @@ export async function updatePasswordController(request, response) {
   }
 }
 
-export async function updateBankDetailsController(request, response) {
-  try {
-    const seller = request.seller;
-    const { accountHolderName, bankName, accountNumber, ifscCode, branchName, upiId } = request.body;
-
-    if (!seller) {
-      return response.status(401).json({
-        success: false,
-        error: true,
-        message: 'Seller not authenticated'
-      });
-    }
-
-    // Validate IFSC code if provided
-    if (ifscCode && !validateIFSC(ifscCode)) {
-      return response.status(400).json({
-        success: false,
-        error: true,
-        message: 'Invalid IFSC code format'
-      });
-    }
-
-    // Build bank details update object
-    const bankDetails = {
-      accountHolderName: accountHolderName || seller.bankDetails.accountHolderName,
-      bankName: bankName || seller.bankDetails.bankName,
-      accountNumber: accountNumber || seller.bankDetails.accountNumber,
-      ifscCode: ifscCode ? ifscCode.toUpperCase() : seller.bankDetails.ifscCode,
-      branchName: branchName || seller.bankDetails.branchName,
-      upiId: upiId || seller.bankDetails.upiId,
-      razorpayFundAccountId: seller.bankDetails.razorpayFundAccountId
-    };
-
-    // Update seller
-    const updatedSeller = await SellerModel.findByIdAndUpdate(
-      seller._id,
-      { bankDetails },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedSeller) {
-      return response.status(404).json({
-        success: false,
-        error: true,
-        message: 'Seller not found'
-      });
-    }
-
-    return response.status(200).json({
-      success: true,
-      error: false,
-      message: 'Bank details updated successfully',
-      data: updatedSeller.toJSON()
-    });
-
-  } catch (error) {
-    console.error('updateBankDetailsController error:', error);
-    return response.status(500).json({
-      success: false,
-      error: true,
-      message: error.message || 'Internal server error'
-    });
-  }
-}
-
 export default {
   registerSellerController,
   loginSellerController,
   getProfileController,
   updateProfileController,
   updatePasswordController,
-  updateBankDetailsController
 };

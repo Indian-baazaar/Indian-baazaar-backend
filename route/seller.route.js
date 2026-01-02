@@ -9,7 +9,6 @@ import {
   getProfileController,
   updateProfileController,
   updatePasswordController,
-  updateBankDetailsController
 } from '../controllers/seller.controller.js';
 
 import {
@@ -34,7 +33,7 @@ import {
   getPayoutHistoryController
 } from '../controllers/sellerPayout.controller.js';
 import auth from '../middlewares/auth.js';
-import { addBankDetails, getSellerBankDetails } from '../controllers/retailer.controller.js';
+import { addBankDetails, getSellerBankDetails, updateBankDetails } from '../controllers/retailer.controller.js';
 
 const router = express.Router();
 
@@ -44,7 +43,6 @@ router.post('/login', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1
 router.get('/profile', sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getProfileController);
 router.put('/update-profile', sellerAuth, endpointSecurity({ maxRequests: 200, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateProfileController);
 router.put('/update-password', sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updatePasswordController);
-router.put('/bank-details', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateBankDetailsController);
 
 router.post('/products', sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), createProductController);
 router.get('/products', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getProductsController);
@@ -60,8 +58,10 @@ router.put('/update-stock/:productId', sellerAuth, endpointSecurity({ maxRequest
 
 router.get('/payout-history', sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getPayoutHistoryController);
 
+router.get('/bank-details-requirements', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getSellerBankDetails);
+
 router.post('/bank-details', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addBankDetails);
 
-router.get('/bank-details-requirements', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getSellerBankDetails);
+router.put('/update-bank-details', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateBankDetails);
 
 export default router;

@@ -125,3 +125,78 @@ export const addBankDetails = async (req, res) => {
     });
   }
 };
+
+export const updateBankDetails = async (req, res) => {
+  try {
+    if (!req.userId) {
+      return res.status(401).json({
+        success: false,
+        error: true,
+        message: "Unauthorized",
+      });
+    }
+
+    const retailerId = req.userId;
+
+    const {
+      accountHolderName,
+      bankName,
+      accountNumber,
+      ifscCode,
+      branchName,
+      upiId,
+    } = req.body;
+
+    if (!accountHolderName || !bankName || !accountNumber || !ifscCode) {
+      return res.status(400).json({
+        success: false,
+        error: true,
+        message: "All required fields are mandatory",
+      });
+    }
+
+    const existing = await RetailerBankDetails.findOne({ retailerId });
+    if (!existing) {
+      return res.status(404).json({
+        success: false,
+        error: true,
+        message: "Bank details not found. Please add first.",
+      });
+    }
+
+    const fundAccount = await razorpay.fundAccount.create({
+      customer_id: existing.razorpayCustomerId,
+      account_type: "bank_account",
+      bank_account: {
+        name: accountHolderName,
+        ifsc: ifscCode,
+        account_number: accountNumber,
+      },
+    });
+
+    existing.accountHolderName = accountHolderName;
+    existing.bankName = bankName;
+    existing.accountNumber = accountNumber;
+    existing.ifscCode = ifscCode;
+    existing.branchName = branchName;
+    existing.upiId = upiId;
+    existing.razorpayFundAccountId = fundAccount.id;
+
+    await existing.save();
+
+    return res.status(200).json({
+      success: true,
+      error: false,
+      message: "Bank details updated successfully",
+      data: existing,
+    });
+  } catch (err) {
+    console.error("Razorpay Error:", err);
+    return res.status(500).json({
+      success: false,
+      error: true,
+      message: err.error?.description || err.message,
+    });
+  }
+};
+
