@@ -4,7 +4,7 @@ dotenv.config();
 export const ROLES = {
   SUPER_ADMIN: 'SUPER_ADMIN',
   ADMIN: 'ADMIN',
-  RETAILER: 'RETAILER',  // Legacy role name for sellers
+  RETAILER: 'RETAILER',  
   SELLER: 'SELLER',
   USER: 'USER',
   CUSTOMER: 'CUSTOMER'
@@ -84,7 +84,6 @@ export const rolePermission = (allowedRoles, options = {}) => {
   
   return (req, res, next) => {
     try {
-      // Check if user is attached to request (from auth middleware)
       const user = req.user || req.seller;
       
       if (!user) {
@@ -95,7 +94,6 @@ export const rolePermission = (allowedRoles, options = {}) => {
         });
       }
       
-      // Get user's role
       const userRole = user.role || (req.seller ? ROLES.SELLER : null);
       
       if (!userRole) {
@@ -106,7 +104,6 @@ export const rolePermission = (allowedRoles, options = {}) => {
         });
       }
       
-      // Check if role is allowed
       let isAllowed = false;
       
       if (useHierarchy) {

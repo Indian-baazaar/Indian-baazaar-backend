@@ -226,7 +226,6 @@ export async function loginSellerController(request, response) {
 
 export async function getProfileController(request, response) {
   try {
-    // Seller is already attached to request by sellerAuth middleware
     const seller = request.seller;
 
     if (!seller) {

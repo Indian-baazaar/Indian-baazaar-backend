@@ -12,7 +12,6 @@ cloudinary.config({
   secure: true,
 });
 
-//image upload
 var imagesArr = [];
 export async function uploadImages(request, response) {
   try {
@@ -58,7 +57,6 @@ export async function uploadImages(request, response) {
   }
 }
 
-//create category
 export async function createCategory(request, response) {
   try {
     let category = new CategoryModel({
@@ -80,7 +78,6 @@ export async function createCategory(request, response) {
     category = await category.save();
     imagesArr = [];
 
-    // Invalidate categories cache
     await delCache('categories');
 
     return response.status(200).json({
@@ -98,7 +95,6 @@ export async function createCategory(request, response) {
   }
 }
 
-//get Categories
 export async function getCategories(request, response) {
   try {
     const cacheKey = 'categories';
@@ -139,7 +135,6 @@ export async function getCategories(request, response) {
   }
 }
 
-//get category count
 export async function getCategoriesCount(request, response) {
   try {
     const categoryCount = await CategoryModel.countDocuments({
@@ -161,7 +156,6 @@ export async function getCategoriesCount(request, response) {
   }
 }
 
-//get sub category count
 export async function getSubCategoriesCount(request, response) {
   try {
     const categories = await CategoryModel.find();
@@ -187,8 +181,6 @@ export async function getSubCategoriesCount(request, response) {
     });
   }
 }
-
-//get single category
 
 export async function getCategory(request, response) {
   try {
@@ -327,7 +319,6 @@ export async function deleteCategory(request, response) {
       });
     }
 
-    // Invalidate categories cache
     await delCache('categories');
 
     return response

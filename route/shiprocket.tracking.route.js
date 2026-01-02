@@ -23,17 +23,13 @@ router.get('/track/shipping/:shipping_id', auth, endpointSecurity({
   try {
     const { shipping_id } = req.params;
     const cacheKey = `tracking_shipping_${shipping_id}`;
-    
-    // Check cache first
     const cachedData = await getCache(cacheKey);
     if (cachedData) {
       return res.json(cachedData);
     }
     
-    // Fetch from Shiprocket
     const result = await trackShipment(shipping_id);
     
-    // Cache for 5 minutes
     await setCache(cacheKey, { success: true, tracking: result }, 300);
     
     res.json({ success: true, tracking: result });

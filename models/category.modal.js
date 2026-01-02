@@ -21,7 +21,7 @@ const categorySchema = mongoose.Schema({
       },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Seller",
       required: true
     }
 },{timestamps:true});
