@@ -165,7 +165,6 @@ export async function deleteCategory(req, res) {
   try {
     const { id } = req.params;
 
-    // Check if category exists
     const category = await CategoryModel.findById(id);
     if (!category) {
       return res.status(404).json({
@@ -175,10 +174,8 @@ export async function deleteCategory(req, res) {
       });
     }
 
-    // Import ProductModel dynamically to avoid circular dependency
     const ProductModel = (await import("../models/product.modal.js")).default;
 
-    // Check if any products are assigned to this category
     const productsWithCategory = await ProductModel.countDocuments({ 
       category: id 
     });
@@ -191,7 +188,6 @@ export async function deleteCategory(req, res) {
       });
     }
 
-    // Check if category has child categories
     const childCategories = await CategoryModel.countDocuments({ 
       parentId: id 
     });
@@ -204,10 +200,8 @@ export async function deleteCategory(req, res) {
       });
     }
 
-    // Delete the category
     await CategoryModel.findByIdAndDelete(id);
 
-    // Invalidate categories cache
     await delCache('categories');
 
     return res.status(200).json({

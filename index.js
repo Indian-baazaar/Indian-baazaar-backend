@@ -27,7 +27,6 @@ import notificationRouter from './route/notification.route.js';
 import shipRocketAddressRoute from './route/shiprocket.address.route.js';
 import ShipRocketOrderRoute from './route/shiprocket.order.route.js';
 import shiprocketTrackingRoute from './route/shiprocket.tracking.route.js';
-import adminRouter from './route/admin.route.js';
 import adminSellerRouter from './route/adminSeller.route.js';
 import sellerRouter from './route/seller.route.js';
 import { razorpayWebhook } from './controllers/payment.controller.js';
@@ -148,23 +147,27 @@ try {
 
 
 app.use('/api/user',userRouter)
-app.use('/api/category',categoryRouter)
+app.use('/api/seller', sellerRouter);
+
 app.use('/api/product',productRouter);
+app.use('/api/category',categoryRouter)
 app.use("/api/cart",cartRouter)
 app.use("/api/myList",myListRouter)
 app.use("/api/address",addressRouter)
+
 app.use("/api/homeSlides",homeSlidesRouter)
 app.use("/api/bannerV1",bannerV1Router)
 app.use("/api/bannerList2",bannerList2Router)
+
 app.use("/api/blog",blogRouter)
 app.use("/api/order",orderRouter)
 app.use('/api/notification', notificationRouter)
+
 app.use('/api/shiprocket/pick-up-address',  shipRocketAddressRoute);
 app.use('/api/shiprocket/package',  ShipRocketOrderRoute);
 app.use('/api/shiprocket', shiprocketTrackingRoute);
-app.use('/api/admin', adminRouter);
-app.use('/api/admin/seller', adminSellerRouter);
-app.use('/api/seller', sellerRouter);
+
+app.use('/api/manage/admin', adminSellerRouter);
 app.post('/api/payment/webhook', express.json({ type: '*/*' }), razorpayWebhook);
 
 app.use((err, req, res, next) => {

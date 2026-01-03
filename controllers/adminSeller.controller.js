@@ -91,7 +91,6 @@ export async function approveSellerController(request, response) {
       });
     }
 
-    // Find seller
     const seller = await SellerModel.findById(sellerId);
     
     if (!seller) {
@@ -105,7 +104,7 @@ export async function approveSellerController(request, response) {
     // Update seller status
     seller.kycStatus = 'approved';
     seller.sellerStatus = 'active';
-    seller.rejectionReason = ''; // Clear any previous rejection reason
+    seller.rejectionReason = ''; 
     
     await seller.save();
 
@@ -139,7 +138,6 @@ export async function rejectSellerController(request, response) {
       });
     }
 
-    // Find seller
     const seller = await SellerModel.findById(sellerId);
     
     if (!seller) {
@@ -150,7 +148,6 @@ export async function rejectSellerController(request, response) {
       });
     }
 
-    // Update seller status
     seller.kycStatus = 'rejected';
     if (reason) {
       seller.rejectionReason = reason;
@@ -187,7 +184,6 @@ export async function toggleSellerStatusController(request, response) {
       });
     }
 
-    // Find seller
     const seller = await SellerModel.findById(sellerId);
     
     if (!seller) {
@@ -198,7 +194,6 @@ export async function toggleSellerStatusController(request, response) {
       });
     }
 
-    // Toggle status
     seller.sellerStatus = seller.sellerStatus === 'active' ? 'inactive' : 'active';
     
     await seller.save();

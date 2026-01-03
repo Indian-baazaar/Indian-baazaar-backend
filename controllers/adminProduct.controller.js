@@ -3,8 +3,6 @@ import ProductModel from '../models/product.modal.js';
 export async function getAllProducts(request, response) {
   try {
     const { page = 1, limit = 10, sellerId, category, status, search } = request.query;
-
-    // Build filter object
     const filter = {};
     
     if (sellerId) {
@@ -100,8 +98,7 @@ export async function updateProduct(request, response) {
       });
     }
 
-    // Admin can update any product - no ownership check
-    // Update allowed fields
+
     const allowedFields = [
       'name', 'description', 'images', 'brand', 'price', 'oldPrice',
       'catName', 'catId', 'subCatId', 'subCat', 'thirdsubCat', 'thirdsubCatId',
