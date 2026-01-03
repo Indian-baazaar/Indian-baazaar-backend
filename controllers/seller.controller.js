@@ -1,125 +1,188 @@
 import SellerModel from '../models/seller.model.js';
 import jwt from 'jsonwebtoken';
-import { validateGST, validatePAN, validateEmail, validatePhone, validateIFSC } from '../utils/sellerValidation.js';
-
+import { validatePhone } from '../utils/sellerValidation.js';
+import AddressModel from '../models/address.model.js';
+import sendEmailFun from '../config/sendEmail.js';
+import bcryptjs from 'bcryptjs';
+import VerificationEmail from '../utils/verifyEmailTemplate.js';
 
 const generateSellerAccessToken = (sellerId) => {
   return jwt.sign({ id: sellerId }, process.env.SECRET_KEY_ACCESS_TOKEN);
 };
 
-const generateSellerRefreshToken = (sellerId) => {
-  return jwt.sign({ id: sellerId }, process.env.SECRET_KEY_REFRESH_TOKEN, {
+const generateSellerRefreshToken = async (sellerId) => {
+  const token = jwt.sign({ id: sellerId }, process.env.SECRET_KEY_REFRESH_TOKEN, {
     expiresIn: '7d'
   });
+   await SellerModel.updateOne({ _id: sellerId }, { refresh_token: token });
+  return token;
 };
 
 export async function registerSellerController(request, response) {
   try {
-    const { name, email, password, phone, brandName, gstNumber, panNumber } = request.body;
-
-    // Validate required fields
-    const missingFields = [];
-    if (!name) missingFields.push('name');
-    if (!email) missingFields.push('email');
-    if (!password) missingFields.push('password');
-    if (!phone) missingFields.push('phone');
-    if (!brandName) missingFields.push('brandName');
-    if (!gstNumber) missingFields.push('gstNumber');
-    if (!panNumber) missingFields.push('panNumber');
-
-    if (missingFields.length > 0) {
-      return response.status(400).json({
-        success: false,
-        error: true,
-        message: `Missing required fields: ${missingFields.join(', ')}`
-      });
-    }
-
-    // Validate email format
-    if (!validateEmail(email)) {
-      return response.status(400).json({
-        success: false,
-        error: true,
-        message: 'Invalid email format'
-      });
-    }
-
-    // Validate phone format
-    if (!validatePhone(phone)) {
-      return response.status(400).json({
-        success: false,
-        error: true,
-        message: 'Invalid phone number format. Must be a 10-digit Indian mobile number starting with 6-9'
-      });
-    }
-
-    // Validate GST number format
-    if (!validateGST(gstNumber)) {
-      return response.status(400).json({
-        success: false,
-        error: true,
-        message: 'Invalid GST number format'
-      });
-    }
-
-
-    // Validate PAN number format
-    if (!validatePAN(panNumber)) {
-      return response.status(400).json({
-        success: false,
-        error: true,
-        message: 'Invalid PAN number format'
-      });
-    }
-
-    // Check if email already exists
-    const existingSeller = await SellerModel.findOne({ email: email.toLowerCase() });
-    if (existingSeller) {
-      return response.status(409).json({
-        success: false,
-        error: true,
-        message: 'A seller with this email already exists'
-      });
-    }
-
-    // Create new seller with kycStatus "pending" and sellerStatus "inactive"
-    const seller = new SellerModel({
+    const {
       name,
-      email: email.toLowerCase(),
-      password, // Will be hashed by pre-save hook
-      phone,
-      brandName,
-      gstNumber: gstNumber.toUpperCase(),
-      panNumber: panNumber.toUpperCase(),
-      kycStatus: 'pending',
-      sellerStatus: 'inactive'
+      email,
+      password,
+      mobile,
+      address_line1,
+      city,
+      state,
+      pincode,
+      country,
+      landmark,
+      addressType, 
+    } = request.body;
+
+    if (!name || !email || !password) {
+      return response.status(400).json({
+        message: "Provide name, email, and password",
+        error: true,
+        success: false,
+      });
+    }
+
+    if (!mobile) {
+      return response.status(400).json({
+        message: "Provide mobile number",
+        error: true,
+        success: false,
+      });
+    }
+
+    if (!address_line1 || !city || !state || !pincode || !country) {
+      return response.status(400).json({
+        message: "Provide complete address details",
+        error: true,
+        success: false,
+      });
+    }
+
+    let user = await SellerModel.findOne({ email });
+
+    const createOrUpdateRetailerAddress = async (userDoc) => {
+      const userIdString = userDoc._id.toString();
+
+      await AddressModel.updateMany(
+        { userId: userIdString },
+        { $set: { selected: false } }
+      );
+
+      const addressPayload = {
+        address_line1,
+        city,
+        state,
+        pincode,
+        country,
+        mobile,
+        landmark: landmark || "",
+        addressType: addressType || "Office",
+        userId: userIdString,
+        selected: true,
+        status: true,
+      };
+
+      const addressDoc = await AddressModel.create(addressPayload);
+
+      if (!userDoc.address_details) {
+        userDoc.address_details = [];
+      }
+
+      const alreadyLinked = userDoc.address_details.some((id) => id.toString() === addressDoc._id.toString());
+
+      if (!alreadyLinked) {
+        userDoc.address_details.push(addressDoc._id);
+      }
+
+      await userDoc.save();
+
+      return addressDoc;
+    };
+
+    if (user) {
+      if (user.verify_email !== true) {
+        const saltExisting = await bcryptjs.genSalt(10);
+        const hashPasswordExisting = await bcryptjs.hash(password, saltExisting);
+
+        const verifyCodeExisting = Math.floor(
+          100000 + Math.random() * 900000
+        ).toString();
+
+        user.name = name;
+        user.password = hashPasswordExisting;
+        user.role = "RETAILER";
+        user.mobile = mobile;
+        user.otp = verifyCodeExisting;
+        user.otpExpires = Date.now() + 600000;
+
+        await user.save();
+        await createOrUpdateRetailerAddress(user);
+
+        await sendEmailFun({
+          sendTo: email,
+          subject: "Verify email to register in the Indian Baazaar",
+          text: "Verify email to register in the Indian Baazaar",
+          html: VerificationEmail(name, verifyCodeExisting),
+        });
+
+        return response.status(200).json({
+          success: true,
+          error: false,
+          message:
+            "Verification email resent. Please check your inbox to verify your account.",
+        });
+      }
+
+      return response.status(400).json({
+        message: "User already registered with this email",
+        error: true,
+        success: false,
+      });
+    }
+
+    const verifyCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const salt = await bcryptjs.genSalt(10);
+    const hashPassword = await bcryptjs.hash(password, salt);
+
+    user = new SellerModel({
+      name,
+      email,
+      password: hashPassword,
+      mobile,
+      role: "RETAILER",
+      otp: verifyCode,
+      otpExpires: Date.now() + 600000, 
     });
 
-    await seller.save();
+    await user.save();
 
-    // Return seller data without password (toJSON method handles this)
-    return response.status(201).json({
+    await createOrUpdateRetailerAddress(user);
+
+    await sendEmailFun({
+      sendTo: email,
+      subject: "Verify email to register in the Indian Baazaar",
+      text: "Verify email to register in the Indian Baazaar",
+      html: VerificationEmail(name, verifyCode),
+    });
+
+    // Invalidate user cache after registration
+    await delCache('users:all*');
+    await delCache('users:details*');
+    await delCache('users:search*');
+
+    return response.status(200).json({
       success: true,
       error: false,
-      message: 'Seller registered successfully. Your account is pending KYC approval.',
-      data: seller.toJSON()
+      message:
+        "Verification email sent. Please check your inbox to verify your account.",
     });
-
   } catch (error) {
-    // Handle duplicate key error (in case of race condition)
-    if (error.code === 11000) {
-      return response.status(409).json({
-        success: false,
-        error: true,
-        message: 'A seller with this email already exists'
-      });
-    }
-
-    console.error('registerSellerController error:', error);
+    console.error("registerRetailerController error:", error);
     return response.status(500).json({
-      success: false,
+      message: error.message || error,
       error: true,
-      message: error.message || 'Internal server error'
+      success: false,
     });
   }
 }
@@ -128,98 +191,73 @@ export async function loginSellerController(request, response) {
   try {
     const { email, password } = request.body;
 
-    // Validate required fields
-    if (!email || !password) {
+    const user = await SellerModel.findOne({ email: email });
+
+    if (!user) {
       return response.status(400).json({
-        success: false,
+        message: "User not register",
         error: true,
-        message: 'Email and password are required'
+        success: false,
       });
     }
 
-    // Find seller by email
-    const seller = await SellerModel.findOne({ email: email.toLowerCase() });
-    if (!seller) {
-      return response.status(401).json({
-        success: false,
+    if (user.status !== "Active") {
+      return response.status(400).json({
+        message: "Contact to admin",
         error: true,
-        message: 'Invalid email or password'
+        success: false,
       });
     }
 
-    // Verify password
-    const isPasswordValid = await seller.comparePassword(password);
-    if (!isPasswordValid) {
-      return response.status(401).json({
-        success: false,
+    if (user.verify_email !== true) {
+      return response.status(400).json({
+        message: "Your Email is not verify yet please verify your email first",
         error: true,
-        message: 'Invalid email or password'
+        success: false,
       });
     }
 
-    // Check KYC status - reject if rejected
-    if (seller.kycStatus === 'rejected') {
-      return response.status(403).json({
-        success: false,
+    const checkPassword = await bcryptjs.compare(password, user.password);
+
+    if (!checkPassword) {
+      return response.status(400).json({
+        message: "Check your password",
         error: true,
-        message: 'Your KYC has been rejected. Please contact support.'
+        success: false,
       });
     }
 
-    // Check KYC status - reject if pending
-    if (seller.kycStatus === 'pending') {
-      return response.status(403).json({
-        success: false,
-        error: true,
-        message: 'Your KYC is pending approval. Please wait for verification.'
-      });
-    }
+    const accessToken =  generateSellerAccessToken(user._id);
+    const refreshToken = await generateSellerRefreshToken(user._id);
 
-    // Check seller status - reject if inactive
-    if (seller.sellerStatus === 'inactive') {
-      return response.status(403).json({
-        success: false,
-        error: true,
-        message: 'Your seller account is inactive. Please contact support.'
-      });
-    }
-
-    // Generate tokens
-    const accessToken = generateSellerAccessToken(seller._id);
-    const refreshToken = generateSellerRefreshToken(seller._id);
-
-    // Update seller with tokens
-    await SellerModel.findByIdAndUpdate(seller._id, {
-      access_token: accessToken,
-      refresh_token: refreshToken
+    await SellerModel.findByIdAndUpdate(user?._id, {
+      last_login_date: new Date(),
     });
 
-    // Set cookies
     const cookiesOption = {
       httpOnly: true,
       secure: true,
-      sameSite: 'None'
+      sameSite: "None",
     };
-    response.cookie('accessToken', accessToken, cookiesOption);
-    response.cookie('refreshToken', refreshToken, cookiesOption);
 
-    return response.status(200).json({
-      success: true,
+    response.cookie("accessToken", accessToken, cookiesOption);
+    response.cookie("refreshToken", refreshToken, cookiesOption);
+
+    return response.json({
+      message: "Login successfully",
       error: false,
-      message: 'Login successful',
+      success: true,
       data: {
         accessToken,
         refreshToken,
-        seller: seller.toJSON()
-      }
+        role : user.role,
+      },
     });
-
   } catch (error) {
-    console.error('loginSellerController error:', error);
     return response.status(500).json({
-      success: false,
+      message: error.message || error,
       error: true,
-      message: error.message || 'Internal server error'
+      success: false,
     });
   }
 }
@@ -236,7 +274,6 @@ export async function getProfileController(request, response) {
       });
     }
 
-    // Return seller data without password (toJSON method handles this)
     return response.status(200).json({
       success: true,
       error: false,
