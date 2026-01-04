@@ -62,6 +62,8 @@ export const addBankDetails = async (req, res) => {
       ifscCode,
       branchName,
       upiId,
+      panNo,
+      accountType,
     } = req.body;
 
     if (!accountHolderName || !bankName || !accountNumber || !ifscCode) {
@@ -106,6 +108,8 @@ export const addBankDetails = async (req, res) => {
       upiId,
       razorpayCustomerId: customer.id,
       razorpayFundAccountId: fundAccount.id,
+      panNo,
+      accountType,
     });
 
     await bankDetails.save();
@@ -145,6 +149,8 @@ export const updateBankDetails = async (req, res) => {
       ifscCode,
       branchName,
       upiId,
+      panNo,
+      accountType,
     } = req.body;
 
     if (!accountHolderName || !bankName || !accountNumber || !ifscCode) {
@@ -174,6 +180,8 @@ export const updateBankDetails = async (req, res) => {
       },
     });
 
+    existing.panNo = panNo,
+    existing.accountType = accountType,
     existing.accountHolderName = accountHolderName;
     existing.bankName = bankName;
     existing.accountNumber = accountNumber;

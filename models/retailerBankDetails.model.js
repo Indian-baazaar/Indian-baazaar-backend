@@ -10,6 +10,8 @@ const retailerBankDetailsSchema = new mongoose.Schema({
   upiId: { type: String },
   panNumeber: { type: String },
   razorpayFundAccountId: { type: String }, 
+  panNo : {type : Number},
+  accountType : {type : String},
 }, { timestamps: true });
 
 export default mongoose.model('RetailerBankDetails', retailerBankDetailsSchema);
