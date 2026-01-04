@@ -2,13 +2,25 @@ import express from 'express';
 import sellerAuth from '../middlewares/sellerAuth.js';
 import { endpointSecurity } from '../middlewares/endpointSecurity.js';
 
-// Import seller controllers
 import {
   registerSellerController,
   loginSellerController,
   getProfileController,
   updateProfileController,
   updatePasswordController,
+  verifySellerEmailController,
+  SellerAuthWithGoogle,
+  logoutSellerController,
+  sellerForgotPasswordController,
+  SellerVerifyForgotPasswordOtp,
+  SellerResetpassword,
+  SellerChangePasswordController,
+  SellerAvatarController,
+  removeSellerImageFromCloudinary,
+  updateSellerDetails,
+  refreshSellerToken,
+  SellerDetails,
+  getAllReviewsBySeller,
 } from '../controllers/seller.controller.js';
 
 import {
@@ -32,14 +44,40 @@ import {
 import {
   getPayoutHistoryController
 } from '../controllers/sellerPayout.controller.js';
-import auth from '../middlewares/auth.js';
 import { addBankDetails, getSellerBankDetails, updateBankDetails } from '../controllers/retailer.controller.js';
+import upload from '../middlewares/multer.js';
 
 const router = express.Router();
 
 router.post('/register', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), registerSellerController);
 
 router.post('/login', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), loginSellerController);
+
+router.post('/verifyEmail', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), verifySellerEmailController);
+
+router.post('/authWithGoogle', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), SellerAuthWithGoogle)
+
+router.get('/logout', sellerAuth, logoutSellerController);
+
+router.post('/forgot-password', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), sellerForgotPasswordController);
+
+router.post('/verify-forgot-password-otp', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), SellerVerifyForgotPasswordOtp);
+
+router.post('/reset-password', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), SellerResetpassword);
+
+router.post('/forgot-password/change-password', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), SellerChangePasswordController);
+
+router.put('/user-avatar', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }),  upload.array('avatar'), SellerAvatarController);
+
+router.delete('/deteleImage', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), removeSellerImageFromCloudinary);
+
+router.put('/:id', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateSellerDetails);
+
+router.post('/refresh-token', endpointSecurity({ maxRequests: 200, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), refreshSellerToken)
+
+router.get('/user-details', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), SellerDetails);
+
+router.get('/getAllReviews',endpointSecurity({ maxRequests: 100, windowMs: 1 * 60 * 1000, blockDurationMs: 3600000 }),getAllReviewsBySeller);
 
 router.get('/profile', sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getProfileController);
 
@@ -67,9 +105,9 @@ router.put('/update-stock/:productId', sellerAuth, endpointSecurity({ maxRequest
 
 router.get('/payout-history', sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getPayoutHistoryController);
 
-router.get('/bank-details-requirements', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getSellerBankDetails);
+router.get('/bank-details-requirements', sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getSellerBankDetails);
 
-router.post('/bank-details', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addBankDetails);
+router.post('/bank-details', sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addBankDetails);
 
 router.put('/update-bank-details', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateBankDetails);
 

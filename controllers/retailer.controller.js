@@ -8,7 +8,7 @@ const razorpay = new Razorpay({
 
 export const getSellerBankDetails = async (req, res) => {
   try {
-    if (!req.userId) {
+    if (!req.sellerId) {
       return res.status(401).json({
         success: false,
         error: true,
@@ -16,7 +16,7 @@ export const getSellerBankDetails = async (req, res) => {
       });
     }
 
-    const sellerId = req.userId;
+    const sellerId = req.sellerId;
 
     const bankDetails = await RetailerBankDetails.findOne({
       retailerId: sellerId,
@@ -46,14 +46,14 @@ export const getSellerBankDetails = async (req, res) => {
 
 export const addBankDetails = async (req, res) => {
   try {
-    if (!req.userId) {
+    if (!req.sellerId) {
       return res.status(401).json({
         success: false,
         error: true,
         message: "Unauthorized",
       });
     }
-    const retailerId = req.userId;
+    const retailerId = req.sellerId;
 
     const {
       accountHolderName,
@@ -128,7 +128,7 @@ export const addBankDetails = async (req, res) => {
 
 export const updateBankDetails = async (req, res) => {
   try {
-    if (!req.userId) {
+    if (!req.sellerId) {
       return res.status(401).json({
         success: false,
         error: true,
@@ -136,7 +136,7 @@ export const updateBankDetails = async (req, res) => {
       });
     }
 
-    const retailerId = req.userId;
+    const retailerId = req.sellerId;
 
     const {
       accountHolderName,
