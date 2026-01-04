@@ -18,13 +18,13 @@ const razorpay = new Razorpay({
 
 export const createOrderController = async (req, res) => {
   try {
-    const { userId, productIds, quantities, deliveryAddressId } = req.body;
+    const { userId, productIds, quantities, deliveryAddressId, paymentMethod } = req.body;
 
-    if (!userId || !productIds || !quantities || !deliveryAddressId) {
+    if (!userId || !productIds || !quantities || !deliveryAddressId || !paymentMethod) {
       return res.status(400).json({
         success: false,
         message:
-          "All fields are required: userId, productIds, quantities, deliveryAddressId",
+          "All fields are required: userId, productIds, quantities, deliveryAddressId, paymentMethod",
       });
     }
 
