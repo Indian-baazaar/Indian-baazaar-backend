@@ -30,6 +30,7 @@ import shiprocketTrackingRoute from './route/shiprocket.tracking.route.js';
 import adminSellerRouter from './route/adminSeller.route.js';
 import sellerRouter from './route/seller.route.js';
 import sellerStoreSettingsRouter from './route/sellerStoreSettings.route.js';
+import sellerAnalyticsRouter from './route/sellerAnalytics.route.js';
 import adminSellerSettingsRouter from './route/adminSellerSettings.route.js';
 import { razorpayWebhook } from './controllers/payment.controller.js';
 import { redis } from './config/redisClient.js';
@@ -151,6 +152,7 @@ try {
 app.use('/api/user',userRouter)
 app.use('/api/seller', sellerRouter);
 app.use('/api/seller', sellerStoreSettingsRouter);
+app.use('/api/seller/analytics', sellerAnalyticsRouter);
 
 app.use('/api/product',productRouter);
 app.use('/api/category',categoryRouter)
