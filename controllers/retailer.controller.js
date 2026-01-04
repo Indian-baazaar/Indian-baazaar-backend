@@ -62,7 +62,7 @@ export const addBankDetails = async (req, res) => {
       ifscCode,
       branchName,
       upiId,
-      panNo,
+      panNumber,
       accountType,
     } = req.body;
 
@@ -108,7 +108,7 @@ export const addBankDetails = async (req, res) => {
       upiId,
       razorpayCustomerId: customer.id,
       razorpayFundAccountId: fundAccount.id,
-      panNo,
+      panNumber,
       accountType,
     });
 
@@ -149,7 +149,7 @@ export const updateBankDetails = async (req, res) => {
       ifscCode,
       branchName,
       upiId,
-      panNo,
+      panNumber,
       accountType,
     } = req.body;
 
@@ -180,7 +180,7 @@ export const updateBankDetails = async (req, res) => {
       },
     });
 
-    existing.panNo = panNo,
+    existing.panNumber = panNumber,
     existing.accountType = accountType,
     existing.accountHolderName = accountHolderName;
     existing.bankName = bankName;
