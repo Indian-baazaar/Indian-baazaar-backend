@@ -32,6 +32,7 @@ import sellerRouter from './route/seller.route.js';
 import sellerStoreSettingsRouter from './route/sellerStoreSettings.route.js';
 import sellerAnalyticsRouter from './route/sellerAnalytics.route.js';
 import adminSellerSettingsRouter from './route/adminSellerSettings.route.js';
+import messageRouter from './route/message.route.js';
 import { razorpayWebhook } from './controllers/payment.controller.js';
 import { redis } from './config/redisClient.js';
 
@@ -174,6 +175,7 @@ app.use('/api/shiprocket', shiprocketTrackingRoute);
 
 app.use('/api/manage/admin', adminSellerRouter);
 app.use('/api/admin', adminSellerSettingsRouter);
+app.use('/api/message', messageRouter);
 app.post('/api/payment/webhook', express.json({ type: '*/*' }), razorpayWebhook);
 
 app.use((err, req, res, next) => {
