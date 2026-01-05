@@ -21,38 +21,23 @@ const getUserModel = (userType) => {
 const validateMessagePermissions = async (
   senderType,
   senderRole,
-  receiverType,
   receiverRole,
   orderId = null
 ) => {
-  if (senderRole === "SUPER_ADMIN") {
-    return true;
+  // SUPER_ADMIN role can message anyone
+  if (senderRole === "SUPER_ADMIN") return true;
+
+  // If the receiver is a SUPER_ADMIN (regardless of their stored type), allow users and retailers to message them
+  if (receiverRole === "SUPER_ADMIN") {
+    if (senderRole === "USER" || senderRole === "RETAILER") return true;
   }
 
-  if (senderType === "User" && senderRole === "USER") {
-    return (
-      receiverType === "SuperAdmin" ||
-      (receiverType === "User" && receiverRole === "SUPER_ADMIN")
-    );
-  }
-
+  // Retailers can message users about an order (order check is done later in createMessage)
   if (senderType === "SellerModel" && senderRole === "RETAILER") {
-    if (
-      receiverType === "SuperAdmin" ||
-      (receiverType === "User" && receiverRole === "SUPER_ADMIN")
-    ) {
-      return true;
-    }
-    if (receiverType === "User" && receiverRole === "USER" && orderId) {
-      const order = await OrderModel.findOne({
-        _id: orderId,
-        userId: receiverType === "User" ? receiverRole : null,
-        retailerId: senderType === "SellerModel" ? senderRole : null,
-      });
-      return !!order;
-    }
+    if (receiverRole === "USER" && orderId) return true;
   }
 
+  // By default, deny
   return false;
 };
 
@@ -81,17 +66,16 @@ export const createMessage = async (req, res) => {
     } = req.body;
 
     const senderId = req.userId;
-    const senderType =
-      req.userType ||
-      (req.user?.role === "SUPER_ADMIN"
-        ? "SuperAdmin"
-        : req.user?.role === "RETAILER"
-        ? "SellerModel"
-        : "User");
+    const senderType = req.userType
+      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      : req.user?.role === "SUPER_ADMIN"
+      ? "SellerModel"
+      : req.user?.role === "RETAILER"
+      ? "SellerModel"
+      : "User";
 
     const SenderModel = getUserModel(senderType);
     const sender = await SenderModel.findById(senderId);
-    console.log("sender : ", sender);
 
     if (!sender) {
       return res.status(404).json({
@@ -101,15 +85,11 @@ export const createMessage = async (req, res) => {
       });
     }
 
-    console.log("receiverType : ", receiverType);
+    const normalizedReceiverType = receiverType === "SuperAdmin" ? "SellerModel" : receiverType;
 
-    const ReceiverModel = getUserModel(receiverType);
-    
-    console.log("ReceiverModel : ", ReceiverModel);
-    console.log("receiverId : ",receiverId);
+    const ReceiverModel = getUserModel(normalizedReceiverType);
 
     const receiver = await ReceiverModel.findById(receiverId);
-    console.log("receiver : ", receiver);
 
     if (!receiver) {
       return res.status(404).json({
@@ -119,8 +99,14 @@ export const createMessage = async (req, res) => {
       });
     }
 
-    const hasPermission = await validateMessagePermissions(senderType,sender.role,receiverType,receiver.role,orderId);
-    console.log("hasPermission : ",hasPermission);
+    const hasPermission = await validateMessagePermissions(
+      senderType,
+      sender.role,
+      normalizedReceiverType,
+      receiver.role,
+      orderId
+    );
+
     if (!hasPermission) {
       return res.status(403).json({
         success: false,
@@ -151,8 +137,6 @@ export const createMessage = async (req, res) => {
       }
     }
 
-    console.log("yhan tak aa gya")
-
     const message = new MessageModel({
       sender: {
         id: senderId,
@@ -160,7 +144,7 @@ export const createMessage = async (req, res) => {
       },
       receiver: {
         id: receiverId,
-        type: receiverType,
+        type: normalizedReceiverType,
       },
       subject,
       content,
@@ -186,6 +170,7 @@ export const createMessage = async (req, res) => {
       message: "Message sent successfully",
       data: message,
     });
+    
   } catch (error) {
     console.error("Create message error:", error);
     res.status(500).json({
@@ -200,13 +185,13 @@ export const createMessage = async (req, res) => {
 export const getMessages = async (req, res) => {
   try {
     const userId = req.userId;
-    const userType =
-      req.userType ||
-      (req.user?.role === "SUPER_ADMIN"
-        ? "SuperAdmin"
-        : req.user?.role === "RETAILER"
-        ? "SellerModel"
-        : "User");
+    const userType = req.userType
+      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      : req.user?.role === "SUPER_ADMIN"
+      ? "SellerModel"
+      : req.user?.role === "RETAILER"
+      ? "SellerModel"
+      : "User";
 
     const {
       type = "inbox",
@@ -296,13 +281,13 @@ export const getMessageById = async (req, res) => {
   try {
     const { messageId } = req.params;
     const userId = req.userId;
-    const userType =
-      req.userType ||
-      (req.user?.role === "SUPER_ADMIN"
-        ? "SuperAdmin"
-        : req.user?.role === "RETAILER"
-        ? "SellerModel"
-        : "User");
+    const userType = req.userType
+      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      : req.user?.role === "SUPER_ADMIN"
+      ? "SellerModel"
+      : req.user?.role === "RETAILER"
+      ? "SellerModel"
+      : "User";
 
     const message = await MessageModel.findById(messageId)
       .populate("sender.id", "name email avatar")
@@ -363,21 +348,24 @@ export const getConversation = async (req, res) => {
   try {
     const { otherUserId, otherUserType } = req.params;
     const userId = req.userId;
-    const userType =
-      req.userType ||
-      (req.user?.role === "SUPER_ADMIN"
-        ? "SuperAdmin"
-        : req.user?.role === "RETAILER"
-        ? "SellerModel"
-        : "User");
+    const userType = req.userType
+      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      : req.user?.role === "SUPER_ADMIN"
+      ? "SellerModel"
+      : req.user?.role === "RETAILER"
+      ? "SellerModel"
+      : "User";
 
     const { page = 1, limit = 20, orderId } = req.query;
+
+    // Normalize other user type to match message enum values
+    const normalizedOtherUserType = otherUserType === "SuperAdmin" ? "SellerModel" : otherUserType;
 
     const messages = await MessageModel.getConversation(
       userId,
       userType,
       otherUserId,
-      otherUserType,
+      normalizedOtherUserType,
       { page: parseInt(page), limit: parseInt(limit), orderId }
     );
 
@@ -387,11 +375,11 @@ export const getConversation = async (req, res) => {
           "sender.id": userId,
           "sender.type": userType,
           "receiver.id": otherUserId,
-          "receiver.type": otherUserType,
+          "receiver.type": normalizedOtherUserType,
         },
         {
           "sender.id": otherUserId,
-          "sender.type": otherUserType,
+          "sender.type": normalizedOtherUserType,
           "receiver.id": userId,
           "receiver.type": userType,
         },
@@ -434,13 +422,13 @@ export const markMessageAsRead = async (req, res) => {
   try {
     const { messageId } = req.params;
     const userId = req.userId;
-    const userType =
-      req.userType ||
-      (req.user?.role === "SUPER_ADMIN"
-        ? "SuperAdmin"
-        : req.user?.role === "RETAILER"
-        ? "SellerModel"
-        : "User");
+    const userType = req.userType
+      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      : req.user?.role === "SUPER_ADMIN"
+      ? "SellerModel"
+      : req.user?.role === "RETAILER"
+      ? "SellerModel"
+      : "User";
 
     const message = await MessageModel.findById(messageId);
 
@@ -486,13 +474,13 @@ export const markMessageAsRead = async (req, res) => {
 export const getMessageStats = async (req, res) => {
   try {
     const userId = req.userId;
-    const userType =
-      req.userType ||
-      (req.user?.role === "SUPER_ADMIN"
-        ? "SuperAdmin"
-        : req.user?.role === "RETAILER"
-        ? "SellerModel"
-        : "User");
+    const userType = req.userType
+      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      : req.user?.role === "SUPER_ADMIN"
+      ? "SellerModel"
+      : req.user?.role === "RETAILER"
+      ? "SellerModel"
+      : "User";
 
     const stats = await MessageModel.aggregate([
       {
@@ -548,13 +536,13 @@ export const deleteMessage = async (req, res) => {
   try {
     const { messageId } = req.params;
     const userId = req.userId;
-    const userType =
-      req.userType ||
-      (req.user?.role === "SUPER_ADMIN"
-        ? "SuperAdmin"
-        : req.user?.role === "RETAILER"
-        ? "SellerModel"
-        : "User");
+    const userType = req.userType
+      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      : req.user?.role === "SUPER_ADMIN"
+      ? "SellerModel"
+      : req.user?.role === "RETAILER"
+      ? "SellerModel"
+      : "User";
 
     const message = await MessageModel.findById(messageId);
 
