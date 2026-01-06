@@ -24,20 +24,16 @@ const validateMessagePermissions = async (
   receiverRole,
   orderId = null
 ) => {
-  // SUPER_ADMIN role can message anyone
   if (senderRole === "SUPER_ADMIN") return true;
 
-  // If the receiver is a SUPER_ADMIN (regardless of their stored type), allow users and retailers to message them
   if (receiverRole === "SUPER_ADMIN") {
     if (senderRole === "USER" || senderRole === "RETAILER") return true;
   }
 
-  // Retailers can message users about an order (order check is done later in createMessage)
   if (senderType === "SellerModel" && senderRole === "RETAILER") {
     if (receiverRole === "USER" && orderId) return true;
   }
 
-  // By default, deny
   return false;
 };
 
@@ -67,7 +63,9 @@ export const createMessage = async (req, res) => {
 
     const senderId = req.userId;
     const senderType = req.userType
-      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      ? req.userType === "SuperAdmin"
+        ? "SellerModel"
+        : req.userType
       : req.user?.role === "SUPER_ADMIN"
       ? "SellerModel"
       : req.user?.role === "RETAILER"
@@ -85,7 +83,8 @@ export const createMessage = async (req, res) => {
       });
     }
 
-    const normalizedReceiverType = receiverType === "SuperAdmin" ? "SellerModel" : receiverType;
+    const normalizedReceiverType =
+      receiverType === "SuperAdmin" ? "SellerModel" : receiverType;
 
     const ReceiverModel = getUserModel(normalizedReceiverType);
 
@@ -170,7 +169,6 @@ export const createMessage = async (req, res) => {
       message: "Message sent successfully",
       data: message,
     });
-    
   } catch (error) {
     console.error("Create message error:", error);
     res.status(500).json({
@@ -186,7 +184,9 @@ export const getMessages = async (req, res) => {
   try {
     const userId = req.userId;
     const userType = req.userType
-      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      ? req.userType === "SuperAdmin"
+        ? "SellerModel"
+        : req.userType
       : req.user?.role === "SUPER_ADMIN"
       ? "SellerModel"
       : req.user?.role === "RETAILER"
@@ -207,7 +207,6 @@ export const getMessages = async (req, res) => {
     const skip = (page - 1) * limit;
     let query = {};
 
-    // Build query based on type
     if (type === "inbox") {
       query = {
         "receiver.id": userId,
@@ -227,13 +226,11 @@ export const getMessages = async (req, res) => {
       };
     }
 
-    // Add filters
     if (status) query.status = status;
     if (messageType) query.messageType = messageType;
     if (priority) query.priority = priority;
     if (orderId) query.orderId = orderId;
 
-    // Add search functionality
     if (search) {
       query.$or = [
         { subject: { $regex: search, $options: "i" } },
@@ -242,13 +239,10 @@ export const getMessages = async (req, res) => {
     }
 
     const messages = await MessageModel.find(query)
-      .populate("sender.id", "name email avatar")
-      .populate("receiver.id", "name email avatar")
-      .populate("orderId", "channel_order_id order_status totalAmt")
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
-
+      
     const total = await MessageModel.countDocuments(query);
 
     res.status(200).json({
@@ -282,7 +276,9 @@ export const getMessageById = async (req, res) => {
     const { messageId } = req.params;
     const userId = req.userId;
     const userType = req.userType
-      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      ? req.userType === "SuperAdmin"
+        ? "SellerModel"
+        : req.userType
       : req.user?.role === "SUPER_ADMIN"
       ? "SellerModel"
       : req.user?.role === "RETAILER"
@@ -349,7 +345,9 @@ export const getConversation = async (req, res) => {
     const { otherUserId, otherUserType } = req.params;
     const userId = req.userId;
     const userType = req.userType
-      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      ? req.userType === "SuperAdmin"
+        ? "SellerModel"
+        : req.userType
       : req.user?.role === "SUPER_ADMIN"
       ? "SellerModel"
       : req.user?.role === "RETAILER"
@@ -359,7 +357,8 @@ export const getConversation = async (req, res) => {
     const { page = 1, limit = 20, orderId } = req.query;
 
     // Normalize other user type to match message enum values
-    const normalizedOtherUserType = otherUserType === "SuperAdmin" ? "SellerModel" : otherUserType;
+    const normalizedOtherUserType =
+      otherUserType === "SuperAdmin" ? "SellerModel" : otherUserType;
 
     const messages = await MessageModel.getConversation(
       userId,
@@ -423,7 +422,9 @@ export const markMessageAsRead = async (req, res) => {
     const { messageId } = req.params;
     const userId = req.userId;
     const userType = req.userType
-      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      ? req.userType === "SuperAdmin"
+        ? "SellerModel"
+        : req.userType
       : req.user?.role === "SUPER_ADMIN"
       ? "SellerModel"
       : req.user?.role === "RETAILER"
@@ -475,7 +476,9 @@ export const getMessageStats = async (req, res) => {
   try {
     const userId = req.userId;
     const userType = req.userType
-      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      ? req.userType === "SuperAdmin"
+        ? "SellerModel"
+        : req.userType
       : req.user?.role === "SUPER_ADMIN"
       ? "SellerModel"
       : req.user?.role === "RETAILER"
@@ -537,7 +540,9 @@ export const deleteMessage = async (req, res) => {
     const { messageId } = req.params;
     const userId = req.userId;
     const userType = req.userType
-      ? (req.userType === "SuperAdmin" ? "SellerModel" : req.userType)
+      ? req.userType === "SuperAdmin"
+        ? "SellerModel"
+        : req.userType
       : req.user?.role === "SUPER_ADMIN"
       ? "SellerModel"
       : req.user?.role === "RETAILER"

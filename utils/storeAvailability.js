@@ -1,24 +1,16 @@
 import SellerStoreSettingsModel from '../models/sellerStoreSettings.model.js';
 import { getCache, setCache } from './redisUtil.js';
 
-/**
- * Check if a seller's store is available for orders
- * @param {string} sellerId - The seller's ID
- * @param {object} orderData - Order data containing quantity, amount, paymentMethod
- * @returns {object} - Availability status and details
- */
 export const checkStoreAvailability = async (sellerId, orderData = {}) => {
   try {
     const { quantity = 1, amount = 0, paymentMethod = 'prepaid' } = orderData;
-
-    // Get seller settings from cache or database
     const cacheKey = `store_settings_${sellerId}`;
     let settings = await getCache(cacheKey);
     
     if (!settings) {
       settings = await SellerStoreSettingsModel.findOne({ sellerId });
       if (settings) {
-        await setCache(cacheKey, settings, 300); // Cache for 5 minutes
+        await setCache(cacheKey, settings, 300); 
       }
     }
 
