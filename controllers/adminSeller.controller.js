@@ -2,79 +2,33 @@ import SellerModel from '../models/seller.model.js';
 
 export async function getSellersController(request, response) {
   try {
-    const { page = 1, limit = 10, kycStatus, sellerStatus, search } = request.query;
+    const page = parseInt(request.query.page) || 1;
+    const limit = parseInt(request.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    // Build filter object
-    const filter = {};
-    
-    if (kycStatus) {
-      if (!['pending', 'approved', 'rejected'].includes(kycStatus)) {
-        return response.status(400).json({
-          success: false,
-          error: true,
-          message: 'Invalid kycStatus. Must be one of: pending, approved, rejected'
-        });
-      }
-      filter.kycStatus = kycStatus;
+    const totalUsersCount = await SellerModel.countDocuments();
+    const totalUsers = await SellerModel.find().sort({ createdAt: -1 }).skip(skip).limit(limit);
+
+    if (!totalUsers) {
+      return response.status(400).json({
+        error: true,
+        success: false,
+      });
     }
-
-    if (sellerStatus) {
-      if (!['active', 'inactive'].includes(sellerStatus)) {
-        return response.status(400).json({
-          success: false,
-          error: true,
-          message: 'Invalid sellerStatus. Must be one of: active, inactive'
-        });
-      }
-      filter.sellerStatus = sellerStatus;
-    }
-
-    // Add search functionality for name, email, or brandName
-    if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { brandName: { $regex: search, $options: 'i' } }
-      ];
-    }
-
-    // Calculate pagination
-    const pageNum = parseInt(page);
-    const limitNum = parseInt(limit);
-    const skip = (pageNum - 1) * limitNum;
-
-    // Get total count for pagination
-    const totalCount = await SellerModel.countDocuments(filter);
-
-    // Get sellers with pagination
-    const sellers = await SellerModel.find(filter)
-      .select('-password') // Exclude password
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limitNum);
-
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limitNum);
 
     return response.status(200).json({
-      success: true,
       error: false,
-      message: 'Sellers retrieved successfully',
-      data: sellers,
-      pagination: {
-        totalCount,
-        currentPage: pageNum,
-        pageSize: limitNum,
-        totalPages
-      }
+      success: true,
+      page: page,
+      totalPages: Math.ceil(totalUsersCount / limit),
+      totalUsersCount: totalUsers?.length,
+      totalUsers: totalUsers,
     });
-
   } catch (error) {
-    console.error('getSellersController error:', error);
     return response.status(500).json({
-      success: false,
+      message: error.message || "Something is wrong",
       error: true,
-      message: error.message || 'Internal server error'
+      success: false,
     });
   }
 }
