@@ -84,4 +84,10 @@ messageSchema.index({ "sender.id": 1 });
 messageSchema.index({ "receiver.id": 1 });
 messageSchema.index({ createdAt: -1 });
 
+messageSchema.methods.markAsRead = async function () {
+  this.status = "READ";
+  this.readAt = new Date();
+  await this.save();
+};
+
 export default mongoose.model("Message", messageSchema);

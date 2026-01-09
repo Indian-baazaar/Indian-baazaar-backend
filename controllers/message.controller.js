@@ -35,6 +35,7 @@ const validateMessagePermissions = async (
   }
 
   return false;
+  // return true;
 };
 
 export const createMessage = async (req, res) => {
@@ -441,10 +442,9 @@ export const markMessageAsRead = async (req, res) => {
       });
     }
 
-    // Check if user is the receiver
     if (
-      message.receiver.id.toString() !== userId ||
-      message.receiver.type !== userType
+      message.receiver.id.toString() !== userId.toString() ||
+      message.receiver.type.toString() !== userType.toString()
     ) {
       return res.status(403).json({
         success: false,
