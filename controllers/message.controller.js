@@ -31,7 +31,7 @@ const validateMessagePermissions = async (
   }
 
   if (senderType === "SellerModel" && senderRole === "RETAILER") {
-    if (receiverRole === "USER" && orderId) return true;
+    if (receiverRole === "SellerModel" && orderId) return true;
   }
 
   return false;
@@ -183,68 +183,14 @@ export const createMessage = async (req, res) => {
 
 export const getMessages = async (req, res) => {
   try {
-    const userId = req.userId;
-    const userType = req.userType
-      ? req.userType === "SuperAdmin"
-        ? "SellerModel"
-        : req.userType
-      : req.user?.role === "SUPER_ADMIN"
-      ? "SellerModel"
-      : req.user?.role === "RETAILER"
-      ? "SellerModel"
-      : "User";
-
-    const {
-      type = "inbox",
-      page = 1,
-      limit = 20,
-      status,
-      messageType,
-      priority,
-      orderId,
-      search,
-    } = req.query;
-
+    const { page = 1, limit = 20 } = req.query;
     const skip = (page - 1) * limit;
-    let query = {};
-
-    if (type === "inbox") {
-      query = {
-        "receiver.id": userId,
-        "receiver.type": userType,
-      };
-    } else if (type === "outbox") {
-      query = {
-        "sender.id": userId,
-        "sender.type": userType,
-      };
-    } else {
-      query = {
-        $or: [
-          { "sender.id": userId, "sender.type": userType },
-          { "receiver.id": userId, "receiver.type": userType },
-        ],
-      };
-    }
-
-    if (status) query.status = status;
-    if (messageType) query.messageType = messageType;
-    if (priority) query.priority = priority;
-    if (orderId) query.orderId = orderId;
-
-    if (search) {
-      query.$or = [
-        { subject: { $regex: search, $options: "i" } },
-        { content: { $regex: search, $options: "i" } },
-      ];
-    }
-
-    const messages = await MessageModel.find(query)
+    const messages = await MessageModel.find()
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
-      
-    const total = await MessageModel.countDocuments(query);
+
+    const total = await MessageModel.countDocuments();
 
     res.status(200).json({
       success: true,
