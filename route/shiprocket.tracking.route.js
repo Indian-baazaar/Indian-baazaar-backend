@@ -1,6 +1,6 @@
 import express from 'express';
 import { trackShipment } from '../utils/shiprocket.service.js';
-import { TrackShipmentRealTime } from '../controllers/trackingController.js';
+import { TrackShipmentRealTime } from '../controllers/Shiprocket/trackingController.js';
 import { endpointSecurity } from '../middlewares/endpointSecurity.js';
 import { getCache, setCache } from '../utils/redisUtil.js';
 import auth from '../middlewares/auth.js';

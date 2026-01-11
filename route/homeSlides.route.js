@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import auth from '../middlewares/auth.js';
 import upload from '../middlewares/multer.js';
-import { addHomeSlide, deleteMultipleSlides, deleteSlide, getHomeSlides, getSlide, removeImageFromCloudinary, updatedSlide, uploadImages } from '../controllers/homeSlider.controller.js';
+import { addHomeSlide, deleteMultipleSlides, deleteSlide, getHomeSlides, getSlide, removeImageFromCloudinary, updatedSlide, uploadImages } from '../controllers/HomeSlides/homeSlider.controller.js';
 import { endpointSecurity } from '../middlewares/endpointSecurity.js';
 import { superAdminAuth } from '../middlewares/adminAuth.js';
 

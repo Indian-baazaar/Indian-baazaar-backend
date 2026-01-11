@@ -33,7 +33,7 @@ import sellerStoreSettingsRouter from './route/sellerStoreSettings.route.js';
 import sellerAnalyticsRouter from './route/sellerAnalytics.route.js';
 import adminSellerSettingsRouter from './route/adminSellerSettings.route.js';
 import messageRouter from './route/message.route.js';
-import { razorpayWebhook } from './controllers/payment.controller.js';
+import { razorpayWebhook } from './controllers/Payment/payment.controller.js';
 import { redis } from './config/redisClient.js';
 
 const app = express();

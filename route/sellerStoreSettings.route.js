@@ -12,7 +12,7 @@ import {
   updateRefundRulesController,
   updateCancellationRulesController,
   updateCodSettingsController
-} from '../controllers/sellerStoreSettings.controller.js';
+} from '../controllers/Seller/sellerStoreSettings.controller.js';
 
 import {
   validateStoreBasicSettings,

@@ -7,7 +7,7 @@ import {
     markMessageAsRead,
     getMessageStats,
     deleteMessage
-} from '../controllers/message.controller.js';
+} from '../controllers/Messages/message.controller.js';
 import {
     validateCreateMessage,
     validateMessageId,

@@ -2,19 +2,6 @@ import express from 'express';
 import sellerAuth from '../middlewares/sellerAuth.js';
 import { endpointSecurity } from '../middlewares/endpointSecurity.js';
 import {
-  dateRangeValidation,
-  revenueAnalyticsValidation,
-  productAnalyticsValidation,
-  inventoryAnalyticsValidation,
-  dashboardSummaryValidation,
-  timeBasedAnalyticsValidation,
-  handleValidationErrors,
-  analyticsSecurityHeaders,
-  sanitizeAnalyticsInput,
-  auditAnalyticsAccess
-} from '../middlewares/analyticsValidation.js';
-
-import {
   getRevenueAnalytics,
   getOrderAnalytics,
   getProductAnalytics,
@@ -25,7 +12,7 @@ import {
   getReviewAnalytics,
   getAdvancedProductAnalytics,
   getTimeBasedAnalytics
-} from '../controllers/sellerAnalytics.controller.js';
+} from '../controllers/Seller/sellerAnalytics.controller.js';
 
 const router = express.Router();
 

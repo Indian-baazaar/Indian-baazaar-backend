@@ -10,11 +10,10 @@ import {
   cancelOrder,
   getOrders,
   getCouriersServices,
-} from "../controllers/package.controller.js";
+} from "../controllers/Shiprocket/package.controller.js";
 import {
   CheckrequestCreateOrder,
   CheckassignAWB,
-  CheckpackageOrders,
   CheckshipmentIds,
   CheckorderIds,
 } from "../Validator/pickUpAddress.validator.js";

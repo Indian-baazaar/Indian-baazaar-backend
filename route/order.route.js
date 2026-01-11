@@ -1,6 +1,6 @@
 import { Router } from "express";
 import auth from "../middlewares/auth.js";
-import { createOrderController, getOrderDetailsController, getTotalOrdersCountController, getUserOrderDetailsController, totalSalesController, totalUsersController, updateOrderStatusController, verifyPaymentController, getRetailerOrdersController } from "../controllers/order.controller.js";
+import { createOrderController, getOrderDetailsController, getTotalOrdersCountController, getUserOrderDetailsController, totalSalesController, totalUsersController, updateOrderStatusController, verifyPaymentController, getRetailerOrdersController } from "../controllers/Orders/order.controller.js";
 import { endpointSecurity } from "../middlewares/endpointSecurity.js";
 import { validateSellerSettings } from "../middlewares/sellerSettingsValidation.js";
 

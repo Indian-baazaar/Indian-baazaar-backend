@@ -1,6 +1,6 @@
 import { Router } from "express";
 import auth from "../middlewares/auth.js";
-import { addToMyListController, deleteToMyListController, getMyListController } from "../controllers/mylist.controller.js";
+import { addToMyListController, deleteToMyListController, getMyListController } from "../controllers/Cart/mylist.controller.js";
 import { endpointSecurity } from '../middlewares/endpointSecurity.js';
 
 const myListRouter = Router();

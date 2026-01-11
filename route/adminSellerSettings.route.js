@@ -10,7 +10,7 @@ import {
   adminUpdateSellerSettingsController,
   getSettingsAnalyticsController,
   SupperAdminLoginController
-} from '../controllers/adminSellerSettings.controller.js';
+} from '../controllers/Admin/adminSellerSettings.controller.js';
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import auth from "../middlewares/auth.js";
-import { addAddressController, deleteAddressController, editAddress, getAddressController, getSingleAddressController } from "../controllers/address.controller.js";
+import { addAddressController, deleteAddressController, editAddress, getAddressController, getSingleAddressController } from "../controllers/Address/address.controller.js";
 import { endpointSecurity } from '../middlewares/endpointSecurity.js';
 
 const addressRouter = Router();

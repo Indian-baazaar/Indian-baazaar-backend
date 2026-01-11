@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import auth from '../middlewares/auth.js';
 import upload from '../middlewares/multer.js';
-import { addBanner, deleteBanner, getBanner, getBanners, updatedBanner, uploadImages } from '../controllers/bannerList2.controller.js';
-import { removeImageFromCloudinary } from '../controllers/category.controller.js';
+import { addBanner, deleteBanner, getBanner, getBanners, updatedBanner, uploadImages } from '../controllers/Banner/bannerList2.controller.js';
+import { removeImageFromCloudinary } from '../controllers/category/category.controller.js';
 import { endpointSecurity } from '../middlewares/endpointSecurity.js';
 import { superAdminAuth } from '../middlewares/adminAuth.js';
 
