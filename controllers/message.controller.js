@@ -184,14 +184,46 @@ export const createMessage = async (req, res) => {
 export const getMessages = async (req, res) => {
   try {
     const { page = 1, limit = 20 } = req.query;
-    const skip = (page - 1) * limit;
-    const messages = await MessageModel.find()
+    const pageNum = parseInt(page);
+    const lim = parseInt(limit);
+    const skip = (pageNum - 1) * lim;
+    const userId = req.userId;
+
+    let userType;
+    if (req.userType) {
+      if (req.userType === "SuperAdmin") {
+        userType = "SellerModel";
+      } else {
+        userType = req.userType;
+      }
+    } else {
+      if (req.user?.role === "SUPER_ADMIN") {
+        userType = "SellerModel";
+      } else if (req.userType === "SellerModel") {
+        userType = "SellerModel";
+      } else if (req.user?.role === "RETAILER") {
+        userType = "SellerModel";
+      } else {
+        userType = "User";
+      }
+    }
+
+    const query = {
+      $or: [
+        { "sender.id": userId, "sender.type": userType },
+        { "receiver.id": userId, "receiver.type": userType },
+      ],
+    };
+
+    const messages = await MessageModel.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(lim)
+      .populate("sender.id", "name email avatar")
+      .populate("receiver.id", "name email avatar")
+      .populate("orderId", "channel_order_id order_status totalAmt");
 
-    const total = await MessageModel.countDocuments();
-
+    const total = await MessageModel.countDocuments(query);
     res.status(200).json({
       success: true,
       error: false,
@@ -199,11 +231,11 @@ export const getMessages = async (req, res) => {
       data: {
         messages,
         pagination: {
-          currentPage: parseInt(page),
-          totalPages: Math.ceil(total / limit),
+          currentPage: pageNum,
+          totalPages: Math.ceil(total / lim),
           totalMessages: total,
-          hasNext: page * limit < total,
-          hasPrev: page > 1,
+          hasNext: pageNum * lim < total,
+          hasPrev: pageNum > 1,
         },
       },
     });
@@ -246,7 +278,6 @@ export const getMessageById = async (req, res) => {
       });
     }
 
-    // Check if user has permission to view this message
     const isAuthorized =
       (message.sender.id._id.toString() === userId &&
         message.sender.type === userType) ||
@@ -261,7 +292,6 @@ export const getMessageById = async (req, res) => {
       });
     }
 
-    // Mark as read if user is the receiver and message is not already read
     if (
       message.receiver.id._id.toString() === userId &&
       message.receiver.type === userType &&
