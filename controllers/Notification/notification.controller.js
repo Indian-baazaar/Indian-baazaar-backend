@@ -1,5 +1,5 @@
-import NotificationModel from '../../models/notification.model.js';
-import UserModel from '../../models/user.model.js';
+import NotificationModel from '../../models/Notifications/notification.model.js';
+import UserModel from '../../models/User/user.model.js';
 import { getCache, setCache, delCache } from '../../utils/redisUtil.js';
 
 export async function getNotifications(request, response) {

@@ -1,4 +1,4 @@
-import ProductModel from '../../models/product.modal.js';
+import ProductModel from '../../models/Product/product.modal.js';
 
 export async function updateStockController(request, response) {
   try {

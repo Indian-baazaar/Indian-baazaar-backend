@@ -1,6 +1,6 @@
 import express from 'express';
-import adminAuth from '../../middlewares/adminAuth.js'; // Assuming you have admin auth middleware
-import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
+import adminAuth from '../../middlewares/Admin/adminAuth.js'; // Assuming you have admin auth middleware
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
 
 import {
   getAllSellerSettingsController,

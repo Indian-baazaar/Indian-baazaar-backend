@@ -1,6 +1,6 @@
 import bcryptjs from "bcryptjs";
-import SellerModel from "../../models/seller.model.js";
-import SellerStoreSettingsModel from "../../models/sellerStoreSettings.model.js";
+import SellerModel from "../../models/Seller/seller.model.js";
+import SellerStoreSettingsModel from "../../models/Seller/sellerStoreSettings.model.js";
 import { delCache } from "../../utils/redisUtil.js";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';

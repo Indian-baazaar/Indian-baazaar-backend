@@ -1,4 +1,4 @@
-import HomeSliderModel from "../../models/homeSlider.modal.js";
+import HomeSliderModel from "../../models/Homeslides/homeSlider.modal.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";

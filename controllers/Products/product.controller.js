@@ -1,8 +1,8 @@
-import ProductModel from "../../models/product.modal.js";
+import ProductModel from "../../models/Product/product.modal.js";
 import { getCache, setCache, delCache } from "../../utils/redisUtil.js";
-import ProductRAMSModel from "../../models/productRAMS.js";
-import ProductWEIGHTModel from "../../models/productWEIGHT.js";
-import ProductSIZEModel from "../../models/productSIZE.js";
+import ProductRAMSModel from "../../models/Product/productRAMS.js";
+import ProductWEIGHTModel from "../../models/Product/productWEIGHT.js";
+import ProductSIZEModel from "../../models/Product/productSIZE.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";

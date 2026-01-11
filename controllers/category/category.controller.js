@@ -1,4 +1,4 @@
-import CategoryModel from "../../models/category.modal.js";
+import CategoryModel from "../../models/Category/category.modal.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";

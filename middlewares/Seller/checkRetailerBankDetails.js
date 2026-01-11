@@ -1,4 +1,4 @@
-import RetailerBankDetails from '../models/retailerBankDetails.model.js';
+import RetailerBankDetails from '../../models/Seller/retailerBankDetails.model.js';
 
 export const checkRetailerBankDetails = async (req, res, next) => {
   try {

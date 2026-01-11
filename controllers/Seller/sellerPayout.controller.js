@@ -1,4 +1,4 @@
-import SettlementModel from '../../models/settlement.model.js';
+import SettlementModel from '../../models/Payment/settlement.model.js';
 
 export async function getPayoutHistoryController(request, response) {
   try {

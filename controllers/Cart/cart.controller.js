@@ -1,4 +1,4 @@
-import CartProductModel from "../../models/cartProduct.modal.js";
+import CartProductModel from "../../models/Cart/cartProduct.modal.js";
 import { getCache, setCache, delCache } from '../../utils/redisUtil.js';
 
 export const addToCartItemController = async (request, response) => {

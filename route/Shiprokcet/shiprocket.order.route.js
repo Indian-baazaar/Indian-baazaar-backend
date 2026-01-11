@@ -17,8 +17,8 @@ import {
   CheckshipmentIds,
   CheckorderIds,
 } from "../../Validator/pickUpAddress.validator.js";
-import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
-import sellerAuth from "../../middlewares/sellerAuth.js";
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
+import sellerAuth from "../../middlewares/Seller/sellerAuth.js";
 
 const ShipRocketOrderRoute = express.Router();
 

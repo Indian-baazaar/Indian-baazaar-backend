@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import SellerModel from '../models/seller.model.js';
+import SellerModel from '../../models/Seller/seller.model.js';
 import dotenv from 'dotenv';
 dotenv.config();
 

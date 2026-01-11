@@ -1,4 +1,4 @@
-import UserModel from "../../models/user.model.js";
+import UserModel from "../../models/User/user.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sendEmailFun from "../../config/Email/sendEmail.js";
@@ -7,7 +7,7 @@ import generatedAccessToken from "../../utils/generatedAccessToken.js";
 import genertedRefreshToken from "../../utils/generatedRefreshToken.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import ReviewModel from "../../models/reviews.model.js.js";
+import ReviewModel from "../../models/Review/reviews.model.js.js";
 import dotenv from "dotenv";
 import { delCache } from "../../utils/redisUtil.js";
 

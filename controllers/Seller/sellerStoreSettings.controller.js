@@ -1,4 +1,4 @@
-import SellerStoreSettingsModel from '../../models/sellerStoreSettings.model.js';
+import SellerStoreSettingsModel from '../../models/Seller/sellerStoreSettings.model.js';
 import { delCache, getCache, setCache } from '../../utils/redisUtil.js';
 import { body, validationResult } from 'express-validator';
 

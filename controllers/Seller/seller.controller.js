@@ -1,7 +1,7 @@
-import SellerModel from '../../models/seller.model.js';
+import SellerModel from '../../models/Seller/seller.model.js';
 import jwt from 'jsonwebtoken';
 import { validatePhone } from '../../utils/sellerValidation.js';
-import AddressModel from '../../models/address.model.js';
+import AddressModel from '../../models/Address/address.model.js';
 import sendEmailFun from '../../config/Email/sendEmail.js';
 import bcryptjs from 'bcryptjs';
 import VerificationEmail from '../../utils/verifyEmailTemplate.js';
@@ -9,7 +9,7 @@ import { delCache } from '../../utils/redisUtil.js';
 import dotenv from "dotenv";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
-import ReviewModel from '../../models/reviews.model.js.js';
+import ReviewModel from '../../models/Review/reviews.model.js.js';
 
 dotenv.config();
 

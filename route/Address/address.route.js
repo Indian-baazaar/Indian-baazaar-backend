@@ -1,7 +1,7 @@
 import { Router } from "express";
-import auth from "../../middlewares/auth.js";
+import auth from "../../middlewares/Basic/auth.js";
 import { addAddressController, deleteAddressController, editAddress, getAddressController, getSingleAddressController } from "../../controllers/Address/address.controller.js";
-import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
 
 const addressRouter = Router();
 addressRouter.post('/add',auth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addAddressController)

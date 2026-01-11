@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import upload from '../../middlewares/multer.js';
+import upload from '../../middlewares/Basic/multer.js';
 import {createProduct, createProductRAMS, deleteMultipleProduct, deleteProduct, deleteProductRAMS, getAllFeaturedProducts, getAllProducts, getAllProductsByCatId, getAllProductsByCatName, getAllProductsByPrice, getAllProductsByRating, getAllProductsBySubCatId, getAllProductsBySubCatName, getAllProductsByThirdLavelCatId, getProduct, getProductRams, getProductsCount, updateProduct, updateProductRam, uploadImages, getProductRamsById, createProductWEIGHT, deleteProductWEIGHT, updateProductWeight, getProductWeight, getProductWeightById, createProductSize, deleteProductSize, updateProductSize, getProductSize, getProductSizeById, uploadBannerImages, getAllProductsBanners, filters, sortBy, searchProductController, getAllProductsByCat, getUsersAllProducts} from '../../controllers/Products/product.controller.js';
-import { checkRetailerBankDetails } from '../../middlewares/checkRetailerBankDetails.js';
-import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
-import sellerAuth from '../../middlewares/sellerAuth.js';
+import { checkRetailerBankDetails } from '../../middlewares/Seller/checkRetailerBankDetails.js';
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
+import sellerAuth from '../../middlewares/Seller/sellerAuth.js';
 import { removeImageFromCloudinary } from '../../controllers/User/user.controller.js';
 
 const productRouter = Router();

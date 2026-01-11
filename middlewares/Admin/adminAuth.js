@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import UserModel from "../models/user.model.js"; 
+import UserModel from "../../models/User/user.model.js"; 
 import dotenv from 'dotenv';
-import SellerModel from "../models/seller.model.js";
+import SellerModel from "../../models/Seller/seller.model.js";
 dotenv.config();
 
 export default async function adminAuth(req, res, next) {

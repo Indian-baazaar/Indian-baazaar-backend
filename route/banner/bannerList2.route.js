@@ -1,9 +1,9 @@
 import { Router } from 'express'
-import upload from '../../middlewares/multer.js';
+import upload from '../../middlewares/Basic/multer.js';
 import { addBanner, deleteBanner, getBanner, getBanners, updatedBanner, uploadImages } from '../../controllers/Banner/bannerList2.controller.js';
 import { removeImageFromCloudinary } from '../../controllers/category/category.controller.js';
-import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
-import { superAdminAuth } from '../../middlewares/adminAuth.js';
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
+import { superAdminAuth } from '../../middlewares/Admin/adminAuth.js';
 
 const bannerList2Router = Router();
 

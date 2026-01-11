@@ -1,4 +1,4 @@
-import CategoryModel from "../../models/category.modal.js";
+import CategoryModel from "../../models/Category/category.modal.js";
 import { delCache } from '../../utils/redisUtil.js';
 
 export async function createCategory(req, res) {
@@ -174,7 +174,7 @@ export async function deleteCategory(req, res) {
       });
     }
 
-    const ProductModel = (await import("../../models/product.modal.js")).default;
+    const ProductModel = (await import("../../models/Product/product.modal.js")).default;
 
     const productsWithCategory = await ProductModel.countDocuments({ 
       category: id 

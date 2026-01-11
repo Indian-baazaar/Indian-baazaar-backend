@@ -1,4 +1,4 @@
-import MyListModel from '../../models/myList.modal.js';
+import MyListModel from '../../models/Cart/myList.modal.js';
 import { getCache, setCache, delCache } from '../../utils/redisUtil.js';
 
 export const addToMyListController = async (request, response) => {

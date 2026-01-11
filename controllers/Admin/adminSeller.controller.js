@@ -1,4 +1,4 @@
-import SellerModel from '../../models/seller.model.js';
+import SellerModel from '../../models/Seller/seller.model.js';
 
 export async function getSellersController(request, response) {
   try {

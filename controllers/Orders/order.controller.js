@@ -1,12 +1,12 @@
-import OrderModel from "../../models/order.model.js";
+import OrderModel from "../../models/Orders/order.model.js";
 import { validateAddress, createShipment } from '../../utils/shiprocket.service.js';
-import UserModel from '../../models/user.model.js';
+import UserModel from '../../models/User/user.model.js';
 import OrderConfirmationEmail from "../../utils/orderEmailTemplate.js";
 import sendEmailFun from "../../config/Email/sendEmail.js";
 import dotenv from 'dotenv';
 import { getCache, setCache, delCache, deleteCacheByPattern } from '../../utils/redisUtil.js';
-import AddressModel from "../../models/address.model.js";
-import ProductModel from "../../models/product.modal.js";
+import AddressModel from "../../models/Address/address.model.js";
+import ProductModel from "../../models/Product/product.modal.js";
 import Razorpay from 'razorpay';
 dotenv.config();
 import crypto from "crypto";

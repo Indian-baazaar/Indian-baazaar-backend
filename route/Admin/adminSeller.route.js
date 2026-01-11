@@ -1,6 +1,6 @@
 import express from 'express';
-import { superAdminAuth } from '../../middlewares/adminAuth.js';
-import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
+import { superAdminAuth } from '../../middlewares/Admin/adminAuth.js';
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
 
 import {
   getSellersController,

@@ -1,5 +1,5 @@
 import Razorpay from "razorpay";
-import RetailerBankDetails from "../../models/retailerBankDetails.model.js";
+import RetailerBankDetails from "../../models/Seller/retailerBankDetails.model.js";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,

@@ -1,8 +1,8 @@
 import express from 'express';
 import {CheckpickUpAddressValidator} from '../../Validator/pickUpAddress.validator.js';
 import {registerPickUpAddress} from '../../controllers/Shiprocket/pickUpAddress.controller.js';
-import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
-import sellerAuth from '../../middlewares/sellerAuth.js';
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
+import sellerAuth from '../../middlewares/Seller/sellerAuth.js';
 
 const shipRocketAddressRoute = express.Router();
 

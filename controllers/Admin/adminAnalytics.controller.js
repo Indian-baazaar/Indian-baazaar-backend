@@ -1,6 +1,6 @@
-import OrderModel from "../../models/order.model.js";
-import SellerModel from "../../models/seller.model.js";
-import ProductModel from "../../models/product.modal.js";
+import OrderModel from "../../models/Orders/order.model.js";
+import SellerModel from "../../models/Seller/seller.model.js";
+import ProductModel from "../../models/Product/product.modal.js";
 
 export async function getAnalytics(req, res) {
   try {

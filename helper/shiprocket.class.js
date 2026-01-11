@@ -1,7 +1,7 @@
 import axios from "axios";
 import RandExp from "randexp";
 import dotenv from "dotenv";
-import OrderModel from "../models/order.model.js";
+import OrderModel from "../models/Orders/order.model.js";
 dotenv.config();
 
 const REQUIRED_FIELDS = [

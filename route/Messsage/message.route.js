@@ -15,8 +15,8 @@ import {
     validateMessageQuery,
     validateConversationQuery
 } from '../../Validator/message.validator.js';
-import { messageAuth } from '../../middlewares/messageAuth.js';
-import sellerAuth from '../../middlewares/sellerAuth.js';
+import { messageAuth } from '../../middlewares/Admin/messageAuth.js';
+import sellerAuth from '../../middlewares/Seller/sellerAuth.js';
 
 const messageRouter = express.Router();
 

@@ -1,6 +1,6 @@
 import express from 'express';
-import sellerAuth from '../../middlewares/sellerAuth.js';
-import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
+import sellerAuth from '../../middlewares/Seller/sellerAuth.js';
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
 
 import {
   registerSellerController,
@@ -44,7 +44,7 @@ import {
   getPayoutHistoryController
 } from '../../controllers/Seller/sellerPayout.controller.js';
 import { addBankDetails, getSellerBankDetails, updateBankDetails } from '../../controllers/Seller/retailer.controller.js';
-import upload from '../../middlewares/multer.js';
+import upload from '../../middlewares/Basic/multer.js';
 
 const router = express.Router();
 

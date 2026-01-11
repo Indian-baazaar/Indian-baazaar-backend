@@ -1,5 +1,5 @@
-import OrderModel from '../../models/order.model.js';
-import ProductModel from '../../models/product.modal.js';
+import OrderModel from '../../models/Orders/order.model.js';
+import ProductModel from '../../models/Product/product.modal.js';
 
 export async function getOrdersController(request, response) {
   try {

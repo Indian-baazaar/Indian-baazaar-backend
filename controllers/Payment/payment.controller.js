@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import Order from "../../models/order.model.js";
-import RetailerWallet from "../../models/retailerWallet.model.js";
-import RetailerLedger from "../../models/retailerLedger.model.js";
+import Order from "../../models/Orders/order.model.js";
+import RetailerWallet from "../../models/Seller/retailerWallet.model.js";
+import RetailerLedger from "../../models/Seller/retailerLedger.model.js";
 import dotenv from "dotenv";
 dotenv.config();
 

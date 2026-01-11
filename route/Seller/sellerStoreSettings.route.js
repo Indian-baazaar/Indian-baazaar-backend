@@ -1,6 +1,6 @@
 import express from 'express';
-import sellerAuth from '../../middlewares/sellerAuth.js';
-import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
+import sellerAuth from '../../middlewares/Seller/sellerAuth.js';
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
 import { validationResult } from 'express-validator';
 
 import {

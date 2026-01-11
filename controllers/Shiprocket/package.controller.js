@@ -7,10 +7,10 @@ import {
   setCache,
 } from "../../utils/redisUtil.js";
 
-import OrderModel from "../../models/order.model.js";
-import ProductModel from "../../models/product.modal.js";
-import UserModel from "../../models/user.model.js";
-import AddressModel from "../../models/address.model.js";
+import OrderModel from "../../models/Orders/order.model.js";
+import ProductModel from "../../models/Product/product.modal.js";
+import UserModel from "../../models/User/user.model.js";
+import AddressModel from "../../models/Address/address.model.js";
 import { buildShiprocketOrderPayload } from "../../utils/shiprocketPayloadBuilder.js";
 import mongoose from "mongoose";
 

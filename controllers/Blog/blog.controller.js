@@ -1,4 +1,4 @@
-import BlogModel from "../../models/blog.model.js";
+import BlogModel from "../../models/Blog/blog.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";

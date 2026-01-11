@@ -1,7 +1,7 @@
-import MessageModel from "../../models/message.model.js";
-import UserModel from "../../models/user.model.js";
-import SellerModel from "../../models/seller.model.js";
-import OrderModel from "../../models/order.model.js";
+import MessageModel from "../../models/Message/message.model.js";
+import UserModel from "../../models/User/user.model.js";
+import SellerModel from "../../models/Seller/seller.model.js";
+import OrderModel from "../../models/Orders/order.model.js";
 import { validationResult } from "express-validator";
 import mongoose from "mongoose";
 

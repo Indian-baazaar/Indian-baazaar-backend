@@ -1,8 +1,8 @@
-import Order from "../../models/order.model.js";
-import Settlement from "../../models/settlement.model.js";
-import RetailerWallet from "../../models/retailerWallet.model.js";
-import RetailerLedger from "../../models/retailerLedger.model.js";
-import RetailerBankDetails from "../../models/retailerBankDetails.model.js";
+import Order from "../../models/Orders/order.model.js";
+import Settlement from "../../models/Payment/settlement.model.js";
+import RetailerWallet from "../../models/Seller/retailerWallet.model.js";
+import RetailerLedger from "../../models/Seller/retailerLedger.model.js";
+import RetailerBankDetails from "../../models/Seller/retailerBankDetails.model.js";
 import Razorpay from "razorpay";
 import dotenv from "dotenv";
 dotenv.config();

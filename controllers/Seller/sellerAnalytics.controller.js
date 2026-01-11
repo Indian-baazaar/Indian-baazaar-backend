@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import OrderModel from '../../models/order.model.js';
-import ProductModel from '../../models/product.modal.js';
+import OrderModel from '../../models/Orders/order.model.js';
+import ProductModel from '../../models/Product/product.modal.js';
 
 // Helper function to build date filter
 const buildDateFilter = (startDate, endDate) => {
@@ -803,7 +803,7 @@ export const getDashboardSummary = async (req, res) => {
     });
   }
 };
-import ReviewModel from '../../models/reviews.model.js.js';
+import ReviewModel from '../../models/Review/reviews.model.js.js';
 
 // Review and Rating Analytics
 export const getReviewAnalytics = async (req, res) => {
