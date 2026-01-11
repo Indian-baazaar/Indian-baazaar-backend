@@ -1,10 +1,10 @@
 import OrderModel from "../../models/Orders/order.model.js";
-import { validateAddress, createShipment } from '../../utils/shiprocket.service.js';
+import { validateAddress, createShipment } from '../../utils/Shiprocket/shiprocket.service.js';
 import UserModel from '../../models/User/user.model.js';
-import OrderConfirmationEmail from "../../utils/orderEmailTemplate.js";
+import OrderConfirmationEmail from "../../utils/Mail/Order/orderEmailTemplate.js";
 import sendEmailFun from "../../config/Email/sendEmail.js";
 import dotenv from 'dotenv';
-import { getCache, setCache, delCache, deleteCacheByPattern } from '../../utils/redisUtil.js';
+import { getCache, setCache, delCache, deleteCacheByPattern } from '../../utils/Redis/redisUtil.js';
 import AddressModel from "../../models/Address/address.model.js";
 import ProductModel from "../../models/Product/product.modal.js";
 import Razorpay from 'razorpay';

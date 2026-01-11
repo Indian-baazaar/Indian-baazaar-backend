@@ -1,8 +1,8 @@
 import express from 'express';
-import { trackShipment } from '../../utils/shiprocket.service.js';
+import { trackShipment } from '../../utils/Shiprocket/shiprocket.service.js';
 import { TrackShipmentRealTime } from '../../controllers/Shiprocket/trackingController.js';
 import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
-import { getCache, setCache } from '../../utils/redisUtil.js';
+import { getCache, setCache } from '../../utils/Redis/redisUtil.js';
 import auth from '../../middlewares/Basic/auth.js';
 
 const router = express.Router();

@@ -2,7 +2,7 @@ import BlogModel from "../../models/Blog/blog.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
-import { getCache, setCache, delCache, deleteCacheByPattern } from '../../utils/redisUtil.js';
+import { getCache, setCache, delCache, deleteCacheByPattern } from '../../utils/Redis/redisUtil.js';
 dotenv.config();
 
 cloudinary.config({

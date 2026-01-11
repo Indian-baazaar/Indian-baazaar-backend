@@ -1,11 +1,11 @@
 import SellerModel from '../../models/Seller/seller.model.js';
 import jwt from 'jsonwebtoken';
-import { validatePhone } from '../../utils/sellerValidation.js';
+import { validatePhone } from '../../Validator/Seller/sellerValidation.js';
 import AddressModel from '../../models/Address/address.model.js';
 import sendEmailFun from '../../config/Email/sendEmail.js';
 import bcryptjs from 'bcryptjs';
-import VerificationEmail from '../../utils/verifyEmailTemplate.js';
-import { delCache } from '../../utils/redisUtil.js';
+import VerificationEmail from '../../utils/Mail/Varification/verifyEmailTemplate.js';
+import { delCache } from '../../utils/Redis/redisUtil.js';
 import dotenv from "dotenv";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";

@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import fetch from "node-fetch";
-import { getShiprocketToken } from "../helper/shiprocketAuth.js";
+import { getShiprocketToken } from "../../helper/Shiprocket/shiprocketAuth.js";
 dotenv.config();
 
 const SHIPROCKET_API_URL = process.env.SHIPROCKET_API_URL || "https://apiv2.shiprocket.in/v1/external";

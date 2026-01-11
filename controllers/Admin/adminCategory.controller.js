@@ -1,5 +1,5 @@
 import CategoryModel from "../../models/Category/category.modal.js";
-import { delCache } from '../../utils/redisUtil.js';
+import { delCache } from '../../utils/Redis/redisUtil.js';
 
 export async function createCategory(req, res) {
   try {

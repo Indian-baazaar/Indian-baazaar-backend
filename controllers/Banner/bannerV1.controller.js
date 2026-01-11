@@ -2,7 +2,7 @@ import BannerV1Model from "../../models/banner/bannerV1.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
-import { getCache, setCache, delCache } from '../../utils/redisUtil.js';
+import { getCache, setCache, delCache } from '../../utils/Redis/redisUtil.js';
 dotenv.config();
 
 cloudinary.config({

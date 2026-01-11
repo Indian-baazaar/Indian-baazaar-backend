@@ -1,6 +1,6 @@
 import NotificationModel from '../../models/Notifications/notification.model.js';
 import UserModel from '../../models/User/user.model.js';
-import { getCache, setCache, delCache } from '../../utils/redisUtil.js';
+import { getCache, setCache, delCache } from '../../utils/Redis/redisUtil.js';
 
 export async function getNotifications(request, response) {
   try {

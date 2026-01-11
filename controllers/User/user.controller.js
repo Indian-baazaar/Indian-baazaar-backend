@@ -2,14 +2,14 @@ import UserModel from "../../models/User/user.model.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sendEmailFun from "../../config/Email/sendEmail.js";
-import VerificationEmail from "../../utils/verifyEmailTemplate.js";
-import generatedAccessToken from "../../utils/generatedAccessToken.js";
-import genertedRefreshToken from "../../utils/generatedRefreshToken.js";
+import VerificationEmail from "../../utils/Mail/Varification/verifyEmailTemplate.js";
+import generatedAccessToken from "../../utils/AccessToken/generatedAccessToken.js";
+import genertedRefreshToken from "../../utils/AccessToken/generatedRefreshToken.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import ReviewModel from "../../models/Review/reviews.model.js.js";
 import dotenv from "dotenv";
-import { delCache } from "../../utils/redisUtil.js";
+import { delCache } from "../../utils/Redis/redisUtil.js";
 
 dotenv.config();
 

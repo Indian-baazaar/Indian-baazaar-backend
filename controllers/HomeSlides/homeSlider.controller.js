@@ -2,7 +2,7 @@ import HomeSliderModel from "../../models/Homeslides/homeSlider.modal.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
-import { getCache, setCache, delCache } from '../../utils/redisUtil.js';
+import { getCache, setCache, delCache } from '../../utils/Redis/redisUtil.js';
 
 dotenv.config();
 

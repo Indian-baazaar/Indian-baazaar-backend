@@ -1,17 +1,17 @@
 import { ShipRocket } from "../../helper/index.js";
-import { getShiprocketToken } from "../../helper/shiprocketAuth.js";
+import { getShiprocketToken } from "../../helper/Shiprocket/shiprocketAuth.js";
 import { response } from "../../utils/index.js";
 import {
   deleteCacheByPattern,
   getCache,
   setCache,
-} from "../../utils/redisUtil.js";
+} from "../../utils/Redis/redisUtil.js";
 
 import OrderModel from "../../models/Orders/order.model.js";
 import ProductModel from "../../models/Product/product.modal.js";
 import UserModel from "../../models/User/user.model.js";
 import AddressModel from "../../models/Address/address.model.js";
-import { buildShiprocketOrderPayload } from "../../utils/shiprocketPayloadBuilder.js";
+import { buildShiprocketOrderPayload } from "../../utils/Shiprocket/shiprocketPayloadBuilder.js";
 import mongoose from "mongoose";
 
 export const requestCreateOrder = async (req, res) => {

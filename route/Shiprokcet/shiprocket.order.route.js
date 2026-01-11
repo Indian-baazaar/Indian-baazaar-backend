@@ -16,7 +16,7 @@ import {
   CheckassignAWB,
   CheckshipmentIds,
   CheckorderIds,
-} from "../../Validator/pickUpAddress.validator.js";
+} from "../../Validator/Address/pickUpAddress.validator.js";
 import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
 import sellerAuth from "../../middlewares/Seller/sellerAuth.js";
 

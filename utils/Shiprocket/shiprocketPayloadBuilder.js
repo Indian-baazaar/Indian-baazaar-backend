@@ -1,4 +1,4 @@
-import AddressModel from "../models/Address/address.model.js";
+import AddressModel from "../../models/Address/address.model.js";
 
 export const buildShiprocketOrderPayload = async ({ order, user, seller, products, deliveryAddress }) => {
   const [firstName, ...lastParts] = (user.name || '').split(' ');

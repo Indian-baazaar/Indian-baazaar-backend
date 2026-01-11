@@ -22,7 +22,7 @@ import {
   validateRefundRules,
   validateCancellationRules,
   validateCodSettings
-} from '../../Validator/sellerStoreSettings.validator.js';
+} from '../../Validator/Store/sellerStoreSettings.validator.js';
 
 // Middleware to handle validation errors
 const handleValidationErrors = (req, res, next) => {

@@ -1,7 +1,7 @@
 // trackingController.js
 import axios from "axios";
-import { getShiprocketToken } from "../../helper/shiprocketAuth.js";
-import { getCache, setCache } from '../../utils/redisUtil.js';
+import { getShiprocketToken } from "../../helper/Shiprocket/shiprocketAuth.js";
+import { getCache, setCache } from '../../utils/Redis/redisUtil.js';
 
 export const TrackShipmentRealTime = async (req, res) => {
   const { awb } = req.params;

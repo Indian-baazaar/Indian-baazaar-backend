@@ -1,4 +1,4 @@
-import ShipRocket from './shiprocket.class.js';
+import ShipRocket from './Shiprocket/shiprocket.class.js';
 
 export {
   ShipRocket,

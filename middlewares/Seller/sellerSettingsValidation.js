@@ -1,5 +1,5 @@
 import SellerStoreSettingsModel from '../../models/Seller/sellerStoreSettings.model.js';
-import { getCache, setCache } from '../../utils/redisUtil.js';
+import { getCache, setCache } from '../../utils/Redis/redisUtil.js';
 
 // Validate seller store settings before order placement
 export const validateSellerSettings = async (req, res, next) => {

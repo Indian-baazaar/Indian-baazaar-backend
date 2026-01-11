@@ -1,5 +1,5 @@
 import { ShipRocket } from '../../helper/index.js';
-import { getShiprocketToken } from '../../helper/shiprocketAuth.js';
+import { getShiprocketToken } from '../../helper/Shiprocket/shiprocketAuth.js';
 import { response } from '../../utils/index.js';
 import AddressModel from '../../models/Address/address.model.js';
 import UserModel from '../../models/User/user.model.js';

@@ -1,15 +1,15 @@
 import ProductModel from "../../models/Product/product.modal.js";
-import { getCache, setCache, delCache } from "../../utils/redisUtil.js";
+import { getCache, setCache, delCache } from "../../utils/Redis/redisUtil.js";
 import ProductRAMSModel from "../../models/Product/productRAMS.js";
 import ProductWEIGHTModel from "../../models/Product/productWEIGHT.js";
 import ProductSIZEModel from "../../models/Product/productSIZE.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
-import { buildRoleBasedFilter, canModifyResource } from "../../utils/roleFilters.js";
+import { buildRoleBasedFilter, canModifyResource } from "../../utils/Rolebase/roleFilters.js";
 dotenv.config();
 
-import { createNotificationForAllUsers } from '../../utils/notification.service.js';
+import { createNotificationForAllUsers } from '../../utils/Notification/notification.service.js';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

@@ -1,5 +1,5 @@
 import MyListModel from '../../models/Cart/myList.modal.js';
-import { getCache, setCache, delCache } from '../../utils/redisUtil.js';
+import { getCache, setCache, delCache } from '../../utils/Redis/redisUtil.js';
 
 export const addToMyListController = async (request, response) => {
     try {

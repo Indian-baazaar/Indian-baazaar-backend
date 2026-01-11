@@ -1,4 +1,4 @@
-import { validateAddress } from '../../utils/shiprocket.service.js';
+import { validateAddress } from '../../utils/Shiprocket/shiprocket.service.js';
 
 export async function shiprocketAddressValidation(req, res, next) {
   const { pincode } = req.body;

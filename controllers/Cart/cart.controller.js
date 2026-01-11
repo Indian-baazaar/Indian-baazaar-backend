@@ -1,5 +1,5 @@
 import CartProductModel from "../../models/Cart/cartProduct.modal.js";
-import { getCache, setCache, delCache } from '../../utils/redisUtil.js';
+import { getCache, setCache, delCache } from '../../utils/Redis/redisUtil.js';
 
 export const addToCartItemController = async (request, response) => {
     try {

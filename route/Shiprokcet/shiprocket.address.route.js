@@ -1,5 +1,5 @@
 import express from 'express';
-import {CheckpickUpAddressValidator} from '../../Validator/pickUpAddress.validator.js';
+import {CheckpickUpAddressValidator} from '../../Validator/Address/pickUpAddress.validator.js';
 import {registerPickUpAddress} from '../../controllers/Shiprocket/pickUpAddress.controller.js';
 import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
 import sellerAuth from '../../middlewares/Seller/sellerAuth.js';

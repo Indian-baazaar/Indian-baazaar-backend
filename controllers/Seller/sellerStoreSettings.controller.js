@@ -1,5 +1,5 @@
 import SellerStoreSettingsModel from '../../models/Seller/sellerStoreSettings.model.js';
-import { delCache, getCache, setCache } from '../../utils/redisUtil.js';
+import { delCache, getCache, setCache } from '../../utils/Redis/redisUtil.js';
 import { body, validationResult } from 'express-validator';
 
 // Get seller store settings

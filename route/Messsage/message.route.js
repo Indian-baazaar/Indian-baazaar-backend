@@ -14,7 +14,7 @@ import {
     validateConversationParams,
     validateMessageQuery,
     validateConversationQuery
-} from '../../Validator/message.validator.js';
+} from '../../Validator/Message/message.validator.js';
 import { messageAuth } from '../../middlewares/Admin/messageAuth.js';
 import sellerAuth from '../../middlewares/Seller/sellerAuth.js';
 

@@ -1,4 +1,4 @@
-import Order from '../models/order.model.js';
+import Order from '../../models/order.model.js';
 
 export const markEligibleOrders = async () => {
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
