@@ -1,5 +1,5 @@
 import express from 'express';
-import './config/patchExpressAsync.js';
+import './config/patchedRouter/patchExpressAsync.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -11,7 +11,7 @@ import hpp from 'hpp';
 import compression from 'compression';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-import connectDB from './config/connectDb.js';
+import connectDB from './config/DB/connectDb.js';
 import userRouter from './route/User/user.route.js'
 import categoryRouter from './route/Category/category.route.js';
 import productRouter from './route/Product/product.route.js';
@@ -34,7 +34,7 @@ import sellerAnalyticsRouter from './route/Seller/sellerAnalytics.route.js';
 import adminSellerSettingsRouter from './route/Admin/adminSellerSettings.route.js';
 import messageRouter from './route/Messsage/message.route.js';
 import { razorpayWebhook } from './controllers/Payment/payment.controller.js';
-import { redis } from './config/redisClient.js';
+import { redis } from './config/Redis/redisClient.js';
 
 const app = express();
 const allowedOrigins = [

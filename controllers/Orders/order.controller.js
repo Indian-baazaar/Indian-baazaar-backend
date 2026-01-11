@@ -2,7 +2,7 @@ import OrderModel from "../../models/order.model.js";
 import { validateAddress, createShipment } from '../../utils/shiprocket.service.js';
 import UserModel from '../../models/user.model.js';
 import OrderConfirmationEmail from "../../utils/orderEmailTemplate.js";
-import sendEmailFun from "../../config/sendEmail.js";
+import sendEmailFun from "../../config/Email/sendEmail.js";
 import dotenv from 'dotenv';
 import { getCache, setCache, delCache, deleteCacheByPattern } from '../../utils/redisUtil.js';
 import AddressModel from "../../models/address.model.js";

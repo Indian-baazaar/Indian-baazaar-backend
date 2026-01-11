@@ -1,4 +1,4 @@
-import { redis as redisClient } from '../config/redisClient.js';
+import { redis as redisClient } from '../config/Redis/redisClient.js';
 
 export const DEFAULT_EXPIRY = 60 * 5;
 

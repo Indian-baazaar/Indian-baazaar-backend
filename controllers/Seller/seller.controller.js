@@ -2,7 +2,7 @@ import SellerModel from '../../models/seller.model.js';
 import jwt from 'jsonwebtoken';
 import { validatePhone } from '../../utils/sellerValidation.js';
 import AddressModel from '../../models/address.model.js';
-import sendEmailFun from '../../config/sendEmail.js';
+import sendEmailFun from '../../config/Email/sendEmail.js';
 import bcryptjs from 'bcryptjs';
 import VerificationEmail from '../../utils/verifyEmailTemplate.js';
 import { delCache } from '../../utils/redisUtil.js';
