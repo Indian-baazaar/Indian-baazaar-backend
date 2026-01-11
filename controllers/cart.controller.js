@@ -4,7 +4,7 @@ import { getCache, setCache, delCache } from '../utils/redisUtil.js';
 export const addToCartItemController = async (request, response) => {
     try {
         const userId = request.userId
-        const { productTitle, image, rating, price, oldPrice, quantity, sub_total, productId, countInStock, discount,size, weight, ram, brand } = request.body
+        const { productTitle, image, rating, price, oldPrice, quantity, subTotal, productId, countInStock, discount,size, weight, ram, brand } = request.body
 
         if (!productId) {
             return response.status(402).json({
@@ -34,7 +34,7 @@ export const addToCartItemController = async (request, response) => {
             price:price,
             oldPrice:oldPrice,
             quantity:quantity,
-            sub_total:sub_total,
+            sub_total:subTotal,
             productId:productId,
             countInStock:countInStock,
             userId:userId,

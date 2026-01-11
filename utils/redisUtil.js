@@ -1,6 +1,6 @@
 import { redis as redisClient } from '../config/redisClient.js';
 
-export const DEFAULT_EXPIRY = 60 * 5; // 5 minutes
+export const DEFAULT_EXPIRY = 60 * 5;
 
 export const getCache = async (key) => {
   try {
@@ -21,4 +21,11 @@ export const delCache = async (key) => {
   try {
     await redisClient.del(key);
   } catch (err) {}
+};
+
+export const deleteCacheByPattern = async (pattern) => {
+    const keys = await redisClient.keys(pattern);
+    if (keys.length > 0) {
+        await redisClient.del(keys);
+    }
 };

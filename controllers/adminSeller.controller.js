@@ -1,97 +1,38 @@
 import SellerModel from '../models/seller.model.js';
 
-/**
- * Get all sellers with pagination and filtering
- * Requirements: 7.1
- * - Returns all registered sellers
- * - Supports pagination (page, limit)
- * - Supports filtering by kycStatus and sellerStatus
- */
 export async function getSellersController(request, response) {
   try {
-    const { page = 1, limit = 10, kycStatus, sellerStatus, search } = request.query;
+    const page = parseInt(request.query.page) || 1;
+    const limit = parseInt(request.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    // Build filter object
-    const filter = {};
-    
-    if (kycStatus) {
-      if (!['pending', 'approved', 'rejected'].includes(kycStatus)) {
-        return response.status(400).json({
-          success: false,
-          error: true,
-          message: 'Invalid kycStatus. Must be one of: pending, approved, rejected'
-        });
-      }
-      filter.kycStatus = kycStatus;
+    const totalUsersCount = await SellerModel.countDocuments();
+    const totalUsers = await SellerModel.find().sort({ createdAt: -1 }).skip(skip).limit(limit);
+
+    if (!totalUsers) {
+      return response.status(400).json({
+        error: true,
+        success: false,
+      });
     }
-
-    if (sellerStatus) {
-      if (!['active', 'inactive'].includes(sellerStatus)) {
-        return response.status(400).json({
-          success: false,
-          error: true,
-          message: 'Invalid sellerStatus. Must be one of: active, inactive'
-        });
-      }
-      filter.sellerStatus = sellerStatus;
-    }
-
-    // Add search functionality for name, email, or brandName
-    if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { brandName: { $regex: search, $options: 'i' } }
-      ];
-    }
-
-    // Calculate pagination
-    const pageNum = parseInt(page);
-    const limitNum = parseInt(limit);
-    const skip = (pageNum - 1) * limitNum;
-
-    // Get total count for pagination
-    const totalCount = await SellerModel.countDocuments(filter);
-
-    // Get sellers with pagination
-    const sellers = await SellerModel.find(filter)
-      .select('-password') // Exclude password
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limitNum);
-
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limitNum);
 
     return response.status(200).json({
-      success: true,
       error: false,
-      message: 'Sellers retrieved successfully',
-      data: sellers,
-      pagination: {
-        totalCount,
-        currentPage: pageNum,
-        pageSize: limitNum,
-        totalPages
-      }
+      success: true,
+      page: page,
+      totalPages: Math.ceil(totalUsersCount / limit),
+      totalUsersCount: totalUsers?.length,
+      totalUsers: totalUsers,
     });
-
   } catch (error) {
-    console.error('getSellersController error:', error);
     return response.status(500).json({
-      success: false,
+      message: error.message || "Something is wrong",
       error: true,
-      message: error.message || 'Internal server error'
+      success: false,
     });
   }
 }
 
-/**
- * Approve a seller
- * Requirements: 7.2
- * - Sets kycStatus to "approved"
- * - Sets sellerStatus to "active"
- */
 export async function approveSellerController(request, response) {
   try {
     const { sellerId } = request.params;
@@ -104,7 +45,6 @@ export async function approveSellerController(request, response) {
       });
     }
 
-    // Find seller
     const seller = await SellerModel.findById(sellerId);
     
     if (!seller) {
@@ -118,7 +58,7 @@ export async function approveSellerController(request, response) {
     // Update seller status
     seller.kycStatus = 'approved';
     seller.sellerStatus = 'active';
-    seller.rejectionReason = ''; // Clear any previous rejection reason
+    seller.rejectionReason = ''; 
     
     await seller.save();
 
@@ -139,12 +79,6 @@ export async function approveSellerController(request, response) {
   }
 }
 
-/**
- * Reject a seller
- * Requirements: 7.3
- * - Sets kycStatus to "rejected"
- * - Optionally stores rejection reason
- */
 export async function rejectSellerController(request, response) {
   try {
     const { sellerId } = request.params;
@@ -158,7 +92,6 @@ export async function rejectSellerController(request, response) {
       });
     }
 
-    // Find seller
     const seller = await SellerModel.findById(sellerId);
     
     if (!seller) {
@@ -169,7 +102,6 @@ export async function rejectSellerController(request, response) {
       });
     }
 
-    // Update seller status
     seller.kycStatus = 'rejected';
     if (reason) {
       seller.rejectionReason = reason;
@@ -194,11 +126,6 @@ export async function rejectSellerController(request, response) {
   }
 }
 
-/**
- * Toggle seller status between active and inactive
- * Requirements: 7.4
- * - Switches sellerStatus between "active" and "inactive"
- */
 export async function toggleSellerStatusController(request, response) {
   try {
     const { sellerId } = request.params;
@@ -211,7 +138,6 @@ export async function toggleSellerStatusController(request, response) {
       });
     }
 
-    // Find seller
     const seller = await SellerModel.findById(sellerId);
     
     if (!seller) {
@@ -222,7 +148,6 @@ export async function toggleSellerStatusController(request, response) {
       });
     }
 
-    // Toggle status
     seller.sellerStatus = seller.sellerStatus === 'active' ? 'inactive' : 'active';
     
     await seller.save();

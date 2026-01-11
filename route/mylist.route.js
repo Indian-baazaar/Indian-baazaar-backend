@@ -5,8 +5,8 @@ import { endpointSecurity } from '../middlewares/endpointSecurity.js';
 
 const myListRouter = Router();
 
-myListRouter.post('/add',auth, endpointSecurity({ maxRequests: 20, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addToMyListController)
+myListRouter.post('/add',auth, endpointSecurity({ maxRequests: 200, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addToMyListController)
 myListRouter.get('/',auth,getMyListController)
-myListRouter.delete('/:id',auth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteToMyListController)
+myListRouter.delete('/:id',auth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteToMyListController)
 
 export default myListRouter;

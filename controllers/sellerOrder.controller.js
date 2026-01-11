@@ -1,12 +1,6 @@
 import OrderModel from '../models/order.model.js';
 import ProductModel from '../models/product.modal.js';
 
-/**
- * Get orders for authenticated seller
- * Requirements: 4.1
- * - Returns only orders containing products from that seller
- * - Supports pagination
- */
 export async function getOrdersController(request, response) {
   try {
     const seller = request.seller;
@@ -68,11 +62,6 @@ export async function getOrdersController(request, response) {
   }
 }
 
-/**
- * Get specific order by ID for authenticated seller
- * Requirements: 4.2
- * - Returns order only if it contains products from that seller
- */
 export async function getOrderByIdController(request, response) {
   try {
     const seller = request.seller;
@@ -147,12 +136,6 @@ export default {
   getOrderStatsController
 };
 
-/**
- * Get order statistics for authenticated seller
- * Requirements: 4.3, 4.4
- * - Returns aggregated data: total orders, pending, completed, revenue
- * - Calculates revenue after commission deduction
- */
 export async function getOrderStatsController(request, response) {
   try {
     const seller = request.seller;

@@ -1,11 +1,5 @@
 import SettlementModel from '../models/settlement.model.js';
 
-/**
- * Get payout history for authenticated seller
- * Requirements: 6.1, 6.2
- * - Returns all settlement records for the seller with pagination
- * - Includes settlement amount, commission deducted, payment status, and transaction dates
- */
 export async function getPayoutHistoryController(request, response) {
   try {
     const seller = request.seller;

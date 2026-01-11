@@ -1,12 +1,5 @@
 import ProductModel from '../models/product.modal.js';
 
-/**
- * Update stock for a product
- * Requirements: 5.1, 5.2, 5.3
- * - Updates stock only if product is owned by authenticated seller
- * - Handles zero stock case (marks as out of stock but keeps visible)
- * - Verifies ownership before updating
- */
 export async function updateStockController(request, response) {
   try {
     const seller = request.seller;

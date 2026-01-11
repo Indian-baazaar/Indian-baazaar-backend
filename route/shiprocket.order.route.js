@@ -9,6 +9,7 @@ import {
   printManifests,
   cancelOrder,
   getOrders,
+  getCouriersServices,
 } from "../controllers/package.controller.js";
 import {
   CheckrequestCreateOrder,
@@ -18,26 +19,28 @@ import {
   CheckorderIds,
 } from "../Validator/pickUpAddress.validator.js";
 import { endpointSecurity } from '../middlewares/endpointSecurity.js';
-import adminAuth from "../middlewares/adminAuth.js";
+import sellerAuth from "../middlewares/sellerAuth.js";
 
 const ShipRocketOrderRoute = express.Router();
 
-ShipRocketOrderRoute.post("/create-order", adminAuth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckrequestCreateOrder,requestCreateOrder);
+ShipRocketOrderRoute.post("/create-order", sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckrequestCreateOrder,requestCreateOrder);
 
-ShipRocketOrderRoute.post("/assign-awb", adminAuth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckassignAWB, assignAWB);
+ShipRocketOrderRoute.post("/assign-awb", sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckassignAWB, assignAWB);
 
-ShipRocketOrderRoute.post("/generate-label", adminAuth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckshipmentIds, generateLabel);
+ShipRocketOrderRoute.post("/generate-label", sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckshipmentIds, generateLabel);
 
-ShipRocketOrderRoute.post("/generate-invoice", adminAuth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, generateInvoice);
+ShipRocketOrderRoute.post("/generate-invoice", sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, generateInvoice);
 
-ShipRocketOrderRoute.post("/schedule-pickup", adminAuth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckshipmentIds, shipmentPickUp);
+ShipRocketOrderRoute.post("/schedule-pickup", sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckshipmentIds, shipmentPickUp);
 
-ShipRocketOrderRoute.post("/generate-manifest", adminAuth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckshipmentIds, generateManifests);
+ShipRocketOrderRoute.post("/generate-manifest", sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckshipmentIds, generateManifests);
 
-ShipRocketOrderRoute.post("/print-manifest", adminAuth, endpointSecurity({ maxRequests: 10, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, printManifests);
+ShipRocketOrderRoute.post("/print-manifest", sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, printManifests);
 
-ShipRocketOrderRoute.delete("/cancel-order", adminAuth, endpointSecurity({ maxRequests: 5, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, cancelOrder);
+ShipRocketOrderRoute.post("/cancel-order", sellerAuth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), CheckorderIds, cancelOrder);
 
-ShipRocketOrderRoute.get("/get-orders", adminAuth, endpointSecurity({ maxRequests: 20, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getOrders);
+ShipRocketOrderRoute.get("/get-orders", sellerAuth, endpointSecurity({ maxRequests: 200, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), getOrders);
+
+ShipRocketOrderRoute.get("/get-courier-patners", sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 60 * 1000, blockDurationMs: 300000 }), getCouriersServices);
 
 export default ShipRocketOrderRoute;

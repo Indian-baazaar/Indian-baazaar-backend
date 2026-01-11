@@ -18,7 +18,12 @@ const categorySchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
         default: null
-      }
+      },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Seller",
+      required: true
+    }
 },{timestamps:true});
 
 

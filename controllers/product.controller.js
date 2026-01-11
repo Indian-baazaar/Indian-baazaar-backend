@@ -215,6 +215,52 @@ export async function getAllProducts(request, response) {
   }
 }
 
+export async function getUsersAllProducts(req, res) {
+  try {
+    const sellerId = req.userId;
+
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+
+    const filter = {
+      createdBy: sellerId,
+      status: "active" 
+    };
+
+    const cacheKey = `products:seller:${sellerId}:page:${page}:limit:${limit}`;
+    const cached = await getCache(cacheKey);
+    if (cached) return res.status(200).json(cached);
+
+    const [products, total] = await Promise.all([
+      ProductModel.find(filter)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit),
+
+      ProductModel.countDocuments(filter),
+    ]);
+
+    const result = {
+      success: true,
+      error: false,
+      products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+
+    await setCache(cacheKey, result);
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      error: true,
+      message: err.message,
+    });
+  }
+}
+
+
 //get all products by category id
 export async function getAllProductsByCatId(request, response) {
   try {

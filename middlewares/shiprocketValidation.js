@@ -1,4 +1,3 @@
-// Middleware to validate address with Shiprocket before saving
 import { validateAddress } from '../utils/shiprocket.service.js';
 
 export async function shiprocketAddressValidation(req, res, next) {

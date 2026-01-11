@@ -2,7 +2,7 @@ import BlogModel from "../models/blog.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
-import { getCache, setCache, delCache } from '../utils/redisUtil.js';
+import { getCache, setCache, delCache, deleteCacheByPattern } from '../utils/redisUtil.js';
 dotenv.config();
 
 cloudinary.config({
@@ -83,6 +83,7 @@ export async function addBlog(request, response) {
 
     // Invalidate blogs cache
     await delCache('blogs');
+    await deleteCacheByPattern("blogs_*");
 
     return response.status(200).json({
       message: "blog created",

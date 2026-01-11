@@ -2,7 +2,6 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Ensure uploads directory exists
 const uploadsDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -13,13 +12,11 @@ const storage = multer.diskStorage({
         cb(null, uploadsDir);
     },
     filename: function (req, file, cb) {
-        // Sanitize filename
         const sanitizedName = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
         cb(null, `${Date.now()}_${sanitizedName}`);
     },
 });
 
-// File filter to allow only specific types
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|gif|webp|pdf|doc|docx/;
   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());

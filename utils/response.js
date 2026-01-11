@@ -1,12 +1,4 @@
-/**
- * Standardized success response helper
- * @param {Object} res - Express response object
- * @param {Object} options - Response options
- * @param {number} options.code - HTTP status code (default: 200)
- * @param {string} options.message - Success message
- * @param {*} options.data - Response data
- * @returns {Object} Express response
- */
+
 export const successResponse = (res, { code = 200, message, data = null }) => {
   return res.status(code).json({
     success: true,
@@ -16,15 +8,6 @@ export const successResponse = (res, { code = 200, message, data = null }) => {
   });
 };
 
-/**
- * Standardized error response helper
- * @param {Object} res - Express response object
- * @param {Object} options - Error options
- * @param {number} options.code - HTTP status code (default: 500)
- * @param {string} options.message - Error message
- * @param {Array} options.errors - Optional array of validation errors
- * @returns {Object} Express response
- */
 export const errorResponse = (res, { code = 500, message, errors = [] }) => {
   const response = {
     success: false,
@@ -33,24 +16,12 @@ export const errorResponse = (res, { code = 500, message, errors = [] }) => {
   };
 
   if (errors.length > 0) {
-    response.errors = errors;
+    response.error = errors;
   }
 
   return res.status(validateError(code)).json(response);
 };
 
-/**
- * Standardized paginated response helper
- * @param {Object} res - Express response object
- * @param {Object} options - Pagination options
- * @param {number} options.code - HTTP status code (default: 200)
- * @param {string} options.message - Success message
- * @param {Array} options.data - Array of data items
- * @param {number} options.totalCount - Total number of items
- * @param {number} options.currentPage - Current page number
- * @param {number} options.pageSize - Number of items per page
- * @returns {Object} Express response
- */
 export const paginatedResponse = (res, { 
   code = 200, 
   message, 
@@ -73,7 +44,6 @@ export const paginatedResponse = (res, {
   });
 };
 
-// Legacy support - keep existing functions for backward compatibility
 export const success = (res, obj) => {
   console.log("res obj : ", obj.message);
 

@@ -4,7 +4,7 @@ import UserModel from '../models/user.model.js';
 import OrderConfirmationEmail from "../utils/orderEmailTemplate.js";
 import sendEmailFun from "../config/sendEmail.js";
 import dotenv from 'dotenv';
-import { getCache, setCache, delCache } from '../utils/redisUtil.js';
+import { getCache, setCache, delCache, deleteCacheByPattern } from '../utils/redisUtil.js';
 import AddressModel from "../models/address.model.js";
 import ProductModel from "../models/product.modal.js";
 import Razorpay from 'razorpay';
@@ -18,13 +18,13 @@ const razorpay = new Razorpay({
 
 export const createOrderController = async (req, res) => {
   try {
-    const { userId, productIds, quantities, deliveryAddressId } = req.body;
+    const { userId, productIds, quantities, deliveryAddressId, paymentMethod } = req.body;
 
-    if (!userId || !productIds || !quantities || !deliveryAddressId) {
+    if (!userId || !productIds || !quantities || !deliveryAddressId || !paymentMethod) {
       return res.status(400).json({
         success: false,
         message:
-          "All fields are required: userId, productIds, quantities, deliveryAddressId",
+          "All fields are required: userId, productIds, quantities, deliveryAddressId, paymentMethod",
       });
     }
 
@@ -233,13 +233,13 @@ export const verifyPaymentController = async (req, res) => {
 export async function getOrderDetailsController(request, response) {
     try {
         const { page, limit } = request.query;
-        const cacheKey = 'order_list';
+        const cacheKey = `order_list_${page}_perPage_${limit}`;
         const cachedData = await getCache(cacheKey);
         if (cachedData) {
             return response.json(cachedData);
         }
         const orderlist = await OrderModel.find().sort({ createdAt: -1 }).populate('delivery_address userId').skip((page - 1) * limit).limit(parseInt(limit));
-        const total = await OrderModel.countDocuments(orderlist);
+        const total = await OrderModel.countDocuments();
         const responseData = {
             message: "order list",
             data: orderlist,
@@ -249,7 +249,8 @@ export async function getOrderDetailsController(request, response) {
             page: parseInt(page),
             totalPages: Math.ceil(total / limit)
         };
-        await setCache(cacheKey, responseData);
+        let expiry = 60*1;
+        await setCache(cacheKey, responseData, expiry);
         return response.json(responseData);
     } catch (error) {
         return response.status(500).json({
@@ -264,7 +265,7 @@ export async function getUserOrderDetailsController(request, response) {
     try {
         const userId = request.userId;
         const { page, limit } = request.query;
-        const cacheKey = `user_order_list_${userId}`;
+        const cacheKey = `user_order_list_${userId}_${page}_${limit}`;
         const cachedData = await getCache(cacheKey);
         if (cachedData) {
             return response.json(cachedData);
@@ -324,8 +325,6 @@ export const updateOrderStatusController = async (request, response) => {
             return response.status(404).json({ message: "Order not found", error: true, success: false });
         }
 
-        // ✅ Verify seller/retailer owns this order
-        // Only the retailer who owns the order can update its status
         if (request.userId && order.retailerId) {
             if (order.retailerId.toString() !== request.userId.toString()) {
                 return response.status(403).json({
@@ -336,15 +335,11 @@ export const updateOrderStatusController = async (request, response) => {
             }
         }
 
-        // If retailer approves, create shipment in Shiprocket
         let shipmentResult = null;
         if (order_status === 'approved') {
-            // Prepare payload for Shiprocket
             const payload = {
-                // Fill with required fields from order, retailer warehouse, and user delivery address
-                // Example:
                 order_id: order._id,
-                pickup_postcode: order.products[0]?.retailerWarehousePincode, // You must ensure this is available
+                pickup_postcode: order.products[0]?.retailerWarehousePincode,
                 delivery_postcode: order.delivery_address?.pincode,
                 // ...other required Shiprocket fields
             };
@@ -353,11 +348,10 @@ export const updateOrderStatusController = async (request, response) => {
         // Update order status
         order.order_status = order_status;
         await order.save();
-        // Invalidate order-related cache after updating order status
         await delCache('order_list');
+        await deleteCacheByPattern("order_list_*");
         await delCache(`user_order_list_${order.userId}`);
         await delCache('total_orders_count');
-        // Also invalidate retailer-specific cache
         if (order.retailerId) {
             await delCache(`retailer_orders_${order.retailerId}_*`);
         }
@@ -742,37 +736,36 @@ export const totalUsersController = async (request, response) => {
 
 
 
-export async function deleteOrder(request, response) {
-    try {
-        const order = await OrderModel.findById(request.params.id);
-        if (!order) {
-            return response.status(404).json({
-                message: "Order Not found",
-                error: true,
-                success: false
-            })
-        }
+// export async function deleteOrder(request, response) {
+//     try {
+//         const order = await OrderModel.findById(request.params.id);
+//         if (!order) {
+//             return response.status(404).json({
+//                 message: "Order Not found",
+//                 error: true,
+//                 success: false
+//             })
+//         }
 
 
-        const deletedOrder = await OrderModel.findByIdAndDelete(request.params.id);
-
-        if (!deletedOrder) {
-            return response.status(404).json({
-                message: "Order not deleted!",
-                success: false,
-                error: true
-            });
-        }
-
-        return response.status(200).json({
-            success: true,
-            error: false,
-            message: "Order Deleted!",
-        });
-    } catch (error) {
-        return response.status(500).json({ message: error.message || error, error: true, success: false });
-    }
-}
+//         const deletedOrder = await OrderModel.findByIdAndDelete(request.params.id);
+//         if (!deletedOrder) {
+//             return response.status(404).json({
+//                 message: "Order not deleted!",
+//                 success: false,
+//                 error: true
+//             });
+//         }
+//         await deleteCacheByPattern("order_list_*");
+//         return response.status(200).json({
+//             success: true,
+//             error: false,
+//             message: "Order Deleted!",
+//         });
+//     } catch (error) {
+//         return response.status(500).json({ message: error.message || error, error: true, success: false });
+//     }
+// }
 
 export async function getRetailerOrdersController(request, response) {
     try {

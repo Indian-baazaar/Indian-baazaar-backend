@@ -1,11 +1,5 @@
 import ProductModel from '../models/product.modal.js';
 
-/**
- * Create a new product
- * Requirements: 3.1
- * - Creates product with sellerId from authenticated seller
- * - Sets status to 'active' by default
- */
 export async function createProductController(request, response) {
   try {
     const seller = request.seller;
@@ -128,12 +122,6 @@ export async function createProductController(request, response) {
   }
 }
 
-/**
- * Get all products for authenticated seller
- * Requirements: 3.2
- * - Returns only products owned by the seller
- * - Supports pagination
- */
 export async function getProductsController(request, response) {
   try {
     const seller = request.seller;
@@ -188,12 +176,6 @@ export async function getProductsController(request, response) {
   }
 }
 
-/**
- * Get single product by ID
- * Requirements: 3.3
- * - Returns product only if owned by authenticated seller
- * - Verifies ownership before returning
- */
 export async function getProductByIdController(request, response) {
   try {
     const seller = request.seller;
@@ -246,12 +228,6 @@ export async function getProductByIdController(request, response) {
   }
 }
 
-/**
- * Update product
- * Requirements: 3.4, 3.5
- * - Updates product only if owned by authenticated seller
- * - Verifies ownership before updating
- */
 export async function updateProductController(request, response) {
   try {
     const seller = request.seller;
@@ -345,12 +321,6 @@ export async function updateProductController(request, response) {
   }
 }
 
-/**
- * Delete product
- * Requirements: 3.6
- * - Deletes product only if owned by authenticated seller
- * - Verifies ownership before deleting
- */
 export async function deleteProductController(request, response) {
   try {
     const seller = request.seller;

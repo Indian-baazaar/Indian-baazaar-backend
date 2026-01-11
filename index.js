@@ -27,10 +27,12 @@ import notificationRouter from './route/notification.route.js';
 import shipRocketAddressRoute from './route/shiprocket.address.route.js';
 import ShipRocketOrderRoute from './route/shiprocket.order.route.js';
 import shiprocketTrackingRoute from './route/shiprocket.tracking.route.js';
-import adminRouter from './route/admin.route.js';
 import adminSellerRouter from './route/adminSeller.route.js';
-import retailerRouter from './route/retailer.route.js';
 import sellerRouter from './route/seller.route.js';
+import sellerStoreSettingsRouter from './route/sellerStoreSettings.route.js';
+import sellerAnalyticsRouter from './route/sellerAnalytics.route.js';
+import adminSellerSettingsRouter from './route/adminSellerSettings.route.js';
+import messageRouter from './route/message.route.js';
 import { razorpayWebhook } from './controllers/payment.controller.js';
 import { redis } from './config/redisClient.js';
 
@@ -42,7 +44,6 @@ const allowedOrigins = [
   "https://www.indianbaazaar.com",
   "https://admin.indianbaazaar.com",
   "https://www.admin.indianbaazaar.com",
-  "https://vivid-seats-assignment.vercel.app",
   "https://seller.indianbaazaar.com/",
   "http://localhost:8081",
 ];
@@ -80,24 +81,24 @@ app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser())
 app.set('trust proxy', 1);
 
-export const checkBlockedIP = async (req, res, next) => {
-  const forwarded = req.headers['x-forwarded-for'];
-  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
-  try {
-    const isBlocked = await redis.get(`blocked:${ip}`);
-    if (isBlocked) {
-      return res.status(403).json({
-        error: true,
-        success: false,
-        message: 'Your IP address has been blocked due to suspicious activity.'
-      });
-    }
-  } catch (error) {
-    console.error('Error checking blocked IP:', error);
-  }
-  next();
-};
-app.use(checkBlockedIP);
+// export const checkBlockedIP = async (req, res, next) => {
+//   const forwarded = req.headers['x-forwarded-for'];
+//   const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded) || req.ip || req.socket?.remoteAddress;
+//   try {
+//     const isBlocked = await redis.get(`blocked:${ip}`);
+//     if (isBlocked) {
+//       return res.status(403).json({
+//         error: true,
+//         success: false,
+//         message: 'Your IP address has been blocked due to suspicious activity.'
+//       });
+//     }
+//   } catch (error) {
+//     console.error('Error checking blocked IP:', error);
+//   }
+//   next();
+// };
+// app.use(checkBlockedIP);
 
 export const limiter = rateLimit({
   windowMs: 1 * 60 * 1000,
@@ -150,24 +151,31 @@ try {
 
 
 app.use('/api/user',userRouter)
-app.use('/api/category',categoryRouter)
+app.use('/api/seller', sellerRouter);
+app.use('/api/seller', sellerStoreSettingsRouter);
+app.use('/api/seller/analytics', sellerAnalyticsRouter);
+
 app.use('/api/product',productRouter);
+app.use('/api/category',categoryRouter)
 app.use("/api/cart",cartRouter)
 app.use("/api/myList",myListRouter)
 app.use("/api/address",addressRouter)
+
 app.use("/api/homeSlides",homeSlidesRouter)
 app.use("/api/bannerV1",bannerV1Router)
 app.use("/api/bannerList2",bannerList2Router)
+
 app.use("/api/blog",blogRouter)
 app.use("/api/order",orderRouter)
 app.use('/api/notification', notificationRouter)
+
 app.use('/api/shiprocket/pick-up-address',  shipRocketAddressRoute);
 app.use('/api/shiprocket/package',  ShipRocketOrderRoute);
 app.use('/api/shiprocket', shiprocketTrackingRoute);
-app.use('/api/admin', adminRouter);
-app.use('/api/admin/seller', adminSellerRouter);
-app.use('/api/retailer', retailerRouter);
-app.use('/api/seller', sellerRouter);
+
+app.use('/api/manage/admin', adminSellerRouter);
+app.use('/api/admin', adminSellerSettingsRouter);
+app.use('/api/message', messageRouter);
 app.post('/api/payment/webhook', express.json({ type: '*/*' }), razorpayWebhook);
 
 app.use((err, req, res, next) => {

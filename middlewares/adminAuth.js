@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import UserModel from "../models/user.model.js"; 
 import dotenv from 'dotenv';
+import SellerModel from "../models/seller.model.js";
 dotenv.config();
 
 export default async function adminAuth(req, res, next) {
@@ -75,14 +76,16 @@ export async function superAdminAuth(req, res, next) {
       });
     }
 
-    const user = await UserModel.findById(decoded.id);
+    let user = await UserModel.findById(decoded.id);
 
     if (!user) {
+      user = await SellerModel.findById(decoded.id);
+      if (!user) {
       return res.status(404).json({
         message: "User not found",
         success: false,
       });
-    }
+    }}
 
     if (user.role !== "SUPER_ADMIN") {
       return res.status(403).json({

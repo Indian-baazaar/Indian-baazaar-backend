@@ -1,13 +1,3 @@
-/**
- * Helper functions for role-based filtering
- */
-
-/**
- * Build MongoDB filter based on user role
- * @param {Object} user - User object with role and _id
- * @param {Object} baseFilter - Base filter to apply
- * @returns {Object} - Enhanced filter with role-based restrictions
- */
 export function buildRoleBasedFilter(user, baseFilter = {}) {
   if (!user) {
     return baseFilter;
@@ -30,12 +20,6 @@ export function buildRoleBasedFilter(user, baseFilter = {}) {
   return baseFilter;
 }
 
-/**
- * Check if user can modify a resource (ownership check)
- * @param {Object} user - User object with role and _id
- * @param {Object} resource - Resource object with createdBy field
- * @returns {boolean} - True if user can modify
- */
 export function canModifyResource(user, resource) {
   if (!user || !resource) {
     return false;
@@ -54,12 +38,6 @@ export function canModifyResource(user, resource) {
   return false;
 }
 
-/**
- * Filter array of resources based on user role
- * @param {Object} user - User object with role and _id
- * @param {Array} resources - Array of resources to filter
- * @returns {Array} - Filtered resources
- */
 export function filterResourcesByRole(user, resources) {
   if (!user || !resources) {
     return resources;
