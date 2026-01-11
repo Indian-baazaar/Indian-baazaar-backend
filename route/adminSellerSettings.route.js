@@ -8,10 +8,13 @@ import {
   adminOverrideSettingsController,
   removeAdminOverrideController,
   adminUpdateSellerSettingsController,
-  getSettingsAnalyticsController
+  getSettingsAnalyticsController,
+  SupperAdminLoginController
 } from '../controllers/adminSellerSettings.controller.js';
 
 const router = express.Router();
+
+router.post('/login', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), SupperAdminLoginController);
 
 // Get all seller settings with pagination and filters
 router.get('/seller-settings', 
