@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import upload from '../middlewares/multer.js';
-import { createCategory, deleteCategory,  getCategories,  getCategoriesCount, getCategory, getSubCategoriesCount, removeImageFromCloudinary, updatedCategory, uploadImages } from '../controllers/category/category.controller.js';
-import { endpointSecurity } from '../middlewares/endpointSecurity.js';
-import sellerAuth from '../middlewares/sellerAuth.js';
+import upload from '../../middlewares/multer.js';
+import { createCategory, deleteCategory,  getCategories,  getCategoriesCount, getCategory, getSubCategoriesCount, removeImageFromCloudinary, updatedCategory, uploadImages } from '../../controllers/category/category.controller.js';
+import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
+import sellerAuth from '../../middlewares/sellerAuth.js';
 
 const categoryRouter = Router();
 

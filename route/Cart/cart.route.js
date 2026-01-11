@@ -1,7 +1,7 @@
 import { Router } from "express";
-import { addToCartItemController, deleteCartItemQtyController, emptyCartController, getCartItemController, updateCartItemQtyController } from "../controllers/Cart/cart.controller.js";
-import auth from "../middlewares/auth.js";
-import { endpointSecurity } from '../middlewares/endpointSecurity.js';
+import { addToCartItemController, deleteCartItemQtyController, emptyCartController, getCartItemController, updateCartItemQtyController } from "../../controllers/Cart/cart.controller.js";
+import auth from "../../middlewares/auth.js";
+import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
 
 const cartRouter = Router();
 

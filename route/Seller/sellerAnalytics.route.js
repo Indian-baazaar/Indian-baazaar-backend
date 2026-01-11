@@ -1,6 +1,6 @@
 import express from 'express';
-import sellerAuth from '../middlewares/sellerAuth.js';
-import { endpointSecurity } from '../middlewares/endpointSecurity.js';
+import sellerAuth from '../../middlewares/sellerAuth.js';
+import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
 import {
   getRevenueAnalytics,
   getOrderAnalytics,
@@ -12,7 +12,7 @@ import {
   getReviewAnalytics,
   getAdvancedProductAnalytics,
   getTimeBasedAnalytics
-} from '../controllers/Seller/sellerAnalytics.controller.js';
+} from '../../controllers/Seller/sellerAnalytics.controller.js';
 
 const router = express.Router();
 

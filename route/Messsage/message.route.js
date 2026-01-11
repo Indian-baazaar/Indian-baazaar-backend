@@ -7,16 +7,16 @@ import {
     markMessageAsRead,
     getMessageStats,
     deleteMessage
-} from '../controllers/Messages/message.controller.js';
+} from '../../controllers/Messages/message.controller.js';
 import {
     validateCreateMessage,
     validateMessageId,
     validateConversationParams,
     validateMessageQuery,
     validateConversationQuery
-} from '../Validator/message.validator.js';
-import { messageAuth } from '../middlewares/messageAuth.js';
-import sellerAuth from '../middlewares/sellerAuth.js';
+} from '../../Validator/message.validator.js';
+import { messageAuth } from '../../middlewares/messageAuth.js';
+import sellerAuth from '../../middlewares/sellerAuth.js';
 
 const messageRouter = express.Router();
 

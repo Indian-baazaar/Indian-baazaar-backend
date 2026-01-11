@@ -1,6 +1,6 @@
 import express from 'express';
-import sellerAuth from '../middlewares/sellerAuth.js';
-import { endpointSecurity } from '../middlewares/endpointSecurity.js';
+import sellerAuth from '../../middlewares/sellerAuth.js';
+import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
 import { validationResult } from 'express-validator';
 
 import {
@@ -12,7 +12,7 @@ import {
   updateRefundRulesController,
   updateCancellationRulesController,
   updateCodSettingsController
-} from '../controllers/Seller/sellerStoreSettings.controller.js';
+} from '../../controllers/Seller/sellerStoreSettings.controller.js';
 
 import {
   validateStoreBasicSettings,
@@ -22,7 +22,7 @@ import {
   validateRefundRules,
   validateCancellationRules,
   validateCodSettings
-} from '../Validator/sellerStoreSettings.validator.js';
+} from '../../Validator/sellerStoreSettings.validator.js';
 
 // Middleware to handle validation errors
 const handleValidationErrors = (req, res, next) => {

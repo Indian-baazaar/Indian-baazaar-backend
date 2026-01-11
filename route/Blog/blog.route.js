@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import upload from '../middlewares/multer.js';
-import { addBlog, deleteBlog, getBlog, getBlogs, updateBlog, uploadImages } from '../controllers/Blog/blog.controller.js';
-import { endpointSecurity } from '../middlewares/endpointSecurity.js';
-import { superAdminAuth } from '../middlewares/adminAuth.js';
+import upload from '../../middlewares/multer.js';
+import { addBlog, deleteBlog, getBlog, getBlogs, updateBlog, uploadImages } from '../../controllers/Blog/blog.controller.js';
+import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
+import { superAdminAuth } from '../../middlewares/adminAuth.js';
 
 const blogRouter = Router();
 

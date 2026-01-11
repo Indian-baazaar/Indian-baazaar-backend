@@ -1,6 +1,6 @@
 import express from 'express';
-import sellerAuth from '../middlewares/sellerAuth.js';
-import { endpointSecurity } from '../middlewares/endpointSecurity.js';
+import sellerAuth from '../../middlewares/sellerAuth.js';
+import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
 
 import {
   registerSellerController,
@@ -21,7 +21,7 @@ import {
   refreshSellerToken,
   SellerDetails,
   getAllReviewsBySeller,
-} from '../controllers/Seller/seller.controller.js';
+} from '../../controllers/Seller/seller.controller.js';
 
 import {
   createProductController,
@@ -29,22 +29,22 @@ import {
   getProductByIdController,
   updateProductController,
   deleteProductController
-} from '../controllers/Seller/sellerProduct.controller.js';
+} from '../../controllers/Seller/sellerProduct.controller.js';
 
 import {
   getOrdersController,
   getOrderByIdController,
   getOrderStatsController
-} from '../controllers/Seller/sellerOrder.controller.js';
+} from '../../controllers/Seller/sellerOrder.controller.js';
 
 import {
   updateStockController
-} from '../controllers/Seller/sellerInventory.controller.js';
+} from '../../controllers/Seller/sellerInventory.controller.js';
 import {
   getPayoutHistoryController
-} from '../controllers/Seller/sellerPayout.controller.js';
-import { addBankDetails, getSellerBankDetails, updateBankDetails } from '../controllers/Seller/retailer.controller.js';
-import upload from '../middlewares/multer.js';
+} from '../../controllers/Seller/sellerPayout.controller.js';
+import { addBankDetails, getSellerBankDetails, updateBankDetails } from '../../controllers/Seller/retailer.controller.js';
+import upload from '../../middlewares/multer.js';
 
 const router = express.Router();
 

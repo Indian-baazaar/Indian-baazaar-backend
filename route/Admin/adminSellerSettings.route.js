@@ -1,6 +1,6 @@
 import express from 'express';
-import adminAuth from '../middlewares/adminAuth.js'; // Assuming you have admin auth middleware
-import { endpointSecurity } from '../middlewares/endpointSecurity.js';
+import adminAuth from '../../middlewares/adminAuth.js'; // Assuming you have admin auth middleware
+import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
 
 import {
   getAllSellerSettingsController,
@@ -10,7 +10,7 @@ import {
   adminUpdateSellerSettingsController,
   getSettingsAnalyticsController,
   SupperAdminLoginController
-} from '../controllers/Admin/adminSellerSettings.controller.js';
+} from '../../controllers/Admin/adminSellerSettings.controller.js';
 
 const router = express.Router();
 

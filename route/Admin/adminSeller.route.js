@@ -1,37 +1,37 @@
 import express from 'express';
-import { superAdminAuth } from '../middlewares/adminAuth.js';
-import { endpointSecurity } from '../middlewares/endpointSecurity.js';
+import { superAdminAuth } from '../../middlewares/adminAuth.js';
+import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
 
 import {
   getSellersController,
   approveSellerController,
   rejectSellerController,
   toggleSellerStatusController
-} from '../controllers/Admin/adminSeller.controller.js';
+} from '../../controllers/Admin/adminSeller.controller.js';
 
 import {
   getAllProducts,
   updateProduct,
   deleteProduct
-} from '../controllers/Admin/adminProduct.controller.js';
+} from '../../controllers/Admin/adminProduct.controller.js';
 
 import {
   getAllOrders,
   getOrderById,
   getGlobalOrderStats
-} from '../controllers/Admin/adminOrder.controller.js';
+} from '../../controllers/Admin/adminOrder.controller.js';
 
 import {
   createCategory,
   getCategories,
   updateCategory,
   deleteCategory
-} from '../controllers/Admin/adminCategory.controller.js';
+} from '../../controllers/Admin/adminCategory.controller.js';
 
 import {
   getAnalytics
-} from '../controllers/Admin/adminAnalytics.controller.js';
-import { approveSettlement } from '../controllers/Payment/settlement.controller.js';
+} from '../../controllers/Admin/adminAnalytics.controller.js';
+import { approveSettlement } from '../../controllers/Payment/settlement.controller.js';
 
 const router = express.Router();
 

@@ -10,15 +10,15 @@ import {
   cancelOrder,
   getOrders,
   getCouriersServices,
-} from "../controllers/Shiprocket/package.controller.js";
+} from "../../controllers/Shiprocket/package.controller.js";
 import {
   CheckrequestCreateOrder,
   CheckassignAWB,
   CheckshipmentIds,
   CheckorderIds,
-} from "../Validator/pickUpAddress.validator.js";
-import { endpointSecurity } from '../middlewares/endpointSecurity.js';
-import sellerAuth from "../middlewares/sellerAuth.js";
+} from "../../Validator/pickUpAddress.validator.js";
+import { endpointSecurity } from '../../middlewares/endpointSecurity.js';
+import sellerAuth from "../../middlewares/sellerAuth.js";
 
 const ShipRocketOrderRoute = express.Router();
 
