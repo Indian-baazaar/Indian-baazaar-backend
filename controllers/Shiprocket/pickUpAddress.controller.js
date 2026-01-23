@@ -2,7 +2,7 @@ import { ShipRocket } from '../../helper/index.js';
 import { getShiprocketToken } from '../../helper/Shiprocket/shiprocketAuth.js';
 import { response } from '../../utils/index.js';
 import AddressModel from '../../models/Address/address.model.js';
-import UserModel from '../../models/User/user.model.js';
+import SellerModel from '../../models/Seller/seller.model.js';
 export const registerPickUpAddress = async (req, res)=>{
 
   try{
@@ -40,7 +40,7 @@ export const registerPickUpAddress = async (req, res)=>{
       userId,
     };
 
-     let sellerDetails = await UserModel.findById(userId).lean();
+     let sellerDetails = await SellerModel.findById(userId).lean();
      console.log("sellerDetails : ",sellerDetails);
 
     const existingAddress = await AddressModel.findOne(sellerDetails.address_details[0]);
