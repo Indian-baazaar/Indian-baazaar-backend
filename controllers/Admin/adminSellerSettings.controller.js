@@ -4,6 +4,7 @@ import SellerStoreSettingsModel from "../../models/Seller/sellerStoreSettings.mo
 import { delCache } from "../../utils/Redis/redisUtil.js";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
+import OrderModel from "../../models/Orders/order.model.js";
 dotenv.config();
 
 
@@ -417,3 +418,38 @@ export default {
   adminUpdateSellerSettingsController,
   getSettingsAnalyticsController,
 };
+
+export async function getAllOrderDetailsController(request, response) {
+  try {
+    const { page, limit } = request.query;
+    const cacheKey = `order_list_${page}_perPage_${limit}`;
+    const cachedData = await getCache(cacheKey);
+    if (cachedData) {
+      return response.json(cachedData);
+    }
+    const orderlist = await OrderModel.find()
+      .sort({ createdAt: -1 })
+      .populate("delivery_address userId")
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+    const total = await OrderModel.countDocuments();
+    const responseData = {
+      message: "order list",
+      data: orderlist,
+      error: false,
+      success: true,
+      total: total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+    };
+    let expiry = 60 * 1;
+    await setCache(cacheKey, responseData, expiry);
+    return response.json(responseData);
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+}

@@ -1,5 +1,5 @@
 import express from 'express';
-import adminAuth from '../../middlewares/Admin/adminAuth.js'; // Assuming you have admin auth middleware
+import adminAuth, { superAdminAuth } from '../../middlewares/Admin/adminAuth.js'; // Assuming you have admin auth middleware
 import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
 
 import {
@@ -9,7 +9,8 @@ import {
   removeAdminOverrideController,
   adminUpdateSellerSettingsController,
   getSettingsAnalyticsController,
-  SupperAdminLoginController
+  SupperAdminLoginController,
+  getAllOrderDetailsController
 } from '../../controllers/Admin/adminSellerSettings.controller.js';
 
 const router = express.Router();
@@ -57,5 +58,7 @@ router.get('/settings-analytics',
   endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), 
   getSettingsAnalyticsController
 );
+
+router.get('/get-all-orders', superAdminAuth, getAllOrderDetailsController);
 
 export default router;

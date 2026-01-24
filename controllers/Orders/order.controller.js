@@ -249,40 +249,148 @@ export const verifyPaymentController = async (req, res) => {
   }
 };
 
+
 export async function getOrderDetailsController(request, response) {
   try {
-    const { page, limit } = request.query;
-    const cacheKey = `order_list_${page}_perPage_${limit}`;
-    const cachedData = await getCache(cacheKey);
-    if (cachedData) {
-      return response.json(cachedData);
+    const sellerId = request.sellerId;
+
+    if (!sellerId || !mongoose.Types.ObjectId.isValid(sellerId)) {
+      return response.status(401).json({
+        message: "Invalid or missing seller authentication",
+        error: true,
+        success: false,
+      });
     }
-    const orderlist = await OrderModel.find()
-      .sort({ createdAt: -1 })
-      .populate("delivery_address userId")
-      .skip((page - 1) * limit)
-      .limit(parseInt(limit));
-    const total = await OrderModel.countDocuments();
+
+    const page = Math.max(parseInt(request.query.page) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(request.query.limit) || 10, 1), 50);
+
+    const cacheKey = `seller_orders_${sellerId}_p${page}_l${limit}`;
+    const cachedData = await getCache(cacheKey);
+    if (cachedData) return response.json(cachedData);
+
+    let orders;
+    try {
+      orders = await OrderModel.find()
+        .sort({ createdAt: -1 })
+        .populate("delivery_address userId")
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean();
+    } catch (dbError) {
+      console.error("Order fetch failed:", dbError);
+      throw new Error("Failed to fetch orders");
+    }
+
+    if (!orders.length) {
+      return response.json({
+        message: "No orders found",
+        data: [],
+        error: false,
+        success: true,
+        total: 0,
+        page,
+        totalPages: 0,
+      });
+    }
+
+    const allProductIds = [
+      ...new Set(
+        orders.flatMap((order) =>
+          order.products
+            .map((p) => p.productId)
+            .filter((id) => mongoose.Types.ObjectId.isValid(id))
+        )
+      ),
+    ];
+
+    if (!allProductIds.length) {
+      return response.json({
+        message: "No valid products in orders",
+        data: [],
+        error: false,
+        success: true,
+        total: 0,
+        page,
+        totalPages: 0,
+      });
+    }
+
+    let sellerProductSet;
+    try {
+      const products = await ProductModel.find(
+        { _id: { $in: allProductIds } },
+        { _id: 1, createdBy: 1 }
+      ).lean();
+
+      sellerProductSet = new Set(
+        products
+          .filter(
+            (p) => p.createdBy && p.createdBy.toString() === sellerId.toString()
+          )
+          .map((p) => p._id.toString())
+      );
+    } catch (dbError) {
+      console.error("Product lookup failed:", dbError);
+      throw new Error("Failed to map products to seller");
+    }
+
+    if (!sellerProductSet.size) {
+      return response.json({
+        message: "No orders for this seller",
+        data: [],
+        error: false,
+        success: true,
+        total: 0,
+        page,
+        totalPages: 0,
+      });
+    }
+
+    const sellerOrders = [];
+    for (const order of orders) {
+      const sellerProducts = order.products.filter((p) =>
+        sellerProductSet.has(p.productId)
+      );
+
+      if (sellerProducts.length > 0) {
+        sellerOrders.push({
+          ...order,
+          products: sellerProducts,
+          totalAmt: sellerProducts.reduce(
+            (sum, p) => sum + (p.sub_total || p.price * p.quantity),
+            0
+          ),
+        });
+      }
+    }
+
+    const totalSellerOrders = await OrderModel.countDocuments({
+      "products.productId": { $in: [...sellerProductSet] },
+    });
+
     const responseData = {
-      message: "order list",
-      data: orderlist,
+      message: "Seller specific orders",
+      data: sellerOrders,
       error: false,
       success: true,
-      total: total,
-      page: parseInt(page),
-      totalPages: Math.ceil(total / limit),
+      total: totalSellerOrders,
+      page,
+      totalPages: Math.ceil(totalSellerOrders / limit),
     };
-    let expiry = 60 * 1;
-    await setCache(cacheKey, responseData, expiry);
+
+    await setCache(cacheKey, responseData, 60);
     return response.json(responseData);
   } catch (error) {
+    console.error("Seller order controller error:", error);
     return response.status(500).json({
-      message: error.message || error,
+      message: error.message || "Internal server error",
       error: true,
       success: false,
     });
   }
 }
+
 
 export async function getUserOrderDetailsController(request, response) {
   try {
