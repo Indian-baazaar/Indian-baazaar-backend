@@ -135,7 +135,7 @@ export async function createProduct(request, response) {
       productRam: request.body.productRam,
       size: request.body.size,
       productWeight: request.body.productWeight,
-      createdBy: request.userId, 
+      createdBy: request.sellerId, 
     });
 
     product = await product.save();
@@ -217,7 +217,7 @@ export async function getAllProducts(request, response) {
 
 export async function getUsersAllProducts(req, res) {
   try {
-    const sellerId = req.userId;
+    const sellerId = req.sellerId;
 
     const page = Math.max(parseInt(req.query.page) || 1, 1);
     const limit = Math.min(parseInt(req.query.limit) || 10, 50);

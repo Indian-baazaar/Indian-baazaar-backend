@@ -2,7 +2,7 @@ import RetailerBankDetails from '../../models/Seller/retailerBankDetails.model.j
 
 export const checkRetailerBankDetails = async (req, res, next) => {
   try {
-    const retailerId = req.userId; // Assuming req.userId is set by auth middleware
+    const retailerId = req.sellerId; 
 
     const bankDetails = await RetailerBankDetails.findOne({ retailerId });
 

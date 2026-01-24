@@ -6,7 +6,7 @@ import { validateSellerSettings } from "../../middlewares/Seller/sellerSettingsV
 
 const orderRouter = Router();
 
-orderRouter.post('/create', auth, validateSellerSettings, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), createOrderController)
+orderRouter.post('/create', auth, endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), createOrderController)
 orderRouter.post("/verify-payment", auth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), verifyPaymentController);
 orderRouter.get("/order-list", auth, getOrderDetailsController)
 orderRouter.put('/order-status/:id', auth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateOrderStatusController)
