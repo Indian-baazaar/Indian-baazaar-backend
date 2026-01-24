@@ -893,11 +893,18 @@ export async function SellerDetails(request, response) {
       .select("-password -refresh_token")
       .populate("address_details");
 
+
+    let sellerAddressDoc = await AddressModel.findById(user.address_details[0]);
+    if(!sellerAddressDoc.pickup_location || sellerAddressDoc.pickup_location == ""){
+      sellerAddressDoc.pickup_location = false;
+    }
+
     return response.json({
       message: "user details",
       data: user,
       error: false,
       success: true,
+      isPickupLocationSet: sellerAddressDoc.pickup_location,
     });
   } catch (error) {
     return response.status(500).json({

@@ -1,5 +1,6 @@
 import Razorpay from "razorpay";
 import RetailerBankDetails from "../../models/Seller/retailerBankDetails.model.js";
+import AddressModel from "../../models/Address/address.model.js";
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -17,6 +18,7 @@ export const getSellerBankDetails = async (req, res) => {
     }
 
     const sellerId = req.sellerId;
+    const seller = req.seller;
 
     const bankDetails = await RetailerBankDetails.findOne({
       retailerId: sellerId,
@@ -30,10 +32,16 @@ export const getSellerBankDetails = async (req, res) => {
       });
     }
 
+    let sellerAddressDoc = await AddressModel.findById(seller.address_details[0]);
+    if(!sellerAddressDoc.pickup_location || sellerAddressDoc.pickup_location == ""){
+      sellerAddressDoc.pickup_location = false;
+    }
+
     return res.status(200).json({
       success: true,
       error: false,
       data: bankDetails,
+      isPickupLocationSet: sellerAddressDoc.pickup_location,
     });
   } catch (error) {
     return res.status(500).json({

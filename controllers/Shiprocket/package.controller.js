@@ -13,6 +13,7 @@ import UserModel from "../../models/User/user.model.js";
 import AddressModel from "../../models/Address/address.model.js";
 import { buildShiprocketOrderPayload } from "../../utils/Shiprocket/shiprocketPayloadBuilder.js";
 import mongoose from "mongoose";
+import SellerModel from "../../models/Seller/seller.model.js";
 
 export const requestCreateOrder = async (req, res) => {
   try {
@@ -31,7 +32,7 @@ export const requestCreateOrder = async (req, res) => {
     const user = await UserModel.findById(userId).lean();
     if (!user) throw { code: 404, message: "User not found" };
 
-    const seller = await UserModel.findById(sellerId).lean();
+    const seller = await SellerModel.findById(sellerId).lean();
     if (!seller) throw { code: 404, message: "Seller not found" };
 
     // Validate seller has pickup address
@@ -46,6 +47,7 @@ export const requestCreateOrder = async (req, res) => {
     const deliveryAddress = await AddressModel.findById(
       order.delivery_address
     ).lean();
+
     if (!deliveryAddress) {
       throw { code: 404, message: "Delivery address not found" };
     }
@@ -55,13 +57,7 @@ export const requestCreateOrder = async (req, res) => {
       _id: { $in: productIds },
     }).lean();
 
-    const payload = await buildShiprocketOrderPayload({
-      order,
-      user,
-      seller,
-      products,
-      deliveryAddress,
-    });
+    const payload = await buildShiprocketOrderPayload({order,user,seller,products,deliveryAddress});
 
     let token = await getShiprocketToken();
     const shipRocket = new ShipRocket(token);

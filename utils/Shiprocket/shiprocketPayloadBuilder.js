@@ -22,6 +22,8 @@ export const buildShiprocketOrderPayload = async ({ order, user, seller, product
   const weightVal = sampleProd.productWeight && sampleProd.productWeight.length ? parseFloat(sampleProd.productWeight[0]) || 0.5 : 0.5;
 
   const sellerAddressDoc = await AddressModel.findById(seller.address_details[0]);
+  console.log("sellerAddressDoc : ",sellerAddressDoc);
+  
   if (!sellerAddressDoc?.pickup_location) {
     throw new Error("Missing required fields: pickup_location");
   }
