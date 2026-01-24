@@ -61,7 +61,7 @@ export const messageAuth = async (req, res, next) => {
             return res.status(404).json({
                 success: false,
                 error: true,
-                message: 'User not found'
+                message: 'Admin not found'
             });
         }
 

@@ -29,7 +29,7 @@ export default async function adminAuth(req, res, next) {
 
     if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        message: "Seller not found",
         success: false,
       });
     }
@@ -82,7 +82,7 @@ export async function superAdminAuth(req, res, next) {
       user = await SellerModel.findById(decoded.id);
       if (!user) {
       return res.status(404).json({
-        message: "User not found",
+        message: "seller not found",
         success: false,
       });
     }}

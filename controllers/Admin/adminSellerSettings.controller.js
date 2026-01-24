@@ -32,7 +32,7 @@ export const SupperAdminLoginController = async (request, response) => {
 
     if (!admin) {
       return response.status(400).json({
-        message: "User not register",
+        message: "SupperAdmin not register",
         error: true,
         success: false,
       });

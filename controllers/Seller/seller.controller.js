@@ -210,7 +210,7 @@ export async function loginSellerController(request, response) {
 
     if (!user) {
       return response.status(400).json({
-        message: "User not register",
+        message: "Seller not register",
         error: true,
         success: false,
       });
@@ -677,7 +677,7 @@ export async function SellerAvatarController(request, response) {
 
     if (!user) {
       return response.status(500).json({
-        message: "User not found",
+        message: "Seller not found",
         error: true,
         success: false,
       });
