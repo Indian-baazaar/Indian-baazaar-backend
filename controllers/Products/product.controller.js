@@ -169,12 +169,19 @@ export async function createProduct(request, response) {
     } catch (e) {
       console.error('Notification creation failed:', e);
     }
-    return response.status(200).json({ message: "Product Created successfully", error: false, success: true, product: product });
+    return response.status(200).json({ 
+      message: "Product Created successfully", 
+      error: false, 
+      success: true, 
+      product: product,
+      isPickupLocationSet: true,
+    });
   } catch (error) {
     return response.status(500).json({
       message: error.message || error,
       error: true,
       success: false,
+      isPickupLocationSet: true,
     });
   }
 }

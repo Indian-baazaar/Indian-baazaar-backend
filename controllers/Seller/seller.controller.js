@@ -895,8 +895,11 @@ export async function SellerDetails(request, response) {
 
 
     let sellerAddressDoc = await AddressModel.findById(user.address_details[0]);
-    if(!sellerAddressDoc.pickup_location || sellerAddressDoc.pickup_location == ""){
-      sellerAddressDoc.pickup_location = false;
+    let pickup_location = null;
+    if (sellerAddressDoc.pickup_location && sellerAddressDoc.pickup_location.trim() != "") {
+      pickup_location = true;
+    } else {
+      pickup_location = true;
     }
 
     return response.json({
@@ -904,7 +907,7 @@ export async function SellerDetails(request, response) {
       data: user,
       error: false,
       success: true,
-      isPickupLocationSet: sellerAddressDoc.pickup_location,
+      isPickupLocationSet: pickup_location,
     });
   } catch (error) {
     return response.status(500).json({

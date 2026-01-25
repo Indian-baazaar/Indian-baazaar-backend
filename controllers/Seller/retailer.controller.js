@@ -10,19 +10,13 @@ const razorpay = new Razorpay({
 export const getSellerBankDetails = async (req, res) => {
   try {
     if (!req.sellerId) {
-      return res.status(401).json({
-        success: false,
-        error: true,
-        message: "Unauthorized",
-      });
+      return res.status(401).json({ success: false, error: true, message: "Unauthorized" });
     }
 
     const sellerId = req.sellerId;
     const seller = req.seller;
 
-    const bankDetails = await RetailerBankDetails.findOne({
-      retailerId: sellerId,
-    }).select("-accountNumber");
+    const bankDetails = await RetailerBankDetails.findOne({ retailerId: sellerId });
 
     if (!bankDetails) {
       return res.status(404).json({
@@ -32,16 +26,16 @@ export const getSellerBankDetails = async (req, res) => {
       });
     }
 
-    let sellerAddressDoc = await AddressModel.findById(seller.address_details[0]);
-    if(!sellerAddressDoc.pickup_location || sellerAddressDoc.pickup_location == ""){
-      sellerAddressDoc.pickup_location = false;
-    }
+    const addressId = seller?.address_details?.[0];
+    const sellerAddressDoc = addressId ? await AddressModel.findById(addressId) : null;
+
+    const isPickupLocationSet = !!sellerAddressDoc?.pickup_location?.trim();
 
     return res.status(200).json({
       success: true,
       error: false,
       data: bankDetails,
-      isPickupLocationSet: sellerAddressDoc.pickup_location,
+      isPickupLocationSet,
     });
   } catch (error) {
     return res.status(500).json({
@@ -55,14 +49,10 @@ export const getSellerBankDetails = async (req, res) => {
 export const addBankDetails = async (req, res) => {
   try {
     if (!req.sellerId) {
-      return res.status(401).json({
-        success: false,
-        error: true,
-        message: "Unauthorized",
-      });
+      return res.status(401).json({ success: false, error: true, message: "Unauthorized" });
     }
-    const retailerId = req.sellerId;
 
+    const retailerId = req.sellerId;
     const {
       accountHolderName,
       bankName,
@@ -78,7 +68,7 @@ export const addBankDetails = async (req, res) => {
       return res.status(400).json({
         success: false,
         error: true,
-        message: "All required fields are mandatory",
+        message: "Account holder name, bank name, account number and IFSC are required",
       });
     }
 
@@ -87,7 +77,7 @@ export const addBankDetails = async (req, res) => {
       return res.status(409).json({
         success: false,
         error: true,
-        message: "Bank details already added",
+        message: "Bank details already exist. Please update instead.",
       });
     }
 
@@ -106,7 +96,7 @@ export const addBankDetails = async (req, res) => {
       },
     });
 
-    const bankDetails = new RetailerBankDetails({
+    const bankDetails = await RetailerBankDetails.create({
       retailerId,
       accountHolderName,
       bankName,
@@ -120,16 +110,16 @@ export const addBankDetails = async (req, res) => {
       accountType,
     });
 
-    await bankDetails.save();
+    const safeData = bankDetails.toObject();
+    delete safeData.accountNumber;
 
     return res.status(201).json({
       success: true,
       error: false,
       message: "Bank details added successfully",
-      data: bankDetails,
+      data: safeData,
     });
   } catch (err) {
-    console.error("Razorpay Error:", err);
     return res.status(500).json({
       success: false,
       error: true,
@@ -141,15 +131,10 @@ export const addBankDetails = async (req, res) => {
 export const updateBankDetails = async (req, res) => {
   try {
     if (!req.sellerId) {
-      return res.status(401).json({
-        success: false,
-        error: true,
-        message: "Unauthorized",
-      });
+      return res.status(401).json({ success: false, error: true, message: "Unauthorized" });
     }
 
     const retailerId = req.sellerId;
-
     const {
       accountHolderName,
       bankName,
@@ -165,7 +150,7 @@ export const updateBankDetails = async (req, res) => {
       return res.status(400).json({
         success: false,
         error: true,
-        message: "All required fields are mandatory",
+        message: "Account holder name, bank name, account number and IFSC are required",
       });
     }
 
@@ -188,26 +173,28 @@ export const updateBankDetails = async (req, res) => {
       },
     });
 
-    existing.panNumber = panNumber,
-    existing.accountType = accountType,
     existing.accountHolderName = accountHolderName;
     existing.bankName = bankName;
     existing.accountNumber = accountNumber;
     existing.ifscCode = ifscCode;
     existing.branchName = branchName;
     existing.upiId = upiId;
+    existing.panNumber = panNumber;
+    existing.accountType = accountType;
     existing.razorpayFundAccountId = fundAccount.id;
 
     await existing.save();
+
+    const safeData = existing.toObject();
 
     return res.status(200).json({
       success: true,
       error: false,
       message: "Bank details updated successfully",
-      data: existing,
+      data: safeData,
     });
+
   } catch (err) {
-    console.error("Razorpay Error:", err);
     return res.status(500).json({
       success: false,
       error: true,

@@ -8,7 +8,6 @@ export const checkRetailerBankDetails = async (req, res, next) => {
 
     const bankDetails = await RetailerBankDetails.findOne({ retailerId });
     let sellerAddressDoc = await AddressModel.findById(seller.address_details[0]);
-
     if (!bankDetails) {
       return res.status(400).json({
         error: true,
@@ -17,13 +16,15 @@ export const checkRetailerBankDetails = async (req, res, next) => {
       });
     }
 
-    if(!sellerAddressDoc.pickup_location || sellerAddressDoc.pickup_location == ""){
-      return res.json({
+     const isPickupLocationSet = !!sellerAddressDoc?.pickup_location?.trim();
+
+    if (!isPickupLocationSet) {
+      return res.status(400).json({
         error: true,
         success: false,
-        message: 'Please set your pickup location address before proceeding',
+        message: "Please set your pickup location address before proceeding",
         isPickupLocationSet: false,
-      }); 
+      });
     }
 
     next();
