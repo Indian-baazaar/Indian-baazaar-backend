@@ -8,9 +8,8 @@ const retailerBankDetailsSchema = new mongoose.Schema({
   ifscCode: { type: String, required: true },
   branchName: { type: String },
   upiId: { type: String },
-  panNumeber: { type: String },
+  panNumber: { type: String },
   razorpayFundAccountId: { type: String }, 
-  panNumber : {type : String},
   accountType : {type : String},
 }, { timestamps: true });
 

@@ -146,15 +146,16 @@ export const updateBankDetails = async (req, res) => {
       accountType,
     } = req.body;
 
-    if (!accountHolderName || !bankName || !accountNumber || !ifscCode) {
+    if (!accountHolderName || !bankName || !accountNumber || !ifscCode || !branchName || !panNumber || !accountType) {
       return res.status(400).json({
         success: false,
         error: true,
-        message: "Account holder name, bank name, account number and IFSC are required",
+        message: "All fields are required",
       });
     }
 
     const existing = await RetailerBankDetails.findOne({ retailerId });
+    console.log("existing : ",existing);
     if (!existing) {
       return res.status(404).json({
         success: false,
@@ -172,7 +173,7 @@ export const updateBankDetails = async (req, res) => {
         account_number: accountNumber,
       },
     });
-
+    
     existing.accountHolderName = accountHolderName;
     existing.bankName = bankName;
     existing.accountNumber = accountNumber;
@@ -184,14 +185,11 @@ export const updateBankDetails = async (req, res) => {
     existing.razorpayFundAccountId = fundAccount.id;
 
     await existing.save();
-
-    const safeData = existing.toObject();
-
     return res.status(200).json({
       success: true,
       error: false,
       message: "Bank details updated successfully",
-      data: safeData,
+      data: existing,
     });
 
   } catch (err) {

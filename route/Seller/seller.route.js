@@ -70,7 +70,7 @@ router.put('/user-avatar', sellerAuth, endpointSecurity({ maxRequests: 100, wind
 
 router.delete('/deteleImage', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), removeSellerImageFromCloudinary);
 
-router.put('/:id', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateSellerDetails);
+router.put('/update-seller-profile/:id', sellerAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateSellerDetails);
 
 router.post('/refresh-token', endpointSecurity({ maxRequests: 200, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), refreshSellerToken)
 
