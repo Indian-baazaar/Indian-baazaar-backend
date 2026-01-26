@@ -9,7 +9,8 @@ import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 import ReviewModel from "../../models/Review/reviews.model.js.js";
 import dotenv from "dotenv";
-import { delCache } from "../../utils/Redis/redisUtil.js";
+import { delCache, getCache, setCache } from "../../utils/Redis/redisUtil.js";
+import OrderModel from "../../models/Orders/order.model.js";
 
 dotenv.config();
 
@@ -492,7 +493,7 @@ export async function removeImageFromCloudinary(request, response) {
 export async function updateUserDetails(request, response) {
   try {
     const userId = request.userId; //auth middleware
-    const { name, email, mobile, password } = request.body;
+    const { name, email, mobile } = request.body;
 
     const userExist = await UserModel.findById(userId);
     if (!userExist)
@@ -825,6 +826,44 @@ export async function userDetails(request, response) {
     });
   }
 }
+
+export async function getUserOrderDetailsController(request, response) {
+  try {
+    const userId = request.userId;
+    const { page, limit } = request.query;
+    const cacheKey = `user_order_list_${userId}_${page}_${limit}`;
+    const cachedData = await getCache(cacheKey);
+    if (cachedData) {
+      return response.json(cachedData);
+    }
+    const orderlist = await OrderModel.find({ userId: userId })
+      .sort({ createdAt: -1 })
+      .populate("delivery_address userId")
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit));
+    const orderTotal = await OrderModel.find({ userId: userId })
+      .sort({ createdAt: -1 })
+      .populate("delivery_address userId");
+    const total = orderTotal?.length;
+    const responseData = {
+      message: "order list",
+      data: orderlist,
+      error: false,
+      success: true,
+      total: total,
+      page: parseInt(page),
+      totalPages: Math.ceil(total / limit),
+    };
+    await setCache(cacheKey, responseData);
+    return response.json(responseData);
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
 
 //review controller
 export async function addReview(request, response) {

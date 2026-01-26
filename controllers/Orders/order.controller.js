@@ -394,7 +394,7 @@ export async function getOrderDetailsController(request, response) {
 
 export async function getUserOrderDetailsController(request, response) {
   try {
-    const userId = request.userId;
+    const userId = request.sellerId;
     const { page, limit } = request.query;
     const cacheKey = `user_order_list_${userId}_${page}_${limit}`;
     const cachedData = await getCache(cacheKey);

@@ -5,7 +5,6 @@ export const addToCartItemController = async (request, response) => {
     try {
         const userId = request.userId
         const { productTitle, image, rating, price, oldPrice, quantity, subTotal, productId, countInStock, discount,size, weight, ram, brand } = request.body
-
         if (!productId) {
             return response.status(402).json({
                 message: "Provide productId",
@@ -13,20 +12,15 @@ export const addToCartItemController = async (request, response) => {
                 success: false
             })
         }
-
-
         const checkItemCart = await CartProductModel.findOne({
             userId: userId,
             productId: productId
         })
-
         if (checkItemCart) {
             return response.status(400).json({
                 message: "Item already in cart"
             })
         }
-
-
         const cartItem = new CartProductModel({
             productTitle:productTitle,
             image:image,
@@ -34,7 +28,7 @@ export const addToCartItemController = async (request, response) => {
             price:price,
             oldPrice:oldPrice,
             quantity:quantity,
-            sub_total:subTotal,
+            subTotal:subTotal,
             productId:productId,
             countInStock:countInStock,
             userId:userId,
@@ -44,9 +38,7 @@ export const addToCartItemController = async (request, response) => {
             weight:weight,
             ram:ram
         })
-
         const save = await cartItem.save();
-        // Invalidate cart cache for user
         await delCache(`cart_${userId}`);
         return response.status(200).json({
             data: save,
@@ -54,8 +46,6 @@ export const addToCartItemController = async (request, response) => {
             error: false,
             success: true
         })
-
-
     } catch (error) {
         return response.status(500).json({
             message: error.message || error,
@@ -64,7 +54,6 @@ export const addToCartItemController = async (request, response) => {
         })
     }
 }
-
 
 export const getCartItemController = async (request, response) => {
     try {
@@ -93,18 +82,13 @@ export const getCartItemController = async (request, response) => {
 
 export const updateCartItemQtyController = async (request, response) => {
     try {
-
         const userId = request.userId
         const { _id, qty , sub_total, size, weight, ram} = request.body
-
-
-
         if (!_id || !qty) {
             return response.status(400).json({
                 message: "provide _id, qty"
             })
         }
-
         const updateCartitem = await CartProductModel.updateOne(
             {
                 _id: _id,
@@ -112,14 +96,13 @@ export const updateCartItemQtyController = async (request, response) => {
             },
             {
                 quantity: qty,
-                sub_total:sub_total,
+                subTotal: sub_total,
                 size:size,
                 ram:ram,
                 weight:weight
             },
             { new: true }
         )
-        // Invalidate cart cache for user
         await delCache(`cart_${userId}`);
         return response.json({
             message: "Update cart item",
@@ -127,9 +110,6 @@ export const updateCartItemQtyController = async (request, response) => {
             error: false,
             data: updateCartitem
         })
-
-
-
     } catch (error) {
         return response.status(500).json({
             message: error.message || error,
@@ -142,10 +122,8 @@ export const updateCartItemQtyController = async (request, response) => {
 
 export const deleteCartItemQtyController = async (request, response) => {
     try {
-        const userId = request.userId // middleware
-        const { id } = request.params
-
-
+        const userId = request.userId;
+        const { id } = request.params;
         if(!id){
             return response.status(400).json({
                 message : "Provide _id",
@@ -153,10 +131,7 @@ export const deleteCartItemQtyController = async (request, response) => {
                 success : false
             })
           }
-
-
           const deleteCartItem  = await CartProductModel.deleteOne({_id : id, userId : userId })
-          // Invalidate cart cache for user
           await delCache(`cart_${userId}`);
           if(!deleteCartItem){
             return response.status(404).json({
@@ -165,16 +140,12 @@ export const deleteCartItemQtyController = async (request, response) => {
                 success:false
             })
           }
-         
-
           return response.status(200).json({
             message : "Item remove",
             error : false,
             success : true,
             data : deleteCartItem
           })
-
-
     } catch (error) {
         return response.status(500).json({
             message: error.message || error,
@@ -184,13 +155,9 @@ export const deleteCartItemQtyController = async (request, response) => {
     }
 }
 
-
-
 export const emptyCartController = async (request, response) => {
     try {
-        const userId = request.userId; // From auth middleware
-        
-        // Security: Verify user can only empty their own cart
+        const userId = request.userId;
         if (!userId) {
             return response.status(401).json({
                 message: "Unauthorized",
@@ -198,16 +165,13 @@ export const emptyCartController = async (request, response) => {
                 success: false
             });
         }
-
         await CartProductModel.deleteMany({userId: userId});
-        // Invalidate cart cache for user
         await delCache(`cart_${userId}`);
         return response.status(200).json({
             message: "Cart emptied successfully",
             error: false,
             success: true,
         });
-
     } catch (error) {
         return response.status(500).json({
             message: error.message || error,

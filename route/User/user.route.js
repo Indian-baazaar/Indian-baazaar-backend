@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import {addReview, authWithGoogle, changePasswordController, forgotPasswordController, getAllReviews, getAllUsers, getReviews, loginUserController, logoutController, refreshToken, registerUserController, removeImageFromCloudinary, resetpassword, updateUserDetails, userAvatarController, userDetails, verifyEmailController, verifyForgotPasswordOtp} from '../../controllers/User/user.controller.js';
+import {addReview, authWithGoogle, changePasswordController, forgotPasswordController, getAllReviews, getAllUsers, getReviews, getUserOrderDetailsController, loginUserController, logoutController, refreshToken, registerUserController, removeImageFromCloudinary, resetpassword, updateUserDetails, userAvatarController, userDetails, verifyEmailController, verifyForgotPasswordOtp} from '../../controllers/User/user.controller.js';
 import auth from '../../middlewares/Basic/auth.js';
 import upload from '../../middlewares/Basic/multer.js';
 import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
@@ -21,7 +21,7 @@ userRouter.put('/user-avatar',  endpointSecurity({ maxRequests: 100, windowMs: 1
 
 userRouter.delete('/deteleImage',auth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), removeImageFromCloudinary);
 
-userRouter.put('/:id', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateUserDetails);
+userRouter.put('/:id',auth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updateUserDetails);
 
 userRouter.post('/forgot-password', endpointSecurity({ maxRequests: 60, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), forgotPasswordController)
 
@@ -43,5 +43,6 @@ userRouter.get('/getAllReviews',endpointSecurity({ maxRequests: 100, windowMs: 1
 
 userRouter.get('/getAllUsers', superAdminAuth, endpointSecurity({ maxRequests: 100, windowMs: 1 * 60 * 1000, blockDurationMs: 3600000 }), getAllUsers);
 
+userRouter.get("/order-list", auth, getUserOrderDetailsController)
 
 export default userRouter

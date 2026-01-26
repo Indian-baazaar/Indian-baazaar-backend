@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { createOrderController, getOrderDetailsController, getTotalOrdersCountController, getUserOrderDetailsController, totalSalesController, totalUsersController, updateOrderStatusController, verifyPaymentController, getRetailerOrdersController } from "../../controllers/Orders/order.controller.js";
 import { endpointSecurity } from "../../middlewares/validation/endpointSecurity.js";
-import { validateSellerSettings } from "../../middlewares/Seller/sellerSettingsValidation.js";
 import sellerAuth from "../../middlewares/Seller/sellerAuth.js";
 
 const orderRouter = Router();

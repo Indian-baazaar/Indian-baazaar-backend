@@ -36,7 +36,7 @@ const cartProductSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    sub_total:{
+    subTotal:{
         type:Number,
         required:true
     },
