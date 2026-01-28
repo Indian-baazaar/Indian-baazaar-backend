@@ -23,9 +23,31 @@ export const delCache = async (key) => {
   } catch (err) {}
 };
 
+// export const deleteCacheByPattern = async (pattern) => {
+//     const keys = await redisClient.keys(pattern);
+//     if (keys.length > 0) {
+//         await redisClient.del(keys);
+//     }
+// };
+
 export const deleteCacheByPattern = async (pattern) => {
-    const keys = await redisClient.keys(pattern);
-    if (keys.length > 0) {
+  try {
+    let cursor = '0';
+    do {
+      const reply = await redisClient.scan(cursor, {
+        MATCH: pattern,
+        COUNT: 100,
+      });
+
+      cursor = reply.cursor;
+      const keys = reply.keys;
+
+      if (keys.length > 0) {
         await redisClient.del(keys);
-    }
+      }
+    } while (cursor !== '0');
+  } catch (err) {
+    console.error('Redis pattern delete error:', err);
+  }
 };
+

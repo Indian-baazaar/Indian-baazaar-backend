@@ -1,6 +1,6 @@
 import NotificationModel from '../../models/Notifications/notification.model.js';
 import UserModel from '../../models/User/user.model.js';
-import { getCache, setCache, delCache } from '../../utils/Redis/redisUtil.js';
+import { getCache, setCache, delCache, deleteCacheByPattern } from '../../utils/Redis/redisUtil.js';
 
 export async function getNotifications(request, response) {
   try {
@@ -45,7 +45,6 @@ export async function markAsRead(request, response) {
     }
     notif.read = true;
     await notif.save();
-    // Invalidate notification cache for user
     await delCache(`notifications_${userId}`);
     return response.status(200).json({ message: 'Notification marked as read', error: false, success: true });
   } catch (error) {
@@ -73,10 +72,7 @@ export async function createNotification(request, response) {
       read: false,
     }));
     await NotificationModel.insertMany(docs);
-    // Invalidate notification cache for all users
-    for (const u of users) {
-      await delCache(`notifications_${u._id}`);
-    }
+   await deleteCacheByPattern('notifications_*');
     return response.status(200).json({ message: 'Notifications created', error: false, success: true });
   } catch (error) {
     console.error('createNotification error:', error);

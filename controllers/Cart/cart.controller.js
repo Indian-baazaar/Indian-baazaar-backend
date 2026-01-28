@@ -2,58 +2,74 @@ import CartProductModel from "../../models/Cart/cartProduct.modal.js";
 import { getCache, setCache, delCache } from '../../utils/Redis/redisUtil.js';
 
 export const addToCartItemController = async (request, response) => {
-    try {
-        const userId = request.userId
-        const { productTitle, image, rating, price, oldPrice, quantity, subTotal, productId, countInStock, discount,size, weight, ram, brand } = request.body
-        if (!productId) {
-            return response.status(402).json({
-                message: "Provide productId",
-                error: true,
-                success: false
-            })
-        }
-        const checkItemCart = await CartProductModel.findOne({
-            userId: userId,
-            productId: productId
-        })
-        if (checkItemCart) {
-            return response.status(400).json({
-                message: "Item already in cart"
-            })
-        }
-        const cartItem = new CartProductModel({
-            productTitle:productTitle,
-            image:image,
-            rating:rating,
-            price:price,
-            oldPrice:oldPrice,
-            quantity:quantity,
-            subTotal:subTotal,
-            productId:productId,
-            countInStock:countInStock,
-            userId:userId,
-            brand:brand,
-            discount:discount,
-            size:size,
-            weight:weight,
-            ram:ram
-        })
-        const save = await cartItem.save();
-        await delCache(`cart_${userId}`);
-        return response.status(200).json({
-            data: save,
-            message: "Item add successfully",
-            error: false,
-            success: true
-        })
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        })
+  try {
+    const userId = request.userId;
+    const { productTitle, image, rating, price, oldPrice, quantity, subTotal, productId, countInStock, discount, size, weight, ram, brand } = request.body;
+
+    if (!productId) {
+      return response.status(400).json({
+        message: "Provide productId",
+        error: true,
+        success: false
+      });
     }
-}
+
+    const existingItem = await CartProductModel.findOne({
+      userId,
+      productId
+    });
+
+    if (existingItem) {
+      existingItem.quantity += quantity;
+      existingItem.subTotal = existingItem.quantity * price;
+
+      await existingItem.save();
+      await delCache(`cart_${userId}`);
+
+      return response.status(200).json({
+        message: "Cart item quantity updated",
+        error: false,
+        success: true,
+        data: existingItem
+      });
+    }
+
+    const cartItem = new CartProductModel({
+      productTitle,
+      image,
+      rating,
+      price,
+      oldPrice,
+      quantity,
+      subTotal,
+      productId,
+      countInStock,
+      userId,
+      brand,
+      discount,
+      size,
+      weight,
+      ram
+    });
+
+    const save = await cartItem.save();
+    await delCache(`cart_${userId}`);
+
+    return response.status(200).json({
+      message: "Item added to cart",
+      error: false,
+      success: true,
+      data: save
+    });
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false
+    });
+  }
+};
+
 
 export const getCartItemController = async (request, response) => {
     try {
@@ -65,7 +81,7 @@ export const getCartItemController = async (request, response) => {
         }
         const cartItems = await CartProductModel.find({ userId: userId });
         const responseData = {
-            data: cartItems,
+            cartItems,
             error: false,
             success: true
         };
