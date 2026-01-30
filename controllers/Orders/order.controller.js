@@ -30,8 +30,7 @@ export const createOrderController = async (req, res) => {
   try {
     const { userId, productIds, quantities, deliveryAddressId, paymentMethod } =
       req.body;
-
-      console.log(userId, productIds, quantities, deliveryAddressId, paymentMethod);
+     console.log("anish",userId, productIds, quantities, deliveryAddressId, paymentMethod);
     if (
       !userId ||
       !productIds ||
@@ -60,7 +59,6 @@ export const createOrderController = async (req, res) => {
       mongoose.Types.ObjectId.createFromHexString(id),
     );
 
-    // ===== User & Address =====
     const user = await UserModel.findById(userId);
     if (!user)
       return res
@@ -79,7 +77,6 @@ export const createOrderController = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Address not serviceable" });
 
-    // ===== Fetch products properly =====
     const products = await ProductModel.find({
       _id: { $in: objectProductIds },
     });
@@ -94,7 +91,6 @@ export const createOrderController = async (req, res) => {
     let grandTotal = 0;
     const orders = [];
 
-    // ===== Create orders =====
     for (let i = 0; i < productIds.length; i++) {
       const product = products.find((p) => p._id.toString() === productIds[i]);
 
@@ -249,7 +245,6 @@ export const verifyPaymentController = async (req, res) => {
   }
 };
 
-
 export async function getOrderDetailsController(request, response) {
   try {
     const sellerId = request.sellerId;
@@ -390,7 +385,6 @@ export async function getOrderDetailsController(request, response) {
     });
   }
 }
-
 
 export async function getUserOrderDetailsController(request, response) {
   try {

@@ -97,7 +97,7 @@ const orderSchema = new mongoose.Schema({
     },
     delivery_address: {
         type: mongoose.Schema.ObjectId,
-        ref: 'address'
+        ref: 'Address'
     },
     deliveredAt : {
         type: Date,
@@ -112,7 +112,7 @@ const orderSchema = new mongoose.Schema({
     },
     retailerId : {
         type : mongoose.Schema.ObjectId,
-        ref : 'Retailer'
+        ref : 'SellerModel'
     },
     paymentApprovalByAdmin: {
         type: Boolean,
