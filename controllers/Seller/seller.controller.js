@@ -884,34 +884,49 @@ export async function refreshSellerToken(request, response) {
   }
 }
 
-//get login user details
 export async function SellerDetails(request, response) {
   try {
-    const userId = request.sellerId;
+    const sellerId = request.sellerId;
 
-    const user = await SellerModel.findById(userId)
+    if (!sellerId) {
+      return response.status(401).json({
+        message: "Unauthorized",
+        error: true,
+        success: false,
+      });
+    }
+
+    const seller = await SellerModel.findById(sellerId)
       .select("-password -refresh_token")
       .populate("address_details");
 
-
-    let sellerAddressDoc = await AddressModel.findById(user.address_details[0]);
-    let pickup_location = null;
-    if (sellerAddressDoc.pickup_location && sellerAddressDoc.pickup_location.trim() != "") {
-      pickup_location = true;
-    } else {
-      pickup_location = true;
+    if (!seller) {
+      return response.status(404).json({
+        message: "Seller not found",
+        error: true,
+        success: false,
+      });
     }
 
-    return response.json({
-      message: "user details",
-      data: user,
+    let isPickupLocationSet = false;
+
+    if (seller.address_details && seller.address_details.length > 0) {
+      const firstAddress = seller.address_details[0]; 
+      isPickupLocationSet = !!firstAddress?.pickup_location?.trim();
+    }
+
+    return response.status(200).json({
+      message: "Seller details fetched successfully",
+      data: seller,
       error: false,
       success: true,
-      isPickupLocationSet: pickup_location,
+      isPickupLocationSet,
     });
+
   } catch (error) {
+    console.log("error :",error);
     return response.status(500).json({
-      message: "Something is wrong",
+      message: error.message || "Something went wrong",
       error: true,
       success: false,
     });
