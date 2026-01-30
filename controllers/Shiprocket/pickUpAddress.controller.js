@@ -6,13 +6,13 @@ import SellerModel from '../../models/Seller/seller.model.js';
 export const registerPickUpAddress = async (req, res)=>{
 
   try{
-    const { email, phone, title, addressLineOne,
+    const { email, phone, name, addressLineOne,
       addressLineTwo, city, pinCode, state, country, userId  } = req.body;
     let token = await getShiprocketToken();
     const shipRocket = new ShipRocket(token);
 
     const body = {
-      name: title,
+      name,
       email,
       phone,
       address: addressLineOne,

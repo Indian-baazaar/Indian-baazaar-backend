@@ -46,7 +46,7 @@ const userSchema = mongoose.Schema({
     address_details: [
         {
             type: mongoose.Schema.ObjectId,
-            ref: 'address'
+            ref: 'Address'
         }
     ],
     orderHistory: [

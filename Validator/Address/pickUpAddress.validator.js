@@ -7,7 +7,7 @@ dotenv.config();
 
 export const CheckpickUpAddressValidator = async(req, res, next)=>{
   try{
-    const { email, phone, title, addressLineOne,
+    const { email, phone, name, addressLineOne,
       addressLineTwo, city, pinCode, state, country, userId  } = req.body;
 
     if(!userId) throw { code: 409, message: 'please provide userId' };
@@ -20,7 +20,7 @@ export const CheckpickUpAddressValidator = async(req, res, next)=>{
 
     if(!validPhone) throw { code: 409, message: 'please provide phone!' };
 
-    if(!title) throw { code: 409, message: 'please provide title' };
+    if(!name) throw { code: 409, message: 'please provide name' };
 
     if(!addressLineOne) throw { code: 409, message: 'please provide address line one' };
 
