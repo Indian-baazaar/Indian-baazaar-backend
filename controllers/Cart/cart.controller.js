@@ -6,9 +6,50 @@ export const addToCartItemController = async (request, response) => {
     const userId = request.userId;
     const { productTitle, image, rating, price, oldPrice, quantity, subTotal, productId, countInStock, discount, size, weight, ram, brand } = request.body;
 
-    if (!productId) {
+    const requiredFields = {
+      productTitle,
+      image,
+      rating,
+      price,
+      quantity,
+      subTotal,
+      productId,
+      countInStock
+    };
+
+    for (const field in requiredFields) {
+      if (
+        requiredFields[field] === undefined ||
+        requiredFields[field] === null ||
+        requiredFields[field] === ""
+      ) {
+        return response.status(400).json({
+          message: `${field} is required`,
+          error: true,
+          success: false
+        });
+      }
+    }
+
+     if (quantity <= 0) {
       return response.status(400).json({
-        message: "Provide productId",
+        message: "quantity must be greater than 0",
+        error: true,
+        success: false
+      });
+    }
+
+    if (price <= 0) {
+      return response.status(400).json({
+        message: "price must be greater than 0",
+        error: true,
+        success: false
+      });
+    }
+
+    if (subTotal <= 0) {
+      return response.status(400).json({
+        message: "subTotal must be greater than 0",
         error: true,
         success: false
       });
