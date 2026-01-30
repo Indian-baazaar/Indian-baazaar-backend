@@ -1,56 +1,83 @@
 import mongoose from "mongoose";
 
-const addressSchema = mongoose.Schema({
-    address_line1 : {
-        type : String,
-        default : ""
+const addressSchema = new mongoose.Schema(
+  {
+    address_line1: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    pickup_location : {
-        type : String,
-        default : ""
+
+    pickup_location: {
+      type: String,
+      default: "",
+      trim: true,
     },
-    city : {
-        type : String,
-        default : ""
+
+    city: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    state : {
-        type : String,
-        default : ""
+
+    state: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    pincode : {
-        type : String
+
+    pincode: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    country : {
-        type : String
+
+    country: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    mobile : {
-        type : Number,
-        default : null
+
+    mobile: {
+      type: String, 
+      required: true,
     },
-    status : {
-        type : Boolean,
-        default : true
+
+    landmark: {
+      type: String,
+      trim: true,
     },
-    selected : {
-        type : Boolean,
-        default : true
-    },
-    landmark : {
-        type : String,
-    },
+
     addressType: {
-        type: String,
-        enum: ["Home", "Office",],
+      type: String,
+      enum: ["Home", "Office"],
+      default: "Home",
     },
-    userId : {
-        type : String,
-        default : ""
-    }
-},{
-    timestamps : true
-})
 
+    ownerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      refPath: "ownerModel",
+    },
 
-const AddressModel = mongoose.model('address',addressSchema)
+    ownerModel: {
+      type: String,
+      required: true,
+      enum: ["User", "SellerModel"],
+    },
 
-export default AddressModel
+    status: {
+      type: Boolean,
+      default: true,
+    },
+
+    selected: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const AddressModel = mongoose.model("Address", addressSchema);
+export default AddressModel;

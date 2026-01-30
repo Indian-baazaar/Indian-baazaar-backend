@@ -1,133 +1,151 @@
 import AddressModel from "../../models/Address/address.model.js";
+import SellerModel from "../../models/Seller/seller.model.js";
 import UserModel from "../../models/User/user.model.js";
 
 export const addAddressController = async (request, response) => {
+  try {
+    const { address_line1, city, state, pincode, country, mobile, userId, landmark, addressType } = request.body;
 
-    try {
-        const { address_line1, city, state, pincode, country, mobile, userId, landmark, addressType } = request.body;
-
-
-        if (!address_line1 || !city || !state || !pincode || !country || !mobile || !userId) {
-            return response.status(500).json({
-                message: "Please provide all the fields",
-                error: true,
-                success: false
-            })
-        }
-
-
-        const address = new AddressModel({
-            address_line1, city, state, pincode, country, mobile, userId, landmark, addressType
-        })
-
-        const savedAddress = await address.save();
-
-        await UserModel.updateOne({ _id: userId }, {
-            $push: {
-                address_details: savedAddress?._id
-            }
-        })
-
-
-        return response.status(200).json({
-            data: savedAddress,
-            message: "Address add successfully",
-            error: false,
-            success: true
-        })
-
-
-
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        })
+    if (!address_line1 || !city || !state || !pincode || !country || !mobile || !userId) {
+      return response.status(400).json({
+        message: "Please provide all the fields",
+        error: true,
+        success: false,
+      });
     }
 
-}
+    const address = new AddressModel({
+      address_line1,
+      city,
+      state,
+      pincode,
+      country,
+      mobile,
+      userId,
+      landmark,
+      addressType,
+    });
+
+    const savedAddress = await address.save();
+
+    const seller = await SellerModel.findById(userId);
+    const user = !seller ? await UserModel.findById(userId) : null;
+
+    if (seller) {
+      await SellerModel.updateOne(
+        { _id: userId },
+        { $addToSet: { address_details: savedAddress._id } } 
+      );
+    } else if (user) {
+      await UserModel.updateOne(
+        { _id: userId },
+        { $addToSet: { address_details: savedAddress._id } }
+      );
+    } else {
+      return response.status(404).json({
+        message: "User or Seller ID not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    return response.status(201).json({
+      data: savedAddress,
+      message: "Address added successfully",
+      error: false,
+      success: true,
+    });
+
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
 
 
 export const getAddressController = async (request, response) => {
-    try {
-        const address = await AddressModel.find({ userId: request?.query?.userId });
+  try {
+    const userId = request.query.userId;
 
-        if (!address) {
-            return response.status({
-                error: true,
-                success: false,
-                message: "address not found"
-            })
-        }
+    const address = await AddressModel.find({ userId });
 
-        else {
-
-            await UserModel.updateOne({ _id: request?.query?.userId }, {
-                $push: {
-                    address: address?._id
-                }
-            })
-            
-            return response.status(200).json({
-                error: false,
-                success: true,
-                data: address
-            })
-        }
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        })
+    if (!address.length) {
+      return response.status(404).json({
+        error: true,
+        success: false,
+        message: "Address not found",
+      });
     }
-}
+
+    return response.status(200).json({
+      error: false,
+      success: true,
+      data: address,
+    });
+
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
 
 
 export const deleteAddressController = async (request, response) => {
-    try {
-        const userId = request.userId 
-        const _id = request.params.id
+  try {
+    const userId = request.userId;
+    const addressId = request.params.id;
 
-        if(!_id){
-            return response.status(400).json({
-                message : "Provide _id",
-                error : true,
-                success : false
-            })
-          }
-
-
-          const deleteItem  = await AddressModel.deleteOne({_id : _id, userId : userId })
-
-          if(!deleteItem){
-            return response.status(404).json({
-                message:"The address in the database is not found",
-                error:true,
-                success:false
-            })
-          }
-          
-
-          return response.json({
-            message : "address remove",
-            error : false,
-            success : true,
-            data : deleteItem
-          })
-
-
-    } catch (error) {
-        return response.status(500).json({
-            message: error.message || error,
-            error: true,
-            success: false
-        })
+    if (!addressId) {
+      return response.status(400).json({
+        message: "Provide address id",
+        error: true,
+        success: false,
+      });
     }
-}
+
+    const deleted = await AddressModel.findOneAndDelete({ _id: addressId, userId });
+
+    if (!deleted) {
+      return response.status(404).json({
+        message: "Address not found",
+        error: true,
+        success: false,
+      });
+    }
+
+    await SellerModel.updateOne(
+      { _id: userId },
+      { $pull: { address_details: addressId } }
+    );
+
+    await UserModel.updateOne(
+      { _id: userId },
+      { $pull: { address_details: addressId } }
+    );
+
+    return response.json({
+      message: "Address removed",
+      error: false,
+      success: true,
+    });
+
+  } catch (error) {
+    return response.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    });
+  }
+};
+
 
 
 export const getSingleAddressController = async (request, response) => {

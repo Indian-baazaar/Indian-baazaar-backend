@@ -17,7 +17,7 @@ userRouter.post('/authWithGoogle', endpointSecurity({ maxRequests: 60, windowMs:
 
 userRouter.get('/logout',auth,logoutController);
 
-userRouter.put('/user-avatar',  endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }),  upload.array('avatar'), userAvatarController);
+userRouter.put('/user-avatar',auth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }),  upload.array('avatar'), userAvatarController);
 
 userRouter.delete('/deteleImage',auth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), removeImageFromCloudinary);
 
