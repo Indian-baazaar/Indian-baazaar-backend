@@ -1,5 +1,5 @@
 import express from 'express';
-import './config/patchExpressAsync.js';
+import './config/patchedRouter/patchExpressAsync.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
 dotenv.config();
@@ -11,30 +11,30 @@ import hpp from 'hpp';
 import compression from 'compression';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-import connectDB from './config/connectDb.js';
-import userRouter from './route/user.route.js'
-import categoryRouter from './route/category.route.js';
-import productRouter from './route/product.route.js';
-import cartRouter from './route/cart.route.js';
-import myListRouter from './route/mylist.route.js';
-import addressRouter from './route/address.route.js';
-import homeSlidesRouter from './route/homeSlides.route.js';
-import bannerV1Router from './route/bannerV1.route.js';
-import bannerList2Router from './route/bannerList2.route.js';
-import blogRouter from './route/blog.route.js';
-import orderRouter from './route/order.route.js';
-import notificationRouter from './route/notification.route.js';
-import shipRocketAddressRoute from './route/shiprocket.address.route.js';
-import ShipRocketOrderRoute from './route/shiprocket.order.route.js';
-import shiprocketTrackingRoute from './route/shiprocket.tracking.route.js';
-import adminSellerRouter from './route/adminSeller.route.js';
-import sellerRouter from './route/seller.route.js';
-import sellerStoreSettingsRouter from './route/sellerStoreSettings.route.js';
-import sellerAnalyticsRouter from './route/sellerAnalytics.route.js';
-import adminSellerSettingsRouter from './route/adminSellerSettings.route.js';
-import messageRouter from './route/message.route.js';
-import { razorpayWebhook } from './controllers/payment.controller.js';
-import { redis } from './config/redisClient.js';
+import connectDB from './config/DB/connectDb.js';
+import userRouter from './route/User/user.route.js'
+import categoryRouter from './route/Category/category.route.js';
+import productRouter from './route/Product/product.route.js';
+import cartRouter from './route/Cart/cart.route.js';
+import myListRouter from './route/Cart/mylist.route.js';
+import addressRouter from './route/Address/address.route.js';
+import homeSlidesRouter from './route/Homeslides/homeSlides.route.js';
+import bannerV1Router from './route/banner/bannerV1.route.js';
+import bannerList2Router from './route/banner/bannerList2.route.js';
+import blogRouter from './route/Blog/blog.route.js';
+import orderRouter from './route/Orders/order.route.js';
+import notificationRouter from './route/Notifications/notification.route.js';
+import shipRocketAddressRoute from './route/Shiprokcet/shiprocket.address.route.js';
+import ShipRocketOrderRoute from './route/Shiprokcet/shiprocket.order.route.js';
+import shiprocketTrackingRoute from './route/Shiprokcet/shiprocket.tracking.route.js';
+import adminSellerRouter from './route/Admin/adminSeller.route.js';
+import sellerRouter from './route/Seller/seller.route.js';
+import sellerStoreSettingsRouter from './route/Seller/sellerStoreSettings.route.js';
+import sellerAnalyticsRouter from './route/Seller/sellerAnalytics.route.js';
+import adminSellerSettingsRouter from './route/Admin/adminSellerSettings.route.js';
+import messageRouter from './route/Messsage/message.route.js';
+import { razorpayWebhook } from './controllers/Payment/payment.controller.js';
+import { redis } from './config/Redis/redisClient.js';
 
 const app = express();
 const allowedOrigins = [
@@ -49,12 +49,13 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error('Not allowed by CORS'));
-  },
+  // origin(origin, callback) {
+  //   if (!origin || allowedOrigins.includes(origin)) {
+  //     return callback(null, true);
+  //   }
+  //   return callback(new Error('Not allowed by CORS'));
+  // },
+  origin: "*",
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]

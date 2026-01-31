@@ -1,0 +1,19 @@
+import { Router } from 'express'
+import upload from '../../middlewares/Basic/multer.js';
+import { addBanner, deleteBanner, getBanner, getBanners, updatedBanner, uploadImages } 
+from '../../controllers/Banner/bannerV1.controller.js';
+import { removeImageFromCloudinary } from '../../controllers/category/category.controller.js';
+import { endpointSecurity } from '../../middlewares/validation/endpointSecurity.js';
+import { superAdminAuth } from '../../middlewares/Admin/adminAuth.js';
+
+const bannerV1Router = Router();
+
+bannerV1Router.post('/uploadImages',superAdminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), upload.array('images'), uploadImages);
+bannerV1Router.post('/add',superAdminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), addBanner);
+bannerV1Router.get('/', getBanners);
+bannerV1Router.get('/:id', getBanner);
+bannerV1Router.delete('/deteleImage',superAdminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), removeImageFromCloudinary);
+bannerV1Router.delete('/:id',superAdminAuth, endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), deleteBanner);
+bannerV1Router.put('/:id', endpointSecurity({ maxRequests: 100, windowMs: 15 * 60 * 1000, blockDurationMs: 3600000 }), updatedBanner);
+
+export default bannerV1Router;
